@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
 defined('_JEXEC') || die;
 
@@ -17,63 +23,60 @@ defined('_JEXEC') || die;
  */
 trait HasLink
 {
-	/**
-	 * Link to this entity.
-	 *
-	 * @var  string
-	 */
-	protected $link;
+    /**
+     * Link to this entity.
+     *
+     * @var  string
+     */
+    protected $link;
 
-	/**
-	 * Gets the Identifier.
-	 *
-	 * @return  integer
-	 */
-	abstract public function id();
+    /**
+     * Gets the Identifier.
+     *
+     * @return  int
+     */
+    abstract public function id();
 
-	/**
-	 * Get the link to this entity.
-	 *
-	 * @param   boolean  $reload  Force reloading
-	 *
-	 * @return  string
-	 */
-	public function link($reload = false)
-	{
-		if ($reload || null === $this->link)
-		{
-			$this->link = $this->loadLink();
-		}
+    /**
+     * Get the link to this entity.
+     *
+     * @param   bool  $reload  Force reloading
+     *
+     * @return  string
+     */
+    public function link($reload = false)
+    {
+        if ($reload || null === $this->link) {
+            $this->link = $this->loadLink();
+        }
 
-		return $this->link;
-	}
+        return $this->link;
+    }
 
-	/**
-	 * Get the URL slug.
-	 *
-	 * @return  string
-	 */
-	public function slug()
-	{
-		$slug = $this->id();
+    /**
+     * Get the URL slug.
+     *
+     * @return  string
+     */
+    public function slug()
+    {
+        $slug = $this->id();
 
-		if (!$slug)
-		{
-			return null;
-		}
+        if (!$slug) {
+            return null;
+        }
 
-		if ($this->has('alias'))
-		{
-			$slug .= ':' . $this->get('alias');
-		}
+        if ($this->has('alias')) {
+            $slug .= ':'.$this->get('alias');
+        }
 
-		return $slug;
-	}
+        return $slug;
+    }
 
-	/**
-	 * Load the link to this entity.
-	 *
-	 * @return  string
-	 */
-	abstract protected function loadLink();
+    /**
+     * Load the link to this entity.
+     *
+     * @return  string
+     */
+    abstract protected function loadLink();
 }

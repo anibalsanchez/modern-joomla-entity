@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Tests\Core\Traits;
+namespace Extly\Joomla\Tests\Core\Traits;
 
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\AnotherClassWithInstances;
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\ClassWithInstances;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\AnotherClassWithInstances;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\ClassWithInstances;
 
 /**
  * Tests for HasInstances trait.
@@ -18,115 +24,115 @@ use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\ClassWithInstances;
  */
 class HasInstancesTest extends \TestCase
 {
-	/**
-	 * Test constructor.
-	 *
-	 * @return  void
-	 */
-	public function testConstructor()
-	{
-		$class = new ClassWithInstances(1337);
+    /**
+     * Test constructor.
+     *
+     * @return  void
+     */
+    public function testConstructor()
+    {
+        $class = new ClassWithInstances(1337);
 
-		$this->assertEquals(1337, $class->getId());
-		$class->setName('Sample name');
-		$this->assertEquals('Sample name', $class->getName());
+        $this->assertEquals(1337, $class->getId());
+        $class->setName('Sample name');
+        $this->assertEquals('Sample name', $class->getName());
 
-		$class2 = new ClassWithInstances(1337);
-		$this->assertNotEquals('Sample name', $class2->getName());
-	}
+        $class2 = new ClassWithInstances(1337);
+        $this->assertNotEquals('Sample name', $class2->getName());
+    }
 
-	/**
-	 * clearAll clears all the instances.
-	 *
-	 * @return  void
-	 */
-	public function testClearAllClearsAllTheInstances()
-	{
-		$reflection = new \ReflectionClass(ClassWithInstances::class);
-		$instancesProperty = $reflection->getProperty('instances');
-		$instancesProperty->setAccessible(true);
+    /**
+     * clearAll clears all the instances.
+     *
+     * @return  void
+     */
+    public function testClearAllClearsAllTheInstances()
+    {
+        $reflectionClass = new \ReflectionClass(ClassWithInstances::class);
+        $reflectionProperty = $reflectionClass->getProperty('instances');
+        $reflectionProperty->setAccessible(true);
 
-		$instances = array(
-			ClassWithInstances::class => array(
-				1337 => new ClassWithInstances(1337),
-				1338 => new ClassWithInstances(1338)
-			)
-		);
+        $instances = [
+            ClassWithInstances::class => [
+                1337 => new ClassWithInstances(1337),
+                1338 => new ClassWithInstances(1338),
+            ],
+        ];
 
-		$instancesProperty->setValue(ClassWithInstances::class, $instances);
+        $reflectionProperty->setValue(ClassWithInstances::class, $instances);
 
-		$this->assertEquals($instances, $instancesProperty->getValue(ClassWithInstances::class));
+        $this->assertEquals($instances, $reflectionProperty->getValue(ClassWithInstances::class));
 
-		ClassWithInstances::clearAll();
+        ClassWithInstances::clearAll();
 
-		$this->assertEquals(array(), $instancesProperty->getValue(ClassWithInstances::class));
-	}
+        $this->assertEquals([], $reflectionProperty->getValue(ClassWithInstances::class));
+    }
 
-	/**
-	 * Test clear method.
-	 *
-	 * @return  void
-	 */
-	public function testClear()
-	{
-		$class = ClassWithInstances::find(1337);
-		$class->setName('Sample name');
-		$this->assertEquals('Sample name', $class->getName());
+    /**
+     * Test clear method.
+     *
+     * @return  void
+     */
+    public function testClear()
+    {
+        $classWithInstances = ClassWithInstances::find(1337);
+        $classWithInstances->setName('Sample name');
+        $this->assertEquals('Sample name', $classWithInstances->getName());
 
-		$class2 = ClassWithInstances::find(1337);
-		$this->assertEquals('Sample name', $class2->getName());
+        $class2 = ClassWithInstances::find(1337);
+        $this->assertEquals('Sample name', $class2->getName());
 
-		ClassWithInstances::clear(1337);
+        ClassWithInstances::clear(1337);
 
-		$class3 = ClassWithInstances::find(1337);
-		$this->assertNotEquals('Sample name', $class3->getName());
-	}
+        $class3 = ClassWithInstances::find(1337);
+        $this->assertNotEquals('Sample name', $class3->getName());
+    }
 
-	/**
-	 * Test getFresh method.
-	 *
-	 * @return  void
-	 */
-	public function testFresh()
-	{
-		$class = ClassWithInstances::find(1337);
-		$class->setName('Sample name');
-		$this->assertEquals('Sample name', $class->getName());
+    /**
+     * Test getFresh method.
+     *
+     * @return  void
+     */
+    public function testFresh()
+    {
+        $classWithInstances = ClassWithInstances::find(1337);
+        $classWithInstances->setName('Sample name');
+        $this->assertEquals('Sample name', $classWithInstances->getName());
 
-		$class3 = ClassWithInstances::fresh(1337);
-		$this->assertNotEquals('Sample name', $class3->getName());
-	}
+        $class3 = ClassWithInstances::fresh(1337);
+        $this->assertNotEquals('Sample name', $class3->getName());
+    }
 
-	/**
-	 * Test find method.
-	 *
-	 * @return  void
-	 */
-	public function testFind()
-	{
-		$class = ClassWithInstances::find(1337);
-		$class->setName('Sample name');
-		$this->assertEquals('Sample name', $class->getName());
+    /**
+     * Test find method.
+     *
+     * @return  void
+     */
+    public function testFind()
+    {
+        $classWithInstances = ClassWithInstances::find(1337);
+        $classWithInstances->setName('Sample name');
+        $this->assertEquals('Sample name', $classWithInstances->getName());
 
-		$class2 = ClassWithInstances::find(1337);
-		$this->assertEquals('Sample name', $class2->getName());
-	}
+        $class2 = ClassWithInstances::find(1337);
+        $this->assertEquals('Sample name', $class2->getName());
+    }
 
-	/**
-	 * Test that different classes using the same id.
-	 *
-	 * @return  void
-	 */
-	public function testNoCollisionsBetweenClasses()
-	{
-		$class = ClassWithInstances::find(1337);
-		$class->setName('Sample name');
-		$this->assertEquals('Sample name', $class->getName());
+    /**
+     * Test that different classes using the same id.
+     *
+     * @return  void
+     */
+    public function testNoCollisionsBetweenClasses()
+    {
+        $classWithInstances = ClassWithInstances::find(1337);
+        $classWithInstances->setName('Sample name');
+        $this->assertEquals('Sample name', $classWithInstances->getName());
 
-		$class2 = AnotherClassWithInstances::find(1337);
-		$this->assertNotEquals('Sample name', $class2->getName());
+        $anotherClassWithInstances = AnotherClassWithInstances::find(1337);
+        $this->assertNotEquals('Sample name', $anotherClassWithInstances->getName());
 
-		$class3 = ClassWithInstances::find(1337);
-		$this->assertEquals('Sample name', $class3->getName());
-	}
+        $class3 = ClassWithInstances::find(1337);
+        $this->assertEquals('Sample name', $class3->getName());
+    }
 }

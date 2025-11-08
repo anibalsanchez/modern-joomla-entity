@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests;
+namespace Extly\Joomla\Entity\Tests;
 
-use Phproberto\Joomla\Entity\Decorator;
-use Phproberto\Joomla\Entity\Tests\Stubs\Entity;
+use Extly\Joomla\Entity\Decorator;
+use Extly\Joomla\Entity\Tests\Stubs\Entity;
 
 /**
  * Base decorator tests.
@@ -18,23 +24,23 @@ use Phproberto\Joomla\Entity\Tests\Stubs\Entity;
  */
 class DecoratorTest extends \TestCase
 {
-	/**
-	 * Constructor sets entity.
-	 *
-	 * @return  void
-	 */
-	public function testConstructorSetsEntity()
-	{
-		$entity = new Entity;
+    /**
+     * Constructor sets entity.
+     *
+     * @return  void
+     */
+    public function testConstructorSetsEntity()
+    {
+        $entity = new Entity();
 
-		$decorator = $this->getMockBuilder(Decorator::class)
-			->setConstructorArgs(array($entity))
-			->getMockForAbstractClass();
+        $decorator = $this->getMockBuilder(Decorator::class)
+            ->setConstructorArgs([$entity])
+            ->getMockForAbstractClass();
 
-		$reflection = new \ReflectionClass($decorator);
-		$entityProperty = $reflection->getProperty('entity');
-		$entityProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($decorator);
+        $reflectionProperty = $reflectionClass->getProperty('entity');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertSame($entity, $entityProperty->getValue($decorator));
-	}
+        $this->assertSame($entity, $reflectionProperty->getValue($decorator));
+    }
 }

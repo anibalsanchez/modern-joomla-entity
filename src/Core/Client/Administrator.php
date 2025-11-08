@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Client;
+namespace Extly\Joomla\Entity\Core\Client;
 
 defined('_JEXEC') || die;
 
@@ -17,27 +23,27 @@ defined('_JEXEC') || die;
  */
 final class Administrator extends BaseClient implements ClientInterface
 {
-	/**
-	 * Client identifier.
-	 *
-	 * @const
-	 */
-	const ID = 1;
+    /**
+     * Client identifier.
+     *
+     * @const
+     */
+    public const ID = 1;
 
-	/**
-	 * Client name.
-	 *
-	 * @const
-	 */
-	const NAME = 'Administrator';
+    /**
+     * Client name.
+     *
+     * @const
+     */
+    public const NAME = 'Administrator';
 
-	/**
-	 * Get the base folder of this client.
-	 *
-	 * @return  string
-	 */
-	public function getFolder()
-	{
-		return JPATH_ADMINISTRATOR;
-	}
+    /**
+     * Get the base folder of this client.
+     *
+     * @return  string
+     */
+    public function getFolder()
+    {
+        return JPATH_ADMINISTRATOR;
+    }
 }

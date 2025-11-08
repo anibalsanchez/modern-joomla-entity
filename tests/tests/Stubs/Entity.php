@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Stubs;
+namespace Extly\Joomla\Entity\Tests\Stubs;
 
-use Phproberto\Joomla\Entity\Entity as BaseEntity;
+use Extly\Joomla\Entity\Entity as BaseEntity;
 
 /**
  * Stub to test Entity class.
@@ -19,38 +25,37 @@ use Phproberto\Joomla\Entity\Entity as BaseEntity;
  */
 class Entity extends BaseEntity
 {
-	/**
-	 * Sample public property for tests.
-	 *
-	 * @var  mixed
-	 */
-	public $publicProperty;
+    /**
+     * Sample public property for tests.
+     *
+     * @var  mixed
+     */
+    public $publicProperty;
 
-	/**
-	 * Allow to mock table returned by this entity.
-	 *
-	 * @var  \PHPUnit_Framework_MockObject_MockObject
-	 */
-	public static $tableMock;
+    /**
+     * Allow to mock table returned by this entity.
+     *
+     * @var  \PHPUnit_Framework_MockObject_MockObject
+     */
+    public static $tableMock;
 
-	/**
-	 * Get a table.
-	 *
-	 * @param   string  $name     Table name. Optional.
-	 * @param   string  $prefix   Class prefix. Optional.
-	 * @param   array   $options  Configuration array for the table. Optional.
-	 *
-	 * @return  \JTable
-	 *
-	 * @throws  \InvalidArgumentException
-	 */
-	public function table($name = '', $prefix = null, $options = array())
-	{
-		if (null !== static::$tableMock)
-		{
-			return static::$tableMock;
-		}
+    /**
+     * Get a table.
+     *
+     * @param   string  $name     Table name. Optional.
+     * @param   string  $prefix   Class prefix. Optional.
+     * @param   array   $options  Configuration array for the table. Optional.
+     *
+     * @return  \JTable
+     *
+     * @throws  \InvalidArgumentException
+     */
+    public function table($name = '', $prefix = null, $options = [])
+    {
+        if (null !== static::$tableMock) {
+            return static::$tableMock;
+        }
 
-		return parent::table($name, $prefix, $options);
-	}
+        return parent::table($name, $prefix, $options);
+    }
 }

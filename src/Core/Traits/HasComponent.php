@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Core\Extension\Component;
+use Extly\Joomla\Entity\Core\Extension\Component;
 
 /**
  * Trait for entities with an associated component.
@@ -19,80 +25,77 @@ use Phproberto\Joomla\Entity\Core\Extension\Component;
  */
 trait HasComponent
 {
-	/**
-	 * Entity component
-	 *
-	 * @var  Component
-	 */
-	protected $component;
+    /**
+     * Entity component
+     *
+     * @var  Component
+     */
+    protected $component;
 
-	/**
-	 * Component option.
-	 *
-	 * @var string
-	 */
-	protected $componentOption;
+    /**
+     * Component option.
+     *
+     * @var string
+     */
+    protected $componentOption;
 
-	/**
-	 * Retrieve the associated component.
-	 *
-	 * @return  Component
-	 */
-	public function component()
-	{
-		if (null === $this->component)
-		{
-			$this->component = $this->loadComponent();
-		}
+    /**
+     * Retrieve the associated component.
+     *
+     * @return  Component
+     */
+    public function component()
+    {
+        if (null === $this->component) {
+            $this->component = $this->loadComponent();
+        }
 
-		return $this->component;
-	}
+        return $this->component;
+    }
 
-	/**
-	 * Try to guess component option from class prefix
-	 *
-	 * @return  mixed  null (not found) | string (found)
-	 */
-	protected function componentOption()
-	{
-		if (null === $this->componentOption)
-		{
-			$this->componentOption = $this->componentOptionFromClass();
-		}
+    /**
+     * Try to guess component option from class prefix
+     *
+     * @return  mixed  null (not found) | string (found)
+     */
+    protected function componentOption()
+    {
+        if (null === $this->componentOption) {
+            $this->componentOption = $this->componentOptionFromClass();
+        }
 
-		return $this->componentOption;
-	}
+        return $this->componentOption;
+    }
 
-	/**
-	 * Try to guess component option from class.
-	 *
-	 * @return  string
-	 */
-	protected function componentOptionFromClass()
-	{
-		$class = get_class($this);
+    /**
+     * Try to guess component option from class.
+     *
+     * @return  string
+     */
+    protected function componentOptionFromClass()
+    {
+        $class = get_class($this);
 
-		if (false !== strpos($class, '\\'))
-		{
-			$suffix = rtrim(strstr($class, 'Entity'), '\\');
-			$parts = explode("\\", $suffix);
+        if (str_contains($class, '\\')) {
+            $suffix = rtrim(strstr($class, 'Entity'), '\\');
+            $parts = explode('\\', $suffix);
 
-			return array_key_exists(1, $parts) ? 'com_' . strtolower($parts[1]) : null;
-		}
+            return array_key_exists(1, $parts) ? 'com_'.strtolower($parts[1]) : null;
+        }
 
-		return  'com_' . strtolower(strstr($class, 'Entity', true));
-	}
+        return  'com_'.strtolower(strstr($class, 'Entity', true));
+    }
 
-	/**
-	 * Load associated component
-	 *
-	 * @return  Component
-	 *
-	 * @throws  \InvalidArgumentException  Wrong option received
-	 * @throws  \RuntimeException          Component not found
-	 */
-	protected function loadComponent()
-	{
-		return Component::fromOption($this->componentOption());
-	}
+    /**
+     * Load associated component
+     *
+     * @return  Component
+     *
+     * @throws  \InvalidArgumentException  Wrong option received
+     * @throws  \RuntimeException          Component not found
+     */
+    protected function loadComponent()
+    {
+        return Component::fromOption($this->componentOption());
+    }
 }

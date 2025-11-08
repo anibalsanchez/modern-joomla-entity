@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Users\Traits;
+namespace Extly\Joomla\Entity\Users\Traits;
 
 defined('_JEXEC') || die;
 
@@ -17,66 +23,65 @@ defined('_JEXEC') || die;
  */
 trait HasViewLevels
 {
-	/**
-	 * Associated view levels.
-	 *
-	 * @var  Collection
-	 */
-	protected $viewLevels;
+    /**
+     * Associated view levels.
+     *
+     * @var  Collection
+     */
+    protected $viewLevels;
 
-	/**
-	 * Clear already loaded view levels.
-	 *
-	 * @return  self
-	 */
-	public function clearViewLevels()
-	{
-		$this->viewLevels = null;
+    /**
+     * Clear already loaded view levels.
+     *
+     * @return  self
+     */
+    public function clearViewLevels()
+    {
+        $this->viewLevels = null;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Get the associated view levels.
-	 *
-	 * @return  Collection
-	 */
-	public function viewLevels()
-	{
-		if (null === $this->viewLevels)
-		{
-			$this->viewLevels = $this->loadViewLevels();
-		}
+    /**
+     * Get the associated view levels.
+     *
+     * @return  Collection
+     */
+    public function viewLevels()
+    {
+        if (null === $this->viewLevels) {
+            $this->viewLevels = $this->loadViewLevels();
+        }
 
-		return $this->viewLevels;
-	}
+        return $this->viewLevels;
+    }
 
-	/**
-	 * Check if this entity has an associated view level.
-	 *
-	 * @param   integer   $id  View level identifier
-	 *
-	 * @return  boolean
-	 */
-	public function hasViewLevel($id)
-	{
-		return $this->viewLevels()->has($id);
-	}
+    /**
+     * Check if this entity has an associated view level.
+     *
+     * @param   int   $id  View level identifier
+     *
+     * @return  bool
+     */
+    public function hasViewLevel($id)
+    {
+        return $this->viewLevels()->has($id);
+    }
 
-	/**
-	 * Check if this entity has associated view levels.
-	 *
-	 * @return  boolean
-	 */
-	public function hasViewLevels()
-	{
-		return !$this->viewLevels()->isEmpty();
-	}
+    /**
+     * Check if this entity has associated view levels.
+     *
+     * @return  bool
+     */
+    public function hasViewLevels()
+    {
+        return !$this->viewLevels()->isEmpty();
+    }
 
-	/**
-	 * Load associated view levels.
-	 *
-	 * @return  Collection
-	 */
-	abstract protected function loadViewLevels();
+    /**
+     * Load associated view levels.
+     *
+     * @return  Collection
+     */
+    abstract protected function loadViewLevels();
 }

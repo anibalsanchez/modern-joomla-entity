@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
 defined('_JEXEC') || die;
 
@@ -17,93 +23,91 @@ defined('_JEXEC') || die;
  */
 trait HasEvents
 {
-	/**
-	 * Check if
-	 *
-	 * @var  boolean
-	 */
-	protected $eventsPluginsImported = array();
+    /**
+     * Check if
+     *
+     * @var  bool
+     */
+    protected $eventsPluginsImported = [];
 
-	/**
-	 * Get the event dispatcher.
-	 *
-	 * @return  \JEventDispatcher
-	 */
-	protected function dispatcher()
-	{
-		return \JEventDispatcher::getInstance();
-	}
+    /**
+     * Import a plugin type for triggered events.
+     *
+     * @param   string  $pluginType  Folder of the plugin
+     *
+     * @return  self
+     */
+    public function importPlugin($pluginType)
+    {
+        if (!in_array($pluginType, $this->eventsPluginsImported)) {
+            $this->eventsPluginsImported[] = $pluginType;
 
-	/**
-	 * Get the plugin types that will be used by this entity.
-	 *
-	 * @return  array
-	 */
-	protected function eventsPlugins()
-	{
-		return array('joomla_entity');
-	}
+            $this->importJoomlaPlugin($pluginType);
+        }
 
-	/**
-	 * Import a plugin type for triggered events.
-	 *
-	 * @param   string  $pluginType  Folder of the plugin
-	 *
-	 * @return  self
-	 */
-	public function importPlugin($pluginType)
-	{
-		if (!in_array($pluginType, $this->eventsPluginsImported))
-		{
-			$this->eventsPluginsImported[] = $pluginType;
+        return $this;
+    }
 
-			$this->importJoomlaPlugin($pluginType);
-		}
+    /**
+     * Trigger an entity event.
+     *
+     * @param   string  $event   Event to trigger
+     * @param   array   $params  Optional parameters for the event
+     *
+     * @return  array
+     */
+    public function trigger($event, $params = [])
+    {
+        $this->importPlugins();
 
-		return $this;
-	}
+        array_unshift($params, $this);
 
-	/**
-	 * Import Joomla plugin. Isolated for tests.
-	 *
-	 * @param   string  $pluginType  Plugin type to import
-	 *
-	 * @return  boolean
-	 *
-	 * @codeCoverageIgnore
-	 */
-	protected function importJoomlaPlugin($pluginType)
-	{
-		return \JPluginHelper::importPlugin($pluginType);
-	}
+        return $this->dispatcher()->trigger($event, $params);
+    }
 
-	/**
-	 * Import available plugins.
-	 *
-	 * @return  void
-	 */
-	protected function importPlugins()
-	{
-		foreach ($this->eventsPlugins() as $plugin)
-		{
-			$this->importPlugin($plugin);
-		}
-	}
+    /**
+     * Get the event dispatcher.
+     *
+     * @return  \JEventDispatcher
+     */
+    protected function dispatcher()
+    {
+        return \JEventDispatcher::getInstance();
+    }
 
-	/**
-	 * Trigger an entity event.
-	 *
-	 * @param   string  $event   Event to trigger
-	 * @param   array   $params  Optional parameters for the event
-	 *
-	 * @return  array
-	 */
-	public function trigger($event, $params = array())
-	{
-		$this->importPlugins();
+    /**
+     * Get the plugin types that will be used by this entity.
+     *
+     * @return  array
+     */
+    protected function eventsPlugins()
+    {
+        return ['joomla_entity'];
+    }
 
-		array_unshift($params, $this);
+    /**
+     * Import Joomla plugin. Isolated for tests.
+     *
+     * @param   string  $pluginType  Plugin type to import
+     *
+     * @return  bool
+     *
+     * @codeCoverageIgnore
+     */
+    protected function importJoomlaPlugin($pluginType)
+    {
+        return \Joomla\CMS\Plugin\PluginHelper::importPlugin($pluginType);
+    }
 
-		return $this->dispatcher()->trigger($event, $params);
-	}
+    /**
+     * Import available plugins.
+     *
+     * @return  void
+     */
+    protected function importPlugins()
+    {
+        foreach ($this->eventsPlugins() as $plugin) {
+            $this->importPlugin($plugin);
+        }
+    }
 }

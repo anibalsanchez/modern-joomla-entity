@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithMetadata;
-use Phproberto\Joomla\Entity\Core\Column;
+use Extly\Joomla\Entity\Core\Column;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithMetadata;
 
 /**
  * HasMetadata trait tests.
@@ -18,81 +24,81 @@ use Phproberto\Joomla\Entity\Core\Column;
  */
 class HasMetadataTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * getMetadata returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testGetMetadataReturnsCorrectValue()
-	{
-		$entity = $this->getMockBuilder(EntityWithMetadata::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * getMetadata returns correct value.
+     *
+     * @return  void
+     */
+    public function testGetMetadataReturnsCorrectValue()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithMetadata::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$entity->method('columnAlias')
-			->willReturn(Column::METADATA);
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn(Column::METADATA);
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-		$idProperty = $reflection->getProperty('id');
-		$idProperty->setAccessible(true);
-		$idProperty->setValue($entity, 999);
+        $reflectionProperty = $reflectionClass->getProperty('id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, 999);
 
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-		$rowProperty->setValue($entity, array('id' => 999));
+        $rowProperty = $reflectionClass->getProperty('row');
+        $rowProperty->setAccessible(true);
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999]);
 
-		$rowProperty->setValue($entity, array('id' => 999, Column::METADATA => ''));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, Column::METADATA => '']);
 
-		$this->assertEquals(array(), $entity->metadata(true));
+        $this->assertEquals([], $phpUnitFrameworkMockObjectMockObject->metadata(true));
 
-		$rowProperty->setValue($entity, array('id' => 999, Column::METADATA => '{}'));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, Column::METADATA => '{}']);
 
-		$this->assertEquals(array(), $entity->metadata(true));
+        $this->assertEquals([], $phpUnitFrameworkMockObjectMockObject->metadata(true));
 
-		$rowProperty->setValue($entity, array('id' => 999, Column::METADATA => '{"robots":"","author":"","rights":"","xreference":""}'));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, Column::METADATA => '{"robots":"","author":"","rights":"","xreference":""}']);
 
-		$this->assertEquals(array(), $entity->metadata(true));
+        $this->assertEquals([], $phpUnitFrameworkMockObjectMockObject->metadata(true));
 
-		$rowProperty->setValue($entity, array('id' => 999, Column::METADATA => '{"robots":"noindex, follow","author":"Roberto Segura","rights":"Creative Commons","xreference":"http:\/\/phproberto.com"}'));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, Column::METADATA => '{"robots":"noindex, follow","author":"Roberto Segura","rights":"Creative Commons","xreference":"http:\/\/phproberto.com"}']);
 
-		// Without reload = old data
-		$this->assertEquals(array(), $entity->metadata());
+        // Without reload = old data
+        $this->assertEquals([], $phpUnitFrameworkMockObjectMockObject->metadata());
 
-		$expected = array(
-			'robots'     => 'noindex, follow',
-			'author'     => 'Roberto Segura',
-			'rights'     => 'Creative Commons',
-			'xreference' => 'http://phproberto.com'
-		);
+        $expected = [
+            'robots'     => 'noindex, follow',
+            'author'     => 'Roberto Segura',
+            'rights'     => 'Creative Commons',
+            'xreference' => 'http://phproberto.com',
+        ];
 
-		$this->assertEquals($expected, $entity->metadata(true));
+        $this->assertEquals($expected, $phpUnitFrameworkMockObjectMockObject->metadata(true));
 
-		$rowProperty->setValue($entity, array('id' => 999, Column::METADATA => '{"robots":"noindex, follow","author":"Roberto Segura","xreference":"http:\/\/phproberto.com"}'));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, Column::METADATA => '{"robots":"noindex, follow","author":"Roberto Segura","xreference":"http:\/\/phproberto.com"}']);
 
-		$expected = array(
-			'robots'     => 'noindex, follow',
-			'author'     => 'Roberto Segura',
-			'xreference' => 'http://phproberto.com'
-		);
+        $expected = [
+            'robots'     => 'noindex, follow',
+            'author'     => 'Roberto Segura',
+            'xreference' => 'http://phproberto.com',
+        ];
 
-		$this->assertEquals($expected, $entity->metadata(true));
+        $this->assertEquals($expected, $phpUnitFrameworkMockObjectMockObject->metadata(true));
 
-		$rowProperty->setValue($entity, array('id' => 999, Column::METADATA => '{"author":"Roberto Segura","xreference":"http:\/\/phproberto.com"}'));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, Column::METADATA => '{"author":"Roberto Segura","xreference":"http:\/\/phproberto.com"}']);
 
-		$expected = array(
-			'author' => 'Roberto Segura',
-			'xreference' => 'http://phproberto.com'
-		);
+        $expected = [
+            'author' => 'Roberto Segura',
+            'xreference' => 'http://phproberto.com',
+        ];
 
-		$this->assertEquals($expected, $entity->metadata(true));
+        $this->assertEquals($expected, $phpUnitFrameworkMockObjectMockObject->metadata(true));
 
-		$rowProperty->setValue($entity, array('id' => 999, Column::METADATA => '{"author":"Roberto Segura"}'));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, Column::METADATA => '{"author":"Roberto Segura"}']);
 
-		$expected = array(
-			'author' => 'Roberto Segura'
-		);
+        $expected = [
+            'author' => 'Roberto Segura',
+        ];
 
-		$this->assertEquals($expected, $entity->metadata(true));
-	}
+        $this->assertEquals($expected, $phpUnitFrameworkMockObjectMockObject->metadata(true));
+    }
 }

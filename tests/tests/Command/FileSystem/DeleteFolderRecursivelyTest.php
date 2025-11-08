@@ -1,18 +1,24 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Command\FileSystem;
+namespace Extly\Joomla\Entity\Tests\Command\FileSystem;
 
 defined('_JEXEC') || die;
 
+use Extly\Joomla\Entity\Command\Contracts\CommandInterface;
+use Extly\Joomla\Entity\Command\FileSystem\DeleteFolderRecursively;
 use Joomla\CMS\Factory;
-use Phproberto\Joomla\Entity\Command\Contracts\CommandInterface;
-use Phproberto\Joomla\Entity\Command\FileSystem\DeleteFolderRecursively;
 
 /**
  * DeleteFolderRecursivelyTest tests.
@@ -21,94 +27,93 @@ use Phproberto\Joomla\Entity\Command\FileSystem\DeleteFolderRecursively;
  */
 class DeleteFolderRecursivelyTestTest extends \TestCase
 {
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function implementsCommandInterface()
-	{
-		$command = new DeleteFolderRecursively('test');
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function implementsCommandInterface()
+    {
+        $deleteFolderRecursively = new DeleteFolderRecursively('test');
 
-		$this->assertTrue($command instanceof CommandInterface);
-	}
+        $this->assertTrue($deleteFolderRecursively instanceof CommandInterface);
+    }
 
-	/**
-	 * Create a test folder structure.
-	 *
-	 * @return  void
-	 */
-	private function createTestFolder()
-	{
-		$tmpFolder = $this->tmpFolder();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function deletingUnexistingFolderReturnsTrue()
+    {
+        $this->assertTrue(
+            DeleteFolderRecursively::instance([__DIR__.'/does-not-exist'])->execute()
+        );
+    }
 
-		if (is_dir($tmpFolder))
-		{
-			$this->deleteTestFolder();
-		}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function folderIsDeleted()
+    {
+        $this->createTestFolder();
 
-		$childFolder = $tmpFolder . '/child-folder';
+        $tmpFolder = $this->tmpFolder();
 
-		mkdir($tmpFolder);
-		touch($tmpFolder . '/delete-me.txt');
-		mkdir($childFolder);
-		touch($childFolder . '/delete-me-too.txt');
-	}
+        $this->assertTrue(is_dir($tmpFolder));
 
-	/**
-	 * Delete the test folder.
-	 *
-	 * @return  void
-	 */
-	private function deleteTestFolder()
-	{
-		$tmpFolder = $this->tmpFolder();
-		$childFolder = $tmpFolder . '/child-folder';
+        $deleteFolderRecursively = new DeleteFolderRecursively($tmpFolder);
+        $deleteFolderRecursively->execute();
 
-		@unlink($tmpFolder . '/delete-me.txt');
-		@unlink($childFolder . '/delete-me-too.txt');
-		@rmdir($childFolder);
-		@rmdir($tmpFolder);
-	}
+        $this->assertFalse(is_dir($tmpFolder));
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function deletingUnexistingFolderReturnsTrue()
-	{
-		$this->assertTrue(
-			DeleteFolderRecursively::instance([__DIR__ . '/does-not-exist'])->execute()
-		);
-	}
+    /**
+     * Create a test folder structure.
+     *
+     * @return  void
+     */
+    private function createTestFolder()
+    {
+        $tmpFolder = $this->tmpFolder();
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function folderIsDeleted()
-	{
-		$this->createTestFolder();
+        if (is_dir($tmpFolder)) {
+            $this->deleteTestFolder();
+        }
 
-		$tmpFolder = $this->tmpFolder();
+        $childFolder = $tmpFolder.'/child-folder';
 
-		$this->assertTrue(is_dir($tmpFolder));
+        mkdir($tmpFolder);
+        touch($tmpFolder.'/delete-me.txt');
+        mkdir($childFolder);
+        touch($childFolder.'/delete-me-too.txt');
+    }
 
-		$command = new DeleteFolderRecursively($tmpFolder);
-		$command->execute();
+    /**
+     * Delete the test folder.
+     *
+     * @return  void
+     */
+    private function deleteTestFolder()
+    {
+        $tmpFolder = $this->tmpFolder();
+        $childFolder = $tmpFolder.'/child-folder';
 
-		$this->assertFalse(is_dir($tmpFolder));
-	}
+        @unlink($tmpFolder.'/delete-me.txt');
+        @unlink($childFolder.'/delete-me-too.txt');
+        @rmdir($childFolder);
+        @rmdir($tmpFolder);
+    }
 
-	/**
-	 * Route to the temporary folder used to test this command.
-	 *
-	 * @return  string
-	 */
-	private function tmpFolder()
-	{
-		return __DIR__ . '/tmp';
-	}
+    /**
+     * Route to the temporary folder used to test this command.
+     *
+     * @return  string
+     */
+    private function tmpFolder()
+    {
+        return __DIR__.'/tmp';
+    }
 }

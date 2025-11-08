@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Core\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Entity;
-use Phproberto\Joomla\Entity\Core\Traits\HasComponent;
+use Extly\Joomla\Entity\Core\Traits\HasComponent;
+use Extly\Joomla\Entity\Entity;
 
 /**
  * Sample class to test HasComponent trait.
@@ -18,5 +24,5 @@ use Phproberto\Joomla\Entity\Core\Traits\HasComponent;
  */
 class ClassWithComponent extends Entity
 {
-	use HasComponent;
+    use HasComponent;
 }

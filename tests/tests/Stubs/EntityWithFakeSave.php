@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Stubs;
+namespace Extly\Joomla\Entity\Tests\Stubs;
 
-use Phproberto\Joomla\Entity\Entity as BaseEntity;
+use Extly\Joomla\Entity\Entity as BaseEntity;
 
 /**
  * Stub to test Entity class.
@@ -17,32 +23,32 @@ use Phproberto\Joomla\Entity\Entity as BaseEntity;
  */
 class EntityWithFakeSave extends BaseEntity
 {
-	/**
-	 * Save method executed?
-	 *
-	 * @var  boolean
-	 */
-	public $saved = false;
+    /**
+     * Save method executed?
+     *
+     * @var  bool
+     */
+    public $saved = false;
 
-	/**
-	 * Data saved in save method.
-	 *
-	 * @var  array
-	 */
-	public $savedData = array();
+    /**
+     * Data saved in save method.
+     *
+     * @var  array
+     */
+    public $savedData = [];
 
-	/**
-	 * Save entity to the database.
-	 *
-	 * @return  self
-	 *
-	 * @throws  SaveException
-	 */
-	public function save()
-	{
-		$this->savedData = $this->row;
-		$this->saved = true;
+    /**
+     * Save entity to the database.
+     *
+     * @return  self
+     *
+     * @throws  SaveException
+     */
+    public function save()
+    {
+        $this->savedData = $this->row;
+        $this->saved = true;
 
-		return $this;
-	}
+        return $this;
+    }
 }

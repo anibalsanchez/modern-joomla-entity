@@ -1,3 +1,7 @@
+--- anibalsanchez/modern-joomla-entity ---
+Copyright © 2025 Anibal Sanchez
+
+--- phproberto/joomla-entity ---
 Copyright © 2017 Roberto Segura López
 
 Each file included in this library is licensed under GNU LESSER GENERAL PUBLIC LICENSE

@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Core\Column;
+use Extly\Joomla\Entity\Core\Column;
 
 /**
  * Trait for entities that have an associated publish up column.
@@ -19,49 +25,48 @@ use Phproberto\Joomla\Entity\Core\Column;
  */
 trait HasPublishUp
 {
-	/**
-	 * Get the empty date for the active DB driver.
-	 *
-	 * @return  string
-	 *
-	 * @codeCoverageIgnore
-	 */
-	abstract protected function nullDate();
+    /**
+     * Get the publish up date.
+     *
+     * @return  string
+     */
+    public function getPublishUp()
+    {
+        return $this->get($this->columnAlias(Column::PUBLISH_UP));
+    }
 
-	/**
-	 * Get the publish up date.
-	 *
-	 * @return  string
-	 */
-	public function getPublishUp()
-	{
-		return $this->get($this->columnAlias(Column::PUBLISH_UP));
-	}
+    /**
+     * Has this entity a publish up date?
+     *
+     * @return  bool
+     */
+    public function hasPublishUp()
+    {
+        $publishUp = $this->getPublishUp();
 
-	/**
-	 * Has this entity a publish up date?
-	 *
-	 * @return  boolean
-	 */
-	public function hasPublishUp()
-	{
-		$publishUp = $this->getPublishUp();
+        return !empty($publishUp) && $publishUp !== $this->nullDate();
+    }
 
-		return !empty($publishUp) && $publishUp !== $this->nullDate();
-	}
+    /**
+     * Check if this entity is published up.
+     *
+     * @return  bool
+     */
+    public function isPublishedUp()
+    {
+        if (!$this->hasPublishUp()) {
+            return true;
+        }
 
-	/**
-	 * Check if this entity is published up.
-	 *
-	 * @return  boolean
-	 */
-	public function isPublishedUp()
-	{
-		if (!$this->hasPublishUp())
-		{
-			return true;
-		}
+        return \Joomla\CMS\Factory::getDate($this->getPublishUp()) <= \Joomla\CMS\Factory::getDate();
+    }
 
-		return \JFactory::getDate($this->getPublishUp()) <= \JFactory::getDate();
-	}
+    /**
+     * Get the empty date for the active DB driver.
+     *
+     * @return  string
+     *
+     * @codeCoverageIgnore
+     */
+    abstract protected function nullDate();
 }

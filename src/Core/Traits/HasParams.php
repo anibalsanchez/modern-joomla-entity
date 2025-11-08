@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
 defined('_JEXEC') || die;
 
+use Extly\Joomla\Entity\Core\Column;
 use Joomla\Registry\Registry;
-use Phproberto\Joomla\Entity\Core\Column;
 
 /**
  * Trait for entities with params. Based on params | attribs columns.
@@ -20,203 +26,195 @@ use Phproberto\Joomla\Entity\Core\Column;
  */
 trait HasParams
 {
-	/**
-	 * Entity parameters.
-	 *
-	 * @var  Registry
-	 */
-	protected $params;
+    /**
+     * Entity parameters.
+     *
+     * @var  Registry
+     */
+    protected $params;
 
-	/**
-	 * Assign a value to entity property.
-	 *
-	 * @param   string  $property  Name of the property to set
-	 * @param   mixed   $value     Value to assign
-	 *
-	 * @return  self
-	 */
-	abstract public function assign($property, $value);
+    /**
+     * Assign a value to entity property.
+     *
+     * @param   string  $property  Name of the property to set
+     * @param   mixed   $value     Value to assign
+     *
+     * @return  self
+     */
+    abstract public function assign($property, $value);
 
-	/**
-	 * Get the alias for a specific DB column.
-	 *
-	 * @param   string  $column  Name of the DB column. Example: created_by
-	 *
-	 * @return  string
-	 */
-	abstract public function columnAlias($column);
+    /**
+     * Get the alias for a specific DB column.
+     *
+     * @param   string  $column  Name of the DB column. Example: created_by
+     *
+     * @return  string
+     */
+    abstract public function columnAlias($column);
 
-	/**
-	 * Get a property of this entity.
-	 *
-	 * @param   string  $property  Name of the property to get
-	 * @param   mixed   $default   Value to use as default if property is not set or is null
-	 *
-	 * @return  mixed
-	 */
-	abstract public function get($property, $default = null);
+    /**
+     * Get a property of this entity.
+     *
+     * @param   string  $property  Name of the property to get
+     * @param   mixed   $default   Value to use as default if property is not set or is null
+     *
+     * @return  mixed
+     */
+    abstract public function get($property, $default = null);
 
-	/**
-	 * Get the entity identifier.
-	 *
-	 * @return  integer
-	 */
-	abstract public function id();
+    /**
+     * Get the entity identifier.
+     *
+     * @return  int
+     */
+    abstract public function id();
 
-	/**
-	 * Get entity primary key column.
-	 *
-	 * @return  string
-	 */
-	abstract public function primaryKey();
+    /**
+     * Get entity primary key column.
+     *
+     * @return  string
+     */
+    abstract public function primaryKey();
 
-	/**
-	 * Get a table.
-	 *
-	 * @param   string  $name     The table name. Optional.
-	 * @param   string  $prefix   The class prefix. Optional.
-	 * @param   array   $options  Configuration array for model. Optional.
-	 *
-	 * @return  \JTable
-	 *
-	 * @codeCoverageIgnore
-	 */
-	abstract public function table($name = '', $prefix = null, $options = array());
+    /**
+     * Get a table.
+     *
+     * @param   string  $name     The table name. Optional.
+     * @param   string  $prefix   The class prefix. Optional.
+     * @param   array   $options  Configuration array for model. Optional.
+     *
+     * @return  \JTable
+     *
+     * @codeCoverageIgnore
+     */
+    abstract public function table($name = '', $prefix = null, $options = []);
 
-	/**
-	 * Clear entity params.
-	 *
-	 * @return  self
-	 */
-	public function clearParams()
-	{
-		$this->params = null;
+    /**
+     * Clear entity params.
+     *
+     * @return  self
+     */
+    public function clearParams()
+    {
+        $this->params = null;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Get a param value.
-	 *
-	 * @param   string  $name     Parameter name
-	 * @param   mixed   $default  Optional default value, returned if the internal value is null.
-	 *
-	 * @return  mixed
-	 */
-	public function param($name, $default = null)
-	{
-		return $this->params()->get($name, $default);
-	}
+    /**
+     * Get a param value.
+     *
+     * @param   string  $name     Parameter name
+     * @param   mixed   $default  Optional default value, returned if the internal value is null.
+     *
+     * @return  mixed
+     */
+    public function param($name, $default = null)
+    {
+        return $this->params()->get($name, $default);
+    }
 
-	/**
-	 * Get the parameters.
-	 *
-	 * @return  Registry
-	 */
-	public function params()
-	{
-		if (null === $this->params)
-		{
-			$this->params = $this->loadParams();
-		}
+    /**
+     * Get the parameters.
+     *
+     * @return  Registry
+     */
+    public function params()
+    {
+        if (null === $this->params) {
+            $this->params = $this->loadParams();
+        }
 
-		return clone $this->params;
-	}
+        return clone $this->params;
+    }
 
+    /**
+     * Save parameters to database.
+     *
+     * @return  bool
+     *
+     * @throws  \RuntimeException
+     */
+    public function saveParams()
+    {
+        $table = $this->table();
 
-	/**
-	 * Load parameters from database.
-	 *
-	 * @return  Registry
-	 */
-	protected function loadParams()
-	{
-		// Avoid loading params if they are already loaded in the row
-		if (!empty($this->row['params']))
-		{
-			return $this->row['params'] instanceof Registry ? $this->row['params'] : new Registry($this->row['params']);
-		}
+        if ($this->id()) {
+            $table->load($this->id());
+        }
 
-		$params = $this->get($this->columnAlias(Column::PARAMS));
+        $saveData = [
+            $this->primaryKey() => $this->id(),
+            $this->columnAlias(Column::PARAMS) => $this->params()->toString(),
+        ];
 
-		// Some tables return params as a Registry object
-		if ($params instanceof Registry)
-		{
-			return $params;
-		}
+        if (!$table->save($saveData)) {
+            throw new \RuntimeException('Error saving entity parameters: '.$table->getError(), 500);
+        }
 
-		if (is_string($params))
-		{
-			$params = trim($params);
-		}
+        return true;
+    }
 
-		return empty($params) ? new Registry : new Registry($params);
-	}
+    /**
+     * Set the value of a parameter.
+     *
+     * @param   string  $name   Parameter name
+     * @param   mixed   $value  Value to assign to selected parameter
+     *
+     * @return  self
+     */
+    public function setParam($name, $value)
+    {
+        if (null === $this->params) {
+            $this->params = $this->loadParams();
+        }
 
-	/**
-	 * Save parameters to database.
-	 *
-	 * @return  boolean
-	 *
-	 * @throws  \RuntimeException
-	 */
-	public function saveParams()
-	{
-		$table = $this->table();
+        $this->params->set($name, $value);
 
-		if ($this->id())
-		{
-			$table->load($this->id());
-		}
+        $this->assign($this->columnAlias(Column::PARAMS), $this->params()->toString());
 
-		$saveData = array(
-			$this->primaryKey() => $this->id(),
-			$this->columnAlias(Column::PARAMS) => $this->params()->toString()
-		);
+        return $this;
+    }
 
-		if (!$table->save($saveData))
-		{
-			throw new \RuntimeException("Error saving entity parameters: " . $table->getError(), 500);
-		}
+    /**
+     * Set the module parameters.
+     *
+     * @param Registry $registry Parameters to apply
+     *
+     * @return  self
+     */
+    public function setParams(Registry $registry)
+    {
+        $this->params = $registry;
 
-		return true;
-	}
+        $this->assign($this->columnAlias(Column::PARAMS), $this->params()->toString());
 
-	/**
-	 * Set the value of a parameter.
-	 *
-	 * @param   string  $name   Parameter name
-	 * @param   mixed   $value  Value to assign to selected parameter
-	 *
-	 * @return  self
-	 */
-	public function setParam($name, $value)
-	{
-		if (null === $this->params)
-		{
-			$this->params = $this->loadParams();
-		}
+        return $this;
+    }
 
-		$this->params->set($name, $value);
+    /**
+     * Load parameters from database.
+     *
+     * @return  Registry
+     */
+    protected function loadParams()
+    {
+        // Avoid loading params if they are already loaded in the row
+        if (!empty($this->row['params'])) {
+            return $this->row['params'] instanceof Registry ? $this->row['params'] : new Registry($this->row['params']);
+        }
 
-		$this->assign($this->columnAlias(Column::PARAMS), $this->params()->toString());
+        $params = $this->get($this->columnAlias(Column::PARAMS));
 
-		return $this;
-	}
+        // Some tables return params as a Registry object
+        if ($params instanceof Registry) {
+            return $params;
+        }
 
-	/**
-	 * Set the module parameters.
-	 *
-	 * @param   Registry  $params  Parameters to apply
-	 *
-	 * @return  self
-	 */
-	public function setParams(Registry $params)
-	{
-		$this->params = $params;
+        if (is_string($params)) {
+            $params = trim($params);
+        }
 
-		$this->assign($this->columnAlias(Column::PARAMS), $this->params()->toString());
-
-		return $this;
-	}
+        return empty($params) ? new Registry() : new Registry($params);
+    }
 }

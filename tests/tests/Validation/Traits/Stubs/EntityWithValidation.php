@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Validation\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\ComponentEntity;
-use Phproberto\Joomla\Entity\Validation\Traits\HasValidation;
-use Phproberto\Joomla\Entity\Validation\Contracts\Validable;
+use Extly\Joomla\Entity\ComponentEntity;
+use Extly\Joomla\Entity\Validation\Contracts\Validable;
+use Extly\Joomla\Entity\Validation\Traits\HasValidation;
 
 /**
  * Entity to test HasValidation trait.
@@ -19,5 +25,5 @@ use Phproberto\Joomla\Entity\Validation\Contracts\Validable;
  */
 class EntityWithValidation extends ComponentEntity implements Validable
 {
-	use HasValidation;
+    use HasValidation;
 }

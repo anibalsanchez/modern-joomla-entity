@@ -1,18 +1,24 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Decorator;
+namespace Extly\Joomla\Entity\Tests\Core\Decorator;
 
-use Phproberto\Joomla\Entity\Tests\Stubs\Entity;
-use Phproberto\Joomla\Entity\Validation\Validator;
-use Phproberto\Joomla\Entity\Validation\Rule\CustomRule;
-use Phproberto\Joomla\Entity\Translation\TranslatorWithFallback;
-use Phproberto\Joomla\Entity\Tests\Translation\Stubs\TranslatableEntity;
+use Extly\Joomla\Entity\Tests\Stubs\Entity;
+use Extly\Joomla\Entity\Tests\Translation\Stubs\TranslatableEntity;
+use Extly\Joomla\Entity\Translation\TranslatorWithFallback;
+use Extly\Joomla\Entity\Validation\Rule\CustomRule;
+use Extly\Joomla\Entity\Validation\Validator;
 
 /**
  * TranslatorWithFallback decorator tests.
@@ -21,158 +27,152 @@ use Phproberto\Joomla\Entity\Tests\Translation\Stubs\TranslatableEntity;
  */
 class TranslatorWithFallbackTest extends \TestCase
 {
-	/**
-	 * translateIf returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testTranslateReturnsCorrectValue()
-	{
-		$spanishTranslation = $this->getMockBuilder('MockedTranslation')
-			->setMethods(array('get'))
-			->getMock();
+    /**
+     * translateIf returns correct value.
+     *
+     * @return  void
+     */
+    public function testTranslateReturnsCorrectValue()
+    {
+        $spanishTranslation = $this->getMockBuilder('MockedTranslation')
+            ->setMethods(['get'])
+            ->getMock();
 
-		$spanishTranslation->method('get')
-			->with($this->equalTo('property'))
-			->will($this->onConsecutiveCalls('translatedValue', 'validValue', 'invalidValue', 'validValue'));
+        $spanishTranslation->method('get')
+            ->with($this->equalTo('property'))
+            ->will($this->onConsecutiveCalls('translatedValue', 'validValue', 'invalidValue', 'validValue'));
 
-		$entity = new TranslatableEntity;
-		$entity->bind(array('id' => 999, 'language' => 'en-GB', 'property' => 'entityValue'));
+        $translatableEntity = new TranslatableEntity();
+        $translatableEntity->bind(['id' => 999, 'language' => 'en-GB', 'property' => 'entityValue']);
 
-		$translator = $this->getMockBuilder(TranslatorWithFallback::class)
-			->disableOriginalConstructor()
-			->setMethods(array('translation', 'isEntityLanguage'))
-			->getMock();
+        $translator = $this->getMockBuilder(TranslatorWithFallback::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['translation', 'isEntityLanguage'])
+            ->getMock();
 
-		$translator->method('translation')
-			->willReturn($spanishTranslation);
+        $translator->method('translation')
+            ->willReturn($spanishTranslation);
 
-		$translator->method('isEntityLanguage')
-			->willReturn(false);
+        $translator->method('isEntityLanguage')
+            ->willReturn(false);
 
-		$reflection = new \ReflectionClass($translator);
+        $reflection = new \ReflectionClass($translator);
 
-		$entityProperty = $reflection->getProperty('entity');
-		$entityProperty->setAccessible(true);
-		$entityProperty->setValue($translator, $entity);
+        $reflectionProperty = $reflection->getProperty('entity');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($translator, $translatableEntity);
 
-		$langTagProperty = $reflection->getProperty('langTag');
-		$langTagProperty->setAccessible(true);
-		$langTagProperty->setValue($translator, 'es-ES');
+        $langTagProperty = $reflection->getProperty('langTag');
+        $langTagProperty->setAccessible(true);
+        $langTagProperty->setValue($translator, 'es-ES');
 
-		$validator = new Validator($entity);
+        $validator = new Validator($translatableEntity);
 
-		$validator->addRule(
-			new CustomRule(
-				function ($value) {
-					return in_array($value, array('validValue'), true);
-				}
-			),
-			'property',
-			'testValidValue'
-		);
+        $validator->addRule(
+            new CustomRule(
+                fn ($value) => $value === 'validValue'
+            ),
+            'property'
+        );
 
-		$translator->setValidator($validator);
+        $translator->setValidator($validator);
 
-		$this->assertSame('defaultValue', $translator->translate('property', 'defaultValue'));
-		$this->assertSame('validValue', $translator->translate('property', 'defaultValue'));
+        $this->assertSame('defaultValue', $translator->translate('property', 'defaultValue'));
+        $this->assertSame('validValue', $translator->translate('property', 'defaultValue'));
 
-		$validatorReflection = new \ReflectionClass($validator);
-		$rulesProperty = $validatorReflection->getProperty('rules');
-		$rulesProperty->setAccessible(true);
-		$rulesProperty->setValue($validator, array());
+        $validatorReflection = new \ReflectionClass($validator);
+        $rulesProperty = $validatorReflection->getProperty('rules');
+        $rulesProperty->setAccessible(true);
+        $rulesProperty->setValue($validator, []);
 
-		$validator->addRule(
-			new CustomRule(
-				function ($value) {
-					return in_array($value, array('validValue', 'entityValue'), true);
-				}
-			),
-			'property',
-			'testValidValue'
-		);
+        $validator->addRule(
+            new CustomRule(
+                fn ($value) => in_array($value, ['validValue', 'entityValue'], true)
+            ),
+            'property'
+        );
 
-		$translator->setValidator($validator);
+        $translator->setValidator($validator);
 
-		$this->assertSame('entityValue', $translator->translate('property', 'defaultValue'));
-		$this->assertSame('validValue', $translator->translate('property', 'defaultValue'));
-	}
+        $this->assertSame('entityValue', $translator->translate('property', 'defaultValue'));
+        $this->assertSame('validValue', $translator->translate('property', 'defaultValue'));
+    }
 
-	/**
-	 * translate returns entity value if is entity language.
-	 *
-	 * @return  void
-	 */
-	public function testTranslateReturnsEntityValueIfIsEntityLanguage()
-	{
-		$entity = $this->getMockBuilder(Entity::class)
-			->setMethods(array('get'))
-			->getMock();
+    /**
+     * translate returns entity value if is entity language.
+     *
+     * @return  void
+     */
+    public function testTranslateReturnsEntityValueIfIsEntityLanguage()
+    {
+        $entity = $this->getMockBuilder(Entity::class)
+            ->setMethods(['get'])
+            ->getMock();
 
-		$entity->method('get')
-			->with($this->equalTo('property'))
-			->will($this->onConsecutiveCalls('value', '', null, 'anotherValue', '0000-00-00 00:00:00'));
+        $entity->method('get')
+            ->with($this->equalTo('property'))
+            ->will($this->onConsecutiveCalls('value', '', null, 'anotherValue', '0000-00-00 00:00:00'));
 
-		$translator = $this->getMockBuilder(TranslatorWithFallback::class)
-			->disableOriginalConstructor()
-			->setMethods(array('isEntityLanguage'))
-			->getMock();
+        $translator = $this->getMockBuilder(TranslatorWithFallback::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['isEntityLanguage'])
+            ->getMock();
 
-		$translator->method('isEntityLanguage')
-			->willReturn(true);
+        $translator->method('isEntityLanguage')
+            ->willReturn(true);
 
-		$reflection = new \ReflectionClass($translator);
+        $reflectionClass = new \ReflectionClass($translator);
 
-		$entityProperty = $reflection->getProperty('entity');
-		$entityProperty->setAccessible(true);
-		$entityProperty->setValue($translator, $entity);
+        $reflectionProperty = $reflectionClass->getProperty('entity');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($translator, $entity);
 
-		$this->assertSame('value', $translator->translate('property', 'default'));
-		$this->assertSame('', $translator->translate('property', 'default'));
-		$this->assertSame('default', $translator->translate('property', 'default'));
-		$this->assertSame('anotherValue', $translator->translate('property', 'default'));
-		$this->assertSame('0000-00-00 00:00:00', $translator->translate('property', 'default'));
-	}
+        $this->assertSame('value', $translator->translate('property', 'default'));
+        $this->assertSame('', $translator->translate('property', 'default'));
+        $this->assertSame('default', $translator->translate('property', 'default'));
+        $this->assertSame('anotherValue', $translator->translate('property', 'default'));
+        $this->assertSame('0000-00-00 00:00:00', $translator->translate('property', 'default'));
+    }
 
-	/**
-	 * translate returns translation value if not entity language.
-	 *
-	 * @return  void
-	 */
-	public function testTranslateReturnsTranslationValueIfNotEntityLanguage()
-	{
-		$translation = $this->getMockBuilder(Entity::class)
-			->setMethods(array('get'))
-			->getMock();
+    /**
+     * translate returns translation value if not entity language.
+     *
+     * @return  void
+     */
+    public function testTranslateReturnsTranslationValueIfNotEntityLanguage()
+    {
+        $translation = $this->getMockBuilder(Entity::class)
+            ->setMethods(['get'])
+            ->getMock();
 
-		$translation->method('get')
-			->with($this->equalTo('property'))
-			->will($this->onConsecutiveCalls('value', '', null, 'anotherValue', '0000-00-00 00:00:00'));
+        $translation->method('get')
+            ->with($this->equalTo('property'))
+            ->will($this->onConsecutiveCalls('value', '', null, 'anotherValue', '0000-00-00 00:00:00'));
 
-		$translator = $this->getMockBuilder(TranslatorWithFallback::class)
-			->disableOriginalConstructor()
-			->setMethods(array('isEntityLanguage', 'translation'))
-			->getMock();
+        $translator = $this->getMockBuilder(TranslatorWithFallback::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['isEntityLanguage', 'translation'])
+            ->getMock();
 
-		$translator->method('isEntityLanguage')
-			->willReturn(false);
+        $translator->method('isEntityLanguage')
+            ->willReturn(false);
 
-		$translator->method('translation')
-			->willReturn($translation);
+        $translator->method('translation')
+            ->willReturn($translation);
 
-		$entity = new Entity(999);
-		$entity->bind(array('id' => 999, 'property' => 'entityValue'));
+        $entity = new Entity(999);
+        $entity->bind(['id' => 999, 'property' => 'entityValue']);
 
-		$reflection = new \ReflectionClass($translator);
+        $reflectionClass = new \ReflectionClass($translator);
 
-		$entityProperty = $reflection->getProperty('entity');
-		$entityProperty->setAccessible(true);
-		$entityProperty->setValue($translator, $entity);
+        $reflectionProperty = $reflectionClass->getProperty('entity');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($translator, $entity);
 
-		$this->assertSame('value', $translator->translate('property', 'default'));
-		$this->assertSame('', $translator->translate('property', 'default'));
-		$this->assertSame('entityValue', $translator->translate('property', 'default'));
-		$this->assertSame('anotherValue', $translator->translate('property', 'default'));
-		$this->assertSame('0000-00-00 00:00:00', $translator->translate('property', 'default'));
-	}
+        $this->assertSame('value', $translator->translate('property', 'default'));
+        $this->assertSame('', $translator->translate('property', 'default'));
+        $this->assertSame('entityValue', $translator->translate('property', 'default'));
+        $this->assertSame('anotherValue', $translator->translate('property', 'default'));
+        $this->assertSame('0000-00-00 00:00:00', $translator->translate('property', 'default'));
+    }
 }

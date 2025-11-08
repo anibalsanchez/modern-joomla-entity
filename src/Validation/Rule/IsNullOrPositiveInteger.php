@@ -1,18 +1,24 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Validation\Rule;
+namespace Extly\Joomla\Entity\Validation\Rule;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Validation\Rule;
-use Phproberto\Joomla\Entity\Validation\Exception\ValidationException;
-use Phproberto\Joomla\Entity\Validation\Contracts\Rule as RuleContract;
+use Extly\Joomla\Entity\Validation\Contracts\Rule as RuleContract;
+use Extly\Joomla\Entity\Validation\Exception\ValidationException;
+use Extly\Joomla\Entity\Validation\Rule;
 
 /**
  * Check that value is null or a positve integer.
@@ -21,24 +27,23 @@ use Phproberto\Joomla\Entity\Validation\Contracts\Rule as RuleContract;
  */
 class IsNullOrPositiveInteger extends Rule implements RuleContract
 {
-	/**
-	 * Check if a value is valid.
-	 *
-	 * @param   mixed  $value  Value to check
-	 *
-	 * @return  boolean
-	 */
-	public function passes($value)
-	{
-		$isNullRule = new IsNull($this->name);
+    /**
+     * Check if a value is valid.
+     *
+     * @param   mixed  $value  Value to check
+     *
+     * @return  bool
+     */
+    public function passes($value)
+    {
+        $isNull = new IsNull($this->name);
 
-		if ($isNullRule->passes($value))
-		{
-			return true;
-		}
+        if ($isNull->passes($value)) {
+            return true;
+        }
 
-		$isPositiveIntegerRule = new IsPositiveInteger($this->name);
+        $isPositiveInteger = new IsPositiveInteger($this->name);
 
-		return $isPositiveIntegerRule->passes($value);
-	}
+        return $isPositiveInteger->passes($value);
+    }
 }

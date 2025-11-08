@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation\Rule;
+namespace Extly\Joomla\Entity\Tests\Validation\Rule;
 
-use Phproberto\Joomla\Entity\Validation\Rule\NoSubstrCount;
+use Extly\Joomla\Entity\Validation\Rule\NoSubstrCount;
 
 /**
  * NoSubstrCount tests.
@@ -17,20 +23,20 @@ use Phproberto\Joomla\Entity\Validation\Rule\NoSubstrCount;
  */
 class NoSubstrCountTest extends \TestCase
 {
-	/**
-	 * passes returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testPassesReturnsCorrectValue()
-	{
-		$rule = new NoSubstrCount('test');
+    /**
+     * passes returns correct value.
+     *
+     * @return  void
+     */
+    public function testPassesReturnsCorrectValue()
+    {
+        $noSubstrCount = new NoSubstrCount('test');
 
-		$this->assertFalse($rule->passes('mytest'));
-		$this->assertTrue($rule->passes(''));
-		$this->assertTrue($rule->passes('my string'));
-		$this->assertTrue($rule->passes(0));
-		$this->assertTrue($rule->passes(null));
-		$this->assertFalse($rule->passes('testing substr_count'));
-	}
+        $this->assertFalse($noSubstrCount->passes('mytest'));
+        $this->assertTrue($noSubstrCount->passes(''));
+        $this->assertTrue($noSubstrCount->passes('my string'));
+        $this->assertTrue($noSubstrCount->passes(0));
+        $this->assertTrue($noSubstrCount->passes(null));
+        $this->assertFalse($noSubstrCount->passes('testing substr_count'));
+    }
 }

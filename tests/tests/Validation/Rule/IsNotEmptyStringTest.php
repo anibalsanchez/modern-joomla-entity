@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation\Rule;
+namespace Extly\Joomla\Entity\Tests\Validation\Rule;
 
-use Phproberto\Joomla\Entity\Validation\Rule\IsNotEmptyString;
+use Extly\Joomla\Entity\Validation\Rule\IsNotEmptyString;
 
 /**
  * IsNotEmptyString tests.
@@ -17,20 +23,20 @@ use Phproberto\Joomla\Entity\Validation\Rule\IsNotEmptyString;
  */
 class IsNotEmptyStringTest extends \TestCase
 {
-	/**
-	 * passes returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testPassesReturnsCorrectValue()
-	{
-		$rule = new IsNotEmptyString;
+    /**
+     * passes returns correct value.
+     *
+     * @return  void
+     */
+    public function testPassesReturnsCorrectValue()
+    {
+        $isNotEmptyString = new IsNotEmptyString();
 
-		$this->assertTrue($rule->passes('mytest'));
-		$this->assertFalse($rule->passes(''));
-		$this->assertTrue($rule->passes('  my string'));
-		$this->assertTrue($rule->passes(0));
-		$this->assertFalse($rule->passes(null));
-		$this->assertFalse($rule->passes(' '));
-	}
+        $this->assertTrue($isNotEmptyString->passes('mytest'));
+        $this->assertFalse($isNotEmptyString->passes(''));
+        $this->assertTrue($isNotEmptyString->passes('  my string'));
+        $this->assertTrue($isNotEmptyString->passes(0));
+        $this->assertFalse($isNotEmptyString->passes(null));
+        $this->assertFalse($isNotEmptyString->passes(' '));
+    }
 }

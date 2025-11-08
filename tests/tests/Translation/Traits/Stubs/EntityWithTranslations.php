@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Translation\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Translation\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Entity;
-use Phproberto\Joomla\Entity\Translation\Traits\HasTranslations;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Entity;
+use Extly\Joomla\Entity\Translation\Traits\HasTranslations;
 
 /**
  * Sample entity to test HasTranslations trait.
@@ -19,29 +25,28 @@ use Phproberto\Joomla\Entity\Translation\Traits\HasTranslations;
  */
 class EntityWithTranslations extends Entity
 {
-	use HasTranslations;
+    use HasTranslations;
 
-	/**
-	 * Expected translations ids for testing.
-	 *
-	 * @var  array
-	 */
-	public $translationsIds = array();
+    /**
+     * Expected translations ids for testing.
+     *
+     * @var  array
+     */
+    public $translationsIds = [];
 
-	/**
-	 * Load associated translations from DB.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadTranslations()
-	{
-		$collection = new Collection;
+    /**
+     * Load associated translations from DB.
+     *
+     * @return  Collection
+     */
+    protected function loadTranslations()
+    {
+        $collection = new Collection();
 
-		foreach ($this->translationsIds as $id)
-		{
-			$collection->add(new static($id));
-		}
+        foreach ($this->translationsIds as $translationId) {
+            $collection->add(new static($translationId));
+        }
 
-		return $collection;
-	}
+        return $collection;
+    }
 }

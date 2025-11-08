@@ -1,18 +1,24 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Exception;
+namespace Extly\Joomla\Entity\Exception;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Contracts\EntityInterface;
-use Phproberto\Joomla\Entity\Contracts\ExceptionInterface;
-use Phproberto\Joomla\Entity\Validation\Exception\ValidationException;
+use Extly\Joomla\Entity\Contracts\EntityInterface;
+use Extly\Joomla\Entity\Contracts\ExceptionInterface;
+use Extly\Joomla\Entity\Validation\Exception\ValidationException;
 
 /**
  * Errors saving entity.
@@ -21,47 +27,45 @@ use Phproberto\Joomla\Entity\Validation\Exception\ValidationException;
  */
 class SaveException extends \RuntimeException implements ExceptionInterface
 {
-	/**
-	 * Entity cannot be saved.
-	 *
-	 * @param   EntityInterface  $entity  Entity with empty data
-	 * @param   \JTable          $table   Table containing the entity data
-	 *
-	 * @return  static
-	 */
-	public static function table(EntityInterface $entity, \JTable $table)
-	{
-		if (!$entity->hasId())
-		{
-			$msg = sprintf("Save failed trying to create `%s`:</br> %s", $entity->name(), $table->getError());
+    /**
+     * Entity cannot be saved.
+     *
+     * @param   EntityInterface  $entity  Entity with empty data
+     * @param \JTable $jTable Table containing the entity data
+     *
+     * @return  static
+     */
+    public static function table(EntityInterface $entity, \JTable $jTable)
+    {
+        if (!$entity->hasId()) {
+            $msg = sprintf('Save failed trying to create `%s`:</br> %s', $entity->name(), $jTable->getError());
 
-			return new static($msg, 500);
-		}
+            return new static($msg, 500);
+        }
 
-		$msg = sprintf("Save failed trying to save `%s`:</br> %s", $entity->name() . '::' . $entity->id(), $table->getError());
+        $msg = sprintf('Save failed trying to save `%s`:</br> %s', $entity->name().'::'.$entity->id(), $jTable->getError());
 
-		return new static($msg, 500);
-	}
+        return new static($msg, 500);
+    }
 
-	/**
-	 * Entity did not pass validation.
-	 *
-	 * @param   EntityInterface      $entity     Entity with empty data
-	 * @param   ValidationException  $exception  Validation exception
-	 *
-	 * @return  static
-	 */
-	public static function validation(EntityInterface $entity, ValidationException $exception)
-	{
-		if (!$entity->hasId())
-		{
-			$msg = sprintf("Validation failed trying to create `%s`:</br> %s", $entity->name(), $exception->getMessage());
+    /**
+     * Entity did not pass validation.
+     *
+     * @param   EntityInterface      $entity     Entity with empty data
+     * @param ValidationException $validationException Validation exception
+     *
+     * @return  static
+     */
+    public static function validation(EntityInterface $entity, ValidationException $validationException)
+    {
+        if (!$entity->hasId()) {
+            $msg = sprintf('Validation failed trying to create `%s`:</br> %s', $entity->name(), $validationException->getMessage());
 
-			return new static($msg, 500);
-		}
+            return new static($msg, 500);
+        }
 
-		$msg = sprintf("Validation failed trying to save `%s`:</br> %s", $entity->name() . '::' . $entity->id(), $exception->getMessage());
+        $msg = sprintf('Validation failed trying to save `%s`:</br> %s', $entity->name().'::'.$entity->id(), $validationException->getMessage());
 
-		return new static($msg, 500);
-	}
+        return new static($msg, 500);
+    }
 }

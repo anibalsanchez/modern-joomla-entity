@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Content\Traits;
+namespace Extly\Joomla\Entity\Tests\Content\Traits;
 
-use Phproberto\Joomla\Entity\Content\Article;
-use Phproberto\Joomla\Entity\Tests\Content\Traits\Stubs\ClassWithArticle;
+use Extly\Joomla\Entity\Content\Article;
+use Extly\Joomla\Entity\Tests\Content\Traits\Stubs\ClassWithArticle;
 
 /**
  * HasArticle trait tests.
@@ -18,144 +24,146 @@ use Phproberto\Joomla\Entity\Tests\Content\Traits\Stubs\ClassWithArticle;
  */
 class HasArticleTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * Column storign the article identifier.
-	 *
-	 * @const
-	 */
-	const ARTICLE_COLUMN = 'article_id';
+    /**
+     * Column storign the article identifier.
+     *
+     * @const
+     */
+    public const ARTICLE_COLUMN = 'article_id';
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		ClassWithArticle::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        ClassWithArticle::clearAll();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * getColumnArticle returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testGetColumnArticleReturnsCorrectValue()
-	{
-		$class = new ClassWithArticle;
+    /**
+     * getColumnArticle returns correct value.
+     *
+     * @return  void
+     */
+    public function testGetColumnArticleReturnsCorrectValue()
+    {
+        $classWithArticle = new ClassWithArticle();
 
-		$reflection = new \ReflectionClass($class);
-		$method = $reflection->getMethod('getColumnArticle');
-		$method->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($classWithArticle);
+        $reflectionMethod = $reflectionClass->getMethod('getColumnArticle');
+        $reflectionMethod->setAccessible(true);
 
-		$this->assertEquals(static::ARTICLE_COLUMN, $method->invoke($class));
-	}
+        $this->assertEquals(static::ARTICLE_COLUMN, $reflectionMethod->invoke($classWithArticle));
+    }
 
-	/**
-	 * loadArticle loads correct article.
-	 *
-	 * @return  void
-	 */
-	public function testLoadArticleLodsCorrectArticle()
-	{
-		$class = new ClassWithArticle;
+    /**
+     * loadArticle loads correct article.
+     *
+     * @return  void
+     */
+    public function testLoadArticleLodsCorrectArticle()
+    {
+        $classWithArticle = new ClassWithArticle();
 
-		$reflection = new \ReflectionClass($class);
-		$method = $reflection->getMethod('loadArticle');
-		$method->setAccessible(true);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($classWithArticle);
+        $reflectionMethod = $reflectionClass->getMethod('loadArticle');
+        $reflectionMethod->setAccessible(true);
 
-		$rowProperty->setValue($class, array('id' => 999));
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertEquals(new Article, $method->invoke($class));
+        $reflectionProperty->setValue($classWithArticle, ['id' => 999]);
 
-		$rowProperty->setValue($class, array('id' => 999, static::ARTICLE_COLUMN => 666));
+        $this->assertEquals(new Article(), $reflectionMethod->invoke($classWithArticle));
 
-		$this->assertEquals(new Article(666), $method->invoke($class));
-	}
+        $reflectionProperty->setValue($classWithArticle, ['id' => 999, static::ARTICLE_COLUMN => 666]);
 
-	/**
-	 * loadArticle works with custom column.
-	 *
-	 * @return  void
-	 */
-	public function testLoadArticleWorksWithCustomColumn()
-	{
-		$class = $this->getMockBuilder(ClassWithArticle::class)
-			->setMethods(array('getColumnArticle'))
-			->getMock();
+        $this->assertEquals(new Article(666), $reflectionMethod->invoke($classWithArticle));
+    }
 
-		$class->method('getColumnArticle')
-			->willReturn('custom_article_id');
+    /**
+     * loadArticle works with custom column.
+     *
+     * @return  void
+     */
+    public function testLoadArticleWorksWithCustomColumn()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(ClassWithArticle::class)
+            ->setMethods(['getColumnArticle'])
+            ->getMock();
 
-		$reflection = new \ReflectionClass($class);
-		$method = $reflection->getMethod('loadArticle');
-		$method->setAccessible(true);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $phpUnitFrameworkMockObjectMockObject->method('getColumnArticle')
+            ->willReturn('custom_article_id');
 
-		$rowProperty->setValue($class, array('id' => 999));
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionMethod = $reflectionClass->getMethod('loadArticle');
+        $reflectionMethod->setAccessible(true);
 
-		$this->assertEquals(new Article, $method->invoke($class));
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$rowProperty->setValue($class, array('id' => 999, 'custom_article_id' => 666));
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999]);
 
-		$this->assertEquals(new Article(666), $method->invoke($class));
+        $this->assertEquals(new Article(), $reflectionMethod->invoke($phpUnitFrameworkMockObjectMockObject));
 
-	}
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'custom_article_id' => 666]);
 
-	/**
-	 * getArticle returns correct data.
-	 *
-	 * @return  void
-	 */
-	public function testGetArticleReturnsCorrectData()
-	{
-		$class = new ClassWithArticle;
+        $this->assertEquals(new Article(666), $reflectionMethod->invoke($phpUnitFrameworkMockObjectMockObject));
+    }
 
-		$reflection = new \ReflectionClass($class);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+    /**
+     * getArticle returns correct data.
+     *
+     * @return  void
+     */
+    public function testGetArticleReturnsCorrectData()
+    {
+        $classWithArticle = new ClassWithArticle();
 
-		$rowProperty->setValue($class, array('id' => 999));
+        $reflectionClass = new \ReflectionClass($classWithArticle);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertEquals(new Article, $class->getArticle());
+        $reflectionProperty->setValue($classWithArticle, ['id' => 999]);
 
-		$rowProperty->setValue($class, array('id' => 999, static::ARTICLE_COLUMN => 666));
+        $this->assertEquals(new Article(), $classWithArticle->getArticle());
 
-		$this->assertEquals(new Article, $class->getArticle());
-		$this->assertEquals(new Article(666), $class->getArticle(true));
-	}
+        $reflectionProperty->setValue($classWithArticle, ['id' => 999, static::ARTICLE_COLUMN => 666]);
 
-	/**
-	 * hasArticle returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasArticleReturnsCorrectValue()
-	{
-		$class = new ClassWithArticle;
+        $this->assertEquals(new Article(), $classWithArticle->getArticle());
+        $this->assertEquals(new Article(666), $classWithArticle->getArticle(true));
+    }
 
-		$reflection = new \ReflectionClass($class);
-		$articleProperty = $reflection->getProperty('article');
-		$articleProperty->setAccessible(true);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+    /**
+     * hasArticle returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasArticleReturnsCorrectValue()
+    {
+        $classWithArticle = new ClassWithArticle();
 
-		$rowProperty->setValue($class, array('id' => 999));
+        $reflectionClass = new \ReflectionClass($classWithArticle);
+        $reflectionProperty = $reflectionClass->getProperty('article');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertFalse($class->hasArticle());
+        $rowProperty = $reflectionClass->getProperty('row');
+        $rowProperty->setAccessible(true);
 
-		$rowProperty->setValue($class, array('id' => 999, static::ARTICLE_COLUMN => 666));
+        $rowProperty->setValue($classWithArticle, ['id' => 999]);
 
-		// Cached data
-		$this->assertFalse($class->hasArticle());
+        $this->assertFalse($classWithArticle->hasArticle());
 
-		$articleProperty->setValue($class, null);
-		$this->assertTrue($class->hasArticle());
-	}
+        $rowProperty->setValue($classWithArticle, ['id' => 999, static::ARTICLE_COLUMN => 666]);
+
+        // Cached data
+        $this->assertFalse($classWithArticle->hasArticle());
+
+        $reflectionProperty->setValue($classWithArticle, null);
+        $this->assertTrue($classWithArticle->hasArticle());
+    }
 }

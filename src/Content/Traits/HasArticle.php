@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Content\Traits;
+namespace Extly\Joomla\Entity\Content\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Content\Article;
+use Extly\Joomla\Entity\Content\Article;
 
 /**
  * Trait for entities that have an associated article.
@@ -19,72 +25,70 @@ use Phproberto\Joomla\Entity\Content\Article;
  */
 trait HasArticle
 {
-	/**
-	 * Associated article.
-	 *
-	 * @var  Article
-	 */
-	protected $article;
+    /**
+     * Associated article.
+     *
+     * @var  Article
+     */
+    protected $article;
 
-	/**
-	 * Get the attached database row.
-	 *
-	 * @return  array
-	 */
-	abstract public function all();
+    /**
+     * Get the attached database row.
+     *
+     * @return  array
+     */
+    abstract public function all();
 
-	/**
-	 * Get the associated article.
-	 *
-	 * @param   boolean  $reload  Force reloading
-	 *
-	 * @return  Article
-	 */
-	public function getArticle($reload = false)
-	{
-		if ($reload || null === $this->article)
-		{
-			$this->article = $this->loadArticle();
-		}
+    /**
+     * Get the associated article.
+     *
+     * @param   bool  $reload  Force reloading
+     *
+     * @return  Article
+     */
+    public function getArticle($reload = false)
+    {
+        if ($reload || null === $this->article) {
+            $this->article = $this->loadArticle();
+        }
 
-		return $this->article;
-	}
+        return $this->article;
+    }
 
-	/**
-	 * Get the name of the column that stores article.
-	 *
-	 * @return  string
-	 */
-	protected function getColumnArticle()
-	{
-		return 'article_id';
-	}
+    /**
+     * Check if this entity has an associated article.
+     *
+     * @return  bool
+     */
+    public function hasArticle()
+    {
+        return $this->getArticle()->hasId();
+    }
 
-	/**
-	 * Check if this entity has an associated article.
-	 *
-	 * @return  boolean
-	 */
-	public function hasArticle()
-	{
-		return $this->getArticle()->hasId();
-	}
+    /**
+     * Get the name of the column that stores article.
+     *
+     * @return  string
+     */
+    protected function getColumnArticle()
+    {
+        return 'article_id';
+    }
 
-	/**
-	 * Load the article from the database.
-	 *
-	 * @return  Article
-	 */
-	protected function loadArticle()
-	{
-		$column = $this->getColumnArticle();
-		$data = $this->all();
+    /**
+     * Load the article from the database.
+     *
+     * @return  Article
+     */
+    protected function loadArticle()
+    {
+        $column = $this->getColumnArticle();
+        $data = $this->all();
 
-		if (array_key_exists($column, $data))
-		{
-			return Article::find($data[$column]);
-		}
+        if (array_key_exists($column, $data)) {
+            return Article::find($data[$column]);
+        }
 
-		return new Article;
-	}
+        return new Article();
+    }
 }

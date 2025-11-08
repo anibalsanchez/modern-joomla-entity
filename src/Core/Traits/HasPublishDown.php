@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Core\Column;
+use Extly\Joomla\Entity\Core\Column;
 
 /**
  * Trait for entities that have an associated publish down column.
@@ -19,49 +25,48 @@ use Phproberto\Joomla\Entity\Core\Column;
  */
 trait HasPublishDown
 {
-	/**
-	 * Get the empty date for the active DB driver.
-	 *
-	 * @return  string
-	 *
-	 * @codeCoverageIgnore
-	 */
-	abstract protected function nullDate();
+    /**
+     * Get the publish down date.
+     *
+     * @return  string
+     */
+    public function getPublishDown()
+    {
+        return $this->get($this->columnAlias(Column::PUBLISH_DOWN));
+    }
 
-	/**
-	 * Get the publish down date.
-	 *
-	 * @return  string
-	 */
-	public function getPublishDown()
-	{
-		return $this->get($this->columnAlias(Column::PUBLISH_DOWN));
-	}
+    /**
+     * Has this entity a publish down date?
+     *
+     * @return  bool
+     */
+    public function hasPublishDown()
+    {
+        $publishDown = $this->getPublishDown();
 
-	/**
-	 * Has this entity a publish down date?
-	 *
-	 * @return  boolean
-	 */
-	public function hasPublishDown()
-	{
-		$publishDown = $this->getPublishDown();
+        return !empty($publishDown) && $publishDown !== $this->nullDate();
+    }
 
-		return !empty($publishDown) && $publishDown !== $this->nullDate();
-	}
+    /**
+     * Check if this entity is published down.
+     *
+     * @return  bool
+     */
+    public function isPublishedDown()
+    {
+        if (!$this->hasPublishDown()) {
+            return false;
+        }
 
-	/**
-	 * Check if this entity is published down.
-	 *
-	 * @return  boolean
-	 */
-	public function isPublishedDown()
-	{
-		if (!$this->hasPublishDown())
-		{
-			return false;
-		}
+        return \Joomla\CMS\Factory::getDate($this->getPublishDown()) <= \Joomla\CMS\Factory::getDate();
+    }
 
-		return \JFactory::getDate($this->getPublishDown()) <= \JFactory::getDate();
-	}
+    /**
+     * Get the empty date for the active DB driver.
+     *
+     * @return  string
+     *
+     * @codeCoverageIgnore
+     */
+    abstract protected function nullDate();
 }

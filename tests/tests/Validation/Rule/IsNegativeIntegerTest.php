@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation\Rule;
+namespace Extly\Joomla\Entity\Tests\Validation\Rule;
 
-use Phproberto\Joomla\Entity\Validation\Rule\IsNegativeInteger;
+use Extly\Joomla\Entity\Validation\Rule\IsNegativeInteger;
 
 /**
  * IsNegativeInteger tests.
@@ -17,28 +23,28 @@ use Phproberto\Joomla\Entity\Validation\Rule\IsNegativeInteger;
  */
 class IsNegativeIntegerTest extends \TestCase
 {
-	/**
-	 * passes returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testPassesReturnsCorrectValue()
-	{
-		$rule = new IsNegativeInteger;
+    /**
+     * passes returns correct value.
+     *
+     * @return  void
+     */
+    public function testPassesReturnsCorrectValue()
+    {
+        $isNegativeInteger = new IsNegativeInteger();
 
-		$this->assertFalse($rule->passes(''));
-		$this->assertFalse($rule->passes('#aa'));
-		$this->assertFalse($rule->passes(0));
-		$this->assertFalse($rule->passes(0.1));
-		$this->assertFalse($rule->passes(1.1));
-		$this->assertFalse($rule->passes('1.1'));
-		$this->assertFalse($rule->passes('12,000'));
+        $this->assertFalse($isNegativeInteger->passes(''));
+        $this->assertFalse($isNegativeInteger->passes('#aa'));
+        $this->assertFalse($isNegativeInteger->passes(0));
+        $this->assertFalse($isNegativeInteger->passes(0.1));
+        $this->assertFalse($isNegativeInteger->passes(1.1));
+        $this->assertFalse($isNegativeInteger->passes('1.1'));
+        $this->assertFalse($isNegativeInteger->passes('12,000'));
 
-		$this->assertTrue($rule->passes('-12'));
-		$this->assertTrue($rule->passes(-1));
-		$this->assertTrue($rule->passes(' -12'));
-		$this->assertTrue($rule->passes(-12));
-		$this->assertTrue($rule->passes('-12.000'));
-		$this->assertTrue($rule->passes(-12.000));
-	}
+        $this->assertTrue($isNegativeInteger->passes('-12'));
+        $this->assertTrue($isNegativeInteger->passes(-1));
+        $this->assertTrue($isNegativeInteger->passes(' -12'));
+        $this->assertTrue($isNegativeInteger->passes(-12));
+        $this->assertTrue($isNegativeInteger->passes('-12.000'));
+        $this->assertTrue($isNegativeInteger->passes(-12.000));
+    }
 }

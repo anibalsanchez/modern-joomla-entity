@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Users\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Entity;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Users\Traits\HasViewLevels;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Entity;
+use Extly\Joomla\Entity\Users\Traits\HasViewLevels;
 
 /**
  * Sample class to test HasViewLevels trait.
@@ -21,22 +27,22 @@ use Phproberto\Joomla\Entity\Users\Traits\HasViewLevels;
  */
 class EntityWithViewLevels extends Entity
 {
-	use HasViewLevels;
+    use HasViewLevels;
 
-	/**
-	 * Expected loadViewLevels result.
-	 *
-	 * @var  Collection
-	 */
-	public $loadableViewLevels;
+    /**
+     * Expected loadViewLevels result.
+     *
+     * @var  Collection
+     */
+    public $loadableViewLevels;
 
-	/**
-	 * Load associated view levels.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadViewLevels()
-	{
-		return null === $this->loadableViewLevels ? new Collection : $this->loadableViewLevels;
-	}
+    /**
+     * Load associated view levels.
+     *
+     * @return  Collection
+     */
+    protected function loadViewLevels()
+    {
+        return $this->loadableViewLevels ?? new Collection();
+    }
 }

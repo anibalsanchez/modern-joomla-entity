@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation\Rule;
+namespace Extly\Joomla\Entity\Tests\Validation\Rule;
 
-use Phproberto\Joomla\Entity\Validation\Rule\SubstrCount;
+use Extly\Joomla\Entity\Validation\Rule\SubstrCount;
 
 /**
  * SubstrCount tests.
@@ -17,20 +23,20 @@ use Phproberto\Joomla\Entity\Validation\Rule\SubstrCount;
  */
 class SubstrCountTest extends \TestCase
 {
-	/**
-	 * passes returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testPassesReturnsCorrectValue()
-	{
-		$rule = new SubstrCount('test');
+    /**
+     * passes returns correct value.
+     *
+     * @return  void
+     */
+    public function testPassesReturnsCorrectValue()
+    {
+        $substrCount = new SubstrCount('test');
 
-		$this->assertTrue($rule->passes('mytest'));
-		$this->assertFalse($rule->passes(''));
-		$this->assertFalse($rule->passes('my string'));
-		$this->assertFalse($rule->passes(0));
-		$this->assertFalse($rule->passes(null));
-		$this->assertTrue($rule->passes('testing substr_count'));
-	}
+        $this->assertTrue($substrCount->passes('mytest'));
+        $this->assertFalse($substrCount->passes(''));
+        $this->assertFalse($substrCount->passes('my string'));
+        $this->assertFalse($substrCount->passes(0));
+        $this->assertFalse($substrCount->passes(null));
+        $this->assertTrue($substrCount->passes('testing substr_count'));
+    }
 }

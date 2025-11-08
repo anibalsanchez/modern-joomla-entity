@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Content\Traits;
+namespace Extly\Joomla\Entity\Tests\Content\Traits;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Content\Article;
-use Phproberto\Joomla\Entity\Tests\Content\Traits\Stubs\ClassWithArticles;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Content\Article;
+use Extly\Joomla\Entity\Tests\Content\Traits\Stubs\ClassWithArticles;
 
 /**
  * HasArticles trait tests.
@@ -19,112 +25,112 @@ use Phproberto\Joomla\Entity\Tests\Content\Traits\Stubs\ClassWithArticles;
  */
 class HasArticlesTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		ClassWithArticles::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        ClassWithArticles::clearAll();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * clearArticles clears articles property.
-	 *
-	 * @return  void
-	 */
-	public function testClearArticlesClearsArticlesProperty()
-	{
-		$entity = new ClassWithArticles;
+    /**
+     * clearArticles clears articles property.
+     *
+     * @return  void
+     */
+    public function testClearArticlesClearsArticlesProperty()
+    {
+        $classWithArticles = new ClassWithArticles();
 
-		$reflection = new \ReflectionClass($entity);
-		$articlesProperty = $reflection->getProperty('articles');
-		$articlesProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($classWithArticles);
+        $reflectionProperty = $reflectionClass->getProperty('articles');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertEquals(null, $articlesProperty->getValue($entity));
+        $this->assertEquals(null, $reflectionProperty->getValue($classWithArticles));
 
-		$articles = new Collection(
-			array(
-				new Article(23),
-				new Article(24),
-				new Article(25)
-			)
-		);
+        $collection = new Collection(
+            [
+                new Article(23),
+                new Article(24),
+                new Article(25),
+            ]
+        );
 
-		$articlesProperty->setValue($entity, $articles);
-		$this->assertEquals($articles, $articlesProperty->getValue($entity));
+        $reflectionProperty->setValue($classWithArticles, $collection);
+        $this->assertEquals($collection, $reflectionProperty->getValue($classWithArticles));
 
-		$entity->clearArticles();
-		$this->assertEquals(null, $articlesProperty->getValue($entity));
-	}
+        $classWithArticles->clearArticles();
+        $this->assertEquals(null, $reflectionProperty->getValue($classWithArticles));
+    }
 
-	/**
-	 * clearArticles is chainable.
-	 *
-	 * @return  void
-	 */
-	public function testClearArticlesIsChainable()
-	{
-		$entity = new ClassWithArticles;
+    /**
+     * clearArticles is chainable.
+     *
+     * @return  void
+     */
+    public function testClearArticlesIsChainable()
+    {
+        $classWithArticles = new ClassWithArticles();
 
-		$this->assertTrue($entity->clearArticles() instanceof ClassWithArticles);
-	}
+        $this->assertTrue($classWithArticles->clearArticles() instanceof ClassWithArticles);
+    }
 
-	/**
-	 * articles returns correct data.
-	 *
-	 * @return  void
-	 */
-	public function testArticlesReturnsCorrectData()
-	{
-		$entity = new ClassWithArticles;
+    /**
+     * articles returns correct data.
+     *
+     * @return  void
+     */
+    public function testArticlesReturnsCorrectData()
+    {
+        $classWithArticles = new ClassWithArticles();
 
-		$this->assertEquals(new Collection, $entity->articles());
+        $this->assertEquals(new Collection(), $classWithArticles->articles());
 
-		$entity->articlesIds = array(999);
+        $classWithArticles->articlesIds = [999];
 
-		// Previous data with no reload
-		$this->assertEquals(new Collection, $entity->articles());
-		$this->assertEquals(new Collection(array(new Article(999))), $entity->articles(true));
-	}
+        // Previous data with no reload
+        $this->assertEquals(new Collection(), $classWithArticles->articles());
+        $this->assertEquals(new Collection([new Article(999)]), $classWithArticles->articles(true));
+    }
 
-	/**
-	 * hasArticle returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasArticleReturnsCorrectValue()
-	{
-		$entity = new ClassWithArticles;
+    /**
+     * hasArticle returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasArticleReturnsCorrectValue()
+    {
+        $classWithArticles = new ClassWithArticles();
 
-		$entity->articlesIds = array(999, 1001, 1003);
+        $classWithArticles->articlesIds = [999, 1001, 1003];
 
-		$this->assertFalse($entity->hasArticle(998));
-		$this->assertTrue($entity->hasArticle(999));
-		$this->assertFalse($entity->hasArticle(1000));
-		$this->assertTrue($entity->hasArticle(1001));
-		$this->assertFalse($entity->hasArticle(1002));
-		$this->assertTrue($entity->hasArticle(1003));
-	}
+        $this->assertFalse($classWithArticles->hasArticle(998));
+        $this->assertTrue($classWithArticles->hasArticle(999));
+        $this->assertFalse($classWithArticles->hasArticle(1000));
+        $this->assertTrue($classWithArticles->hasArticle(1001));
+        $this->assertFalse($classWithArticles->hasArticle(1002));
+        $this->assertTrue($classWithArticles->hasArticle(1003));
+    }
 
-	/**
-	 * hasArticles returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasArticlesReturnsCorrectValue()
-	{
-		$entity = new ClassWithArticles;
+    /**
+     * hasArticles returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasArticlesReturnsCorrectValue()
+    {
+        $entity = new ClassWithArticles();
 
-		$this->assertFalse($entity->hasArticles());
+        $this->assertFalse($entity->hasArticles());
 
-		$entity = new ClassWithArticles;
-		$entity->articlesIds = array(999, 1001, 1003);
+        $entity = new ClassWithArticles();
+        $entity->articlesIds = [999, 1001, 1003];
 
-		$this->assertTrue($entity->hasArticles());
-	}
+        $this->assertTrue($entity->hasArticles());
+    }
 }

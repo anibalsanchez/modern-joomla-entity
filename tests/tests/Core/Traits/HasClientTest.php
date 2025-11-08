@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
-use Phproberto\Joomla\Entity\Core\Client\Administrator;
-use Phproberto\Joomla\Entity\Core\Client\Site;
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\ClassWithClient;
+use Extly\Joomla\Entity\Core\Client\Administrator;
+use Extly\Joomla\Entity\Core\Client\Site;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\ClassWithClient;
 
 /**
  * HasClient trait tests.
@@ -19,144 +25,144 @@ use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\ClassWithClient;
  */
 class HasClientTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * Column storing the client identifier.
-	 *
-	 * @const
-	 */
-	const CLIENT_COLUMN = 'client_id';
+    /**
+     * Column storing the client identifier.
+     *
+     * @const
+     */
+    public const CLIENT_COLUMN = 'client_id';
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		ClassWithClient::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        ClassWithClient::clearAll();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * admin changes active client.
-	 *
-	 * @return  void
-	 */
-	public function testAdminChangesActiveClient()
-	{
-		$entity = $this->getEntity(array('id' => 999, 'client_id' => '0'));
+    /**
+     * admin changes active client.
+     *
+     * @return  void
+     */
+    public function testAdminChangesActiveClient()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(['id' => 999, 'client_id' => '0']);
 
-		$this->assertInstanceOf(Site::class, $entity->client());
+        $this->assertInstanceOf(Site::class, $phpUnitFrameworkMockObjectMockObject->client());
 
-		$entity->admin();
+        $phpUnitFrameworkMockObjectMockObject->admin();
 
-		$this->assertInstanceOf(Administrator::class, $entity->client());
-	}
+        $this->assertInstanceOf(Administrator::class, $phpUnitFrameworkMockObjectMockObject->client());
+    }
 
-	/**
-	 * client returns correct data.
-	 *
-	 * @return  void
-	 */
-	public function testClientReturnsCorrectData()
-	{
-		$entity = $this->getEntity(array('id' => 999, static::CLIENT_COLUMN => 0));
+    /**
+     * client returns correct data.
+     *
+     * @return  void
+     */
+    public function testClientReturnsCorrectData()
+    {
+        $entity = $this->getEntity(['id' => 999, static::CLIENT_COLUMN => 0]);
 
-		$this->assertInstanceOf(Site::class, $entity->client());
+        $this->assertInstanceOf(Site::class, $entity->client());
 
-		$entity = $this->getEntity(array('id' => 999, static::CLIENT_COLUMN => 1));
+        $entity = $this->getEntity(['id' => 999, static::CLIENT_COLUMN => 1]);
 
-		$this->assertInstanceOf(Administrator::class, $entity->client(true));
-	}
+        $this->assertInstanceOf(Administrator::class, $entity->client(true));
+    }
 
-	/**
-	 * client throws an exception when client column is not found.
-	 *
-	 * @return  void
-	 *
-	 * @expectedException  \InvalidArgumentException
-	 */
-	public function testLoadClientThrowsExceptionWhenClientColumnIsNotFound()
-	{
-		$entity = $this->getEntity(array('id' => 999));
+    /**
+     * client throws an exception when client column is not found.
+     *
+     * @return  void
+     *
+     * @expectedException  \InvalidArgumentException
+     */
+    public function testLoadClientThrowsExceptionWhenClientColumnIsNotFound()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(['id' => 999]);
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-		$method = $reflection->getMethod('loadClient');
-		$method->setAccessible(true);
+        $reflectionMethod = $reflectionClass->getMethod('loadClient');
+        $reflectionMethod->setAccessible(true);
 
-		$method->invoke($entity);
-	}
+        $reflectionMethod->invoke($phpUnitFrameworkMockObjectMockObject);
+    }
 
-	/**
-	 * loadClient returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testLoadClientReturnsCorrectValue()
-	{
-		$entity = $this->getEntity(array('id' => 999, 'client_id' => 0));
+    /**
+     * loadClient returns correct value.
+     *
+     * @return  void
+     */
+    public function testLoadClientReturnsCorrectValue()
+    {
+        $entity = $this->getEntity(['id' => 999, 'client_id' => 0]);
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entity);
 
-		$method = $reflection->getMethod('loadClient');
-		$method->setAccessible(true);
+        $reflectionMethod = $reflectionClass->getMethod('loadClient');
+        $reflectionMethod->setAccessible(true);
 
-		$this->assertInstanceOf(Site::class, $method->invoke($entity));
+        $this->assertInstanceOf(Site::class, $reflectionMethod->invoke($entity));
 
-		$entity = $this->getEntity(array('id' => 999, 'client_id' => '0'));
+        $entity = $this->getEntity(['id' => 999, 'client_id' => '0']);
 
-		$this->assertInstanceOf(Site::class, $method->invoke($entity));
+        $this->assertInstanceOf(Site::class, $reflectionMethod->invoke($entity));
 
-		$entity = $this->getEntity(array('id' => 999, 'client_id' => 'thiswillreturn0'));
+        $entity = $this->getEntity(['id' => 999, 'client_id' => 'thiswillreturn0']);
 
-		$this->assertInstanceOf(Site::class, $method->invoke($entity));
+        $this->assertInstanceOf(Site::class, $reflectionMethod->invoke($entity));
 
-		$entity = $this->getEntity(array('id' => 999, 'client_id' => 1));
+        $entity = $this->getEntity(['id' => 999, 'client_id' => 1]);
 
-		$this->assertInstanceOf(Administrator::class, $method->invoke($entity));
+        $this->assertInstanceOf(Administrator::class, $reflectionMethod->invoke($entity));
 
-		$entity = $this->getEntity(array('id' => 999, 'client_id' => '1'));
+        $entity = $this->getEntity(['id' => 999, 'client_id' => '1']);
 
-		$this->assertInstanceOf(Administrator::class, $method->invoke($entity));
-	}
+        $this->assertInstanceOf(Administrator::class, $reflectionMethod->invoke($entity));
+    }
 
-	/**
-	 * site changes active client.
-	 *
-	 * @return  void
-	 */
-	public function testSiteChangesActiveClient()
-	{
-		$entity = $this->getEntity(array('id' => 999, 'client_id' => '1'));
+    /**
+     * site changes active client.
+     *
+     * @return  void
+     */
+    public function testSiteChangesActiveClient()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(['id' => 999, 'client_id' => '1']);
 
-		$this->assertInstanceOf(Administrator::class, $entity->client());
+        $this->assertInstanceOf(Administrator::class, $phpUnitFrameworkMockObjectMockObject->client());
 
-		$entity->site();
+        $phpUnitFrameworkMockObjectMockObject->site();
 
-		$this->assertInstanceOf(Site::class, $entity->client());
-	}
+        $this->assertInstanceOf(Site::class, $phpUnitFrameworkMockObjectMockObject->client());
+    }
 
-	/**
-	 * Get a mocked entity with client.
-	 *
-	 * @param   array  $row  Row returned by the entity as data
-	 *
-	 * @return  \PHPUnit_Framework_MockObject_MockObject
-	 */
-	private function getEntity($row = array())
-	{
-		$entity = $this->getMockBuilder(ClassWithClient::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * Get a mocked entity with client.
+     *
+     * @param   array  $row  Row returned by the entity as data
+     *
+     * @return  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getEntity($row = [])
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(ClassWithClient::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$entity->method('columnAlias')
-			->willReturn('client_id');
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('client_id');
 
-		$entity->bind($row);
+        $phpUnitFrameworkMockObjectMockObject->bind($row);
 
-		return $entity;
-	}
+        return $phpUnitFrameworkMockObjectMockObject;
+    }
 }

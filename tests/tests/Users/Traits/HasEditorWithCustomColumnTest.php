@@ -1,17 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users\Traits;
+namespace Extly\Joomla\Entity\Tests\Users\Traits;
 
-use Phproberto\Joomla\Entity\Users\Traits\HasAuthor;
-use Phproberto\Joomla\Entity\Users\User;
-
-use Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithAuthorAndEditor;
+use Extly\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithAuthorAndEditor;
+use Extly\Joomla\Entity\Users\Traits\HasAuthor;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * HasEditor trait tests for entities with custom editor column.
@@ -20,10 +25,10 @@ use Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithAuthorAndEditor;
  */
 class HasEditorWithCustomColumnTest extends HasEditorTest
 {
-	/**
-	 * Name of the editor column.
-	 *
-	 * @const
-	 */
-	const EDITOR_COLUMN = 'modified_user_id';
+    /**
+     * Name of the editor column.
+     *
+     * @const
+     */
+    public const EDITOR_COLUMN = 'modified_user_id';
 }

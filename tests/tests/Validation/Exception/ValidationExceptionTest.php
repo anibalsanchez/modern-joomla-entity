@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation\Exception;
+namespace Extly\Joomla\Entity\Tests\Validation\Exception;
 
-use Phproberto\Joomla\Entity\Tests\Stubs\Entity;
-use Phproberto\Joomla\Entity\Validation\Rule;
-use Phproberto\Joomla\Entity\Validation\Exception\ValidationException;
+use Extly\Joomla\Entity\Tests\Stubs\Entity;
+use Extly\Joomla\Entity\Validation\Exception\ValidationException;
+use Extly\Joomla\Entity\Validation\Rule;
 
 /**
  * ValidationException tests.
@@ -19,41 +25,41 @@ use Phproberto\Joomla\Entity\Validation\Exception\ValidationException;
  */
 class ValidationExceptionTest extends \TestCase
 {
-	/**
-	 * invalidEntity returns ValidationException.
-	 *
-	 * @return  void
-	 */
-	public function testInvalidEntityReturnsValidationException()
-	{
-		$entity = new Entity(999);
-		$errors = array(
-			'`alias` cannot be empty',
-			'`column` is wrong'
-		);
+    /**
+     * invalidEntity returns ValidationException.
+     *
+     * @return  void
+     */
+    public function testInvalidEntityReturnsValidationException()
+    {
+        $entity = new Entity(999);
+        $errors = [
+            '`alias` cannot be empty',
+            '`column` is wrong',
+        ];
 
-		$exception = ValidationException::invalidEntity($entity, $errors);
+        $validationException = ValidationException::invalidEntity($entity, $errors);
 
-		$this->assertInstanceOf(ValidationException::class, $exception);
-		$this->assertTrue(strlen($exception->getMessage()) > 0);
-	}
+        $this->assertInstanceOf(ValidationException::class, $validationException);
+        $this->assertTrue(strlen($validationException->getMessage()) > 0);
+    }
 
-	/**
-	 * invalidColumn returns ValidationException.
-	 *
-	 * @return  void
-	 */
-	public function testInvalidColumnReturnsValidationException()
-	{
-		$entity = new Entity(999);
-		$failedRules = array(
-			new Rule\IsPositiveInteger('Is not a positive integer'),
-			new Rule\IsNotEmptyString('Cannot be an empty string')
-		);
+    /**
+     * invalidColumn returns ValidationException.
+     *
+     * @return  void
+     */
+    public function testInvalidColumnReturnsValidationException()
+    {
+        $entity = new Entity(999);
+        $failedRules = [
+            new Rule\IsPositiveInteger('Is not a positive integer'),
+            new Rule\IsNotEmptyString('Cannot be an empty string'),
+        ];
 
-		$exception = ValidationException::invalidColumn('sample_column', $failedRules);
+        $validationException = ValidationException::invalidColumn('sample_column', $failedRules);
 
-		$this->assertInstanceOf(ValidationException::class, $exception);
-		$this->assertTrue(strlen($exception->getMessage()) > 0);
-	}
+        $this->assertInstanceOf(ValidationException::class, $validationException);
+        $this->assertTrue(strlen($validationException->getMessage()) > 0);
+    }
 }

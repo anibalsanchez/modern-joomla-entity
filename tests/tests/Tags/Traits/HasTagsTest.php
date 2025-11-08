@@ -1,18 +1,24 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Tags\Traits;
+namespace Extly\Joomla\Entity\Tests\Tags\Traits;
 
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Tags\Tag;
+use Extly\Joomla\Entity\Tests\Tags\Traits\Stubs\ClassWithSearchableTags;
+use Extly\Joomla\Entity\Tests\Tags\Traits\Stubs\ClassWithTags;
 use Joomla\CMS\Factory;
-use Phproberto\Joomla\Entity\Tags\Tag;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Tests\Tags\Traits\Stubs\ClassWithTags;
-use Phproberto\Joomla\Entity\Tests\Tags\Traits\Stubs\ClassWithSearchableTags;
 
 /**
  * HasTags trait tests.
@@ -21,304 +27,304 @@ use Phproberto\Joomla\Entity\Tests\Tags\Traits\Stubs\ClassWithSearchableTags;
  */
 class HasTagsTest extends \TestCaseDatabase
 {
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function contentTypeAliasReturnsExpectedString()
-	{
-		$this->assertSame('', ClassWithTags::contentTypeAlias());
-	}
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        ClassWithTags::clearAll();
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_tags', dirname(__DIR__) . '/Stubs/Database/tags.csv');
-		$dataSet->addTable('jos_contentitem_tag_map', dirname(__DIR__) . '/Stubs/Database/contentitem_tag_map.csv');
+        parent::tearDown();
+    }
 
-		return $dataSet;
-	}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function contentTypeAliasReturnsExpectedString()
+    {
+        $this->assertSame('', ClassWithTags::contentTypeAlias());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function loadTagsReturnsEmptyCollectionForEntityWithoutId()
-	{
-		$entity = new ClassWithSearchableTags;
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function loadTagsReturnsEmptyCollectionForEntityWithoutId()
+    {
+        $classWithSearchableTags = new ClassWithSearchableTags();
 
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('loadTags');
-		$method->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($classWithSearchableTags);
+        $reflectionMethod = $reflectionClass->getMethod('loadTags');
+        $reflectionMethod->setAccessible(true);
 
-		$tags = $method->invoke($entity);
+        $tags = $reflectionMethod->invoke($classWithSearchableTags);
 
-		$this->assertInstanceOf(Collection::class, $tags);
-		$this->assertTrue($tags->isEmpty());
-	}
+        $this->assertInstanceOf(Collection::class, $tags);
+        $this->assertTrue($tags->isEmpty());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function loadTagsReturnsEmptyCollectionForEntityWithoutContentTypeAlias()
-	{
-		$entity = new ClassWithTags(15);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function loadTagsReturnsEmptyCollectionForEntityWithoutContentTypeAlias()
+    {
+        $classWithTags = new ClassWithTags(15);
 
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('loadTags');
-		$method->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($classWithTags);
+        $reflectionMethod = $reflectionClass->getMethod('loadTags');
+        $reflectionMethod->setAccessible(true);
 
-		$tags = $method->invoke($entity);
+        $tags = $reflectionMethod->invoke($classWithTags);
 
-		$this->assertInstanceOf(Collection::class, $tags);
-		$this->assertTrue($tags->isEmpty());
-	}
+        $this->assertInstanceOf(Collection::class, $tags);
+        $this->assertTrue($tags->isEmpty());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function loadTagsReturnsExpectedTags()
-	{
-		$mockSession = $this->getMockBuilder('JSession')
-			->setMethods(array('_start', 'get'))
-			->getMock();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function loadTagsReturnsExpectedTags()
+    {
+        $mockSession = $this->getMockBuilder('JSession')
+            ->setMethods(['_start', 'get'])
+            ->getMock();
 
-		$mockSession->expects($this->once())
-			->method('get')
-			->will($this->returnValue(new \JUser(42)));
+        $mockSession->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue(new \JUser(42)));
 
-		Factory::$session = $mockSession;
+        Factory::$session = $mockSession;
 
-		$entity = new ClassWithSearchableTags(15);
+        $classWithSearchableTags = new ClassWithSearchableTags(15);
 
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('loadTags');
-		$method->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($classWithSearchableTags);
+        $reflectionMethod = $reflectionClass->getMethod('loadTags');
+        $reflectionMethod->setAccessible(true);
 
-		$tags = $method->invoke($entity);
+        $tags = $reflectionMethod->invoke($classWithSearchableTags);
 
-		$this->assertInstanceOf(Collection::class, $tags);
-		$this->assertFalse($tags->isEmpty());
-	}
+        $this->assertInstanceOf(Collection::class, $tags);
+        $this->assertFalse($tags->isEmpty());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function removeAllTagsRemovesAssignedTags()
-	{
-		$entity = $this->getMockBuilder(ClassWithSearchableTags::class)
-			->setConstructorArgs([15])
-			->setMethods(array('getDbo'))
-			->getMock();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function removeAllTagsRemovesAssignedTags()
+    {
+        $entity = $this->getMockBuilder(ClassWithSearchableTags::class)
+            ->setConstructorArgs([15])
+            ->setMethods(['getDbo'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('getDbo')
-			->willReturn(Factory::getDbo());
+        $entity->expects($this->once())
+            ->method('getDbo')
+            ->willReturn(Factory::getDbo());
 
-		$tags = $entity->searchTags();
+        $tags = $entity->searchTags();
 
-		$this->assertInstanceOf(Collection::class, $tags);
-		$this->assertFalse($tags->isEmpty());
+        $this->assertInstanceOf(Collection::class, $tags);
+        $this->assertFalse($tags->isEmpty());
 
-		$entity->removeAllTags();
+        $entity->removeAllTags();
 
-		$this->assertTrue($entity->searchTags()->isEmpty());
-	}
+        $this->assertTrue($entity->searchTags()->isEmpty());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 *
-	 * @expectedException  \RuntimeException
-	 */
-	public function removeAllTagsThrowsExceptionForEntityWithoutId()
-	{
-		$entity = new ClassWithSearchableTags;
+    /**
+     * @test
+     *
+     * @return void
+     *
+     * @expectedException  \RuntimeException
+     */
+    public function removeAllTagsThrowsExceptionForEntityWithoutId()
+    {
+        $classWithSearchableTags = new ClassWithSearchableTags();
 
-		$entity->removeAllTags();
-	}
+        $classWithSearchableTags->removeAllTags();
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function searchTagsReturnsEmptyCollectionForMissingId()
-	{
-		$entity = new ClassWithSearchableTags;
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function searchTagsReturnsEmptyCollectionForMissingId()
+    {
+        $classWithSearchableTags = new ClassWithSearchableTags();
 
-		$tags = $entity->searchTags();
+        $collection = $classWithSearchableTags->searchTags();
 
-		$this->assertInstanceOf(Collection::class, $tags);
-		$this->assertTrue($tags->isEmpty());
-	}
+        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertTrue($collection->isEmpty());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function searchTagsReturnsEmptyCollectionForMissingAlias()
-	{
-		$entity = new ClassWithTags;
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function searchTagsReturnsEmptyCollectionForMissingAlias()
+    {
+        $classWithTags = new ClassWithTags();
 
-		$tags = $entity->searchTags();
+        $collection = $classWithTags->searchTags();
 
-		$this->assertInstanceOf(Collection::class, $tags);
-		$this->assertTrue($tags->isEmpty());
-	}
+        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertTrue($collection->isEmpty());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function searchTagsReturnsExpectedTags()
-	{
-		$entity = new ClassWithSearchableTags(15);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function searchTagsReturnsExpectedTags()
+    {
+        $classWithSearchableTags = new ClassWithSearchableTags(15);
 
-		$tags = $entity->searchTags();
+        $collection = $classWithSearchableTags->searchTags();
 
-		$this->assertInstanceOf(Collection::class, $tags);
-		$this->assertSame([4,6], $tags->ids());
-	}
+        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertSame([4, 6], $collection->ids());
+    }
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		ClassWithTags::clearAll();
+    /**
+     * clearTags clears tags property.
+     *
+     * @return  void
+     */
+    public function testClearTagsClearsTagsProperty()
+    {
+        $classWithTags = new ClassWithTags();
 
-		parent::tearDown();
-	}
+        $reflectionClass = new \ReflectionClass($classWithTags);
+        $reflectionProperty = $reflectionClass->getProperty('tags');
+        $reflectionProperty->setAccessible(true);
 
-	/**
-	 * clearTags clears tags property.
-	 *
-	 * @return  void
-	 */
-	public function testClearTagsClearsTagsProperty()
-	{
-		$entity = new ClassWithTags;
+        $this->assertEquals(null, $reflectionProperty->getValue($classWithTags));
 
-		$reflection = new \ReflectionClass($entity);
-		$tagsProperty = $reflection->getProperty('tags');
-		$tagsProperty->setAccessible(true);
+        $collection = new Collection(
+            [
+                new Tag(23),
+                new Tag(24),
+                new Tag(25),
+            ]
+        );
 
-		$this->assertEquals(null, $tagsProperty->getValue($entity));
+        $reflectionProperty->setValue($classWithTags, $collection);
+        $this->assertEquals($collection, $reflectionProperty->getValue($classWithTags));
 
-		$tags = new Collection(
-			array(
-				new Tag(23),
-				new Tag(24),
-				new Tag(25)
-			)
-		);
+        $classWithTags->clearTags();
+        $this->assertEquals(null, $reflectionProperty->getValue($classWithTags));
+    }
 
-		$tagsProperty->setValue($entity, $tags);
-		$this->assertEquals($tags, $tagsProperty->getValue($entity));
+    /**
+     * clearTags is chainable.
+     *
+     * @return  void
+     */
+    public function testClearTagsIsChainable()
+    {
+        $classWithTags = new ClassWithTags();
 
-		$entity->clearTags();
-		$this->assertEquals(null, $tagsProperty->getValue($entity));
-	}
+        $this->assertTrue($classWithTags->clearTags() instanceof ClassWithTags);
+    }
 
-	/**
-	 * clearTags is chainable.
-	 *
-	 * @return  void
-	 */
-	public function testClearTagsIsChainable()
-	{
-		$entity = new ClassWithTags;
+    /**
+     * getTagsHelper returns correct class.
+     *
+     * @return  void
+     */
+    public function testGetTagsHelperReturnsCorrectInstance()
+    {
+        $classWithTags = new ClassWithTags();
 
-		$this->assertTrue($entity->clearTags() instanceof ClassWithTags);
-	}
+        $reflectionClass = new \ReflectionClass($classWithTags);
+        $reflectionMethod = $reflectionClass->getMethod('getTagsHelperInstance');
+        $reflectionMethod->setAccessible(true);
 
-	/**
-	 * getTagsHelper returns correct class.
-	 *
-	 * @return  void
-	 */
-	public function testGetTagsHelperReturnsCorrectInstance()
-	{
-		$entity = new ClassWithTags;
+        $this->assertTrue($reflectionMethod->invoke($classWithTags) instanceof \Joomla\CMS\Helper\TagsHelper);
+    }
 
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('getTagsHelperInstance');
-		$method->setAccessible(true);
+    /**
+     * tags returns correct data.
+     *
+     * @return  void
+     */
+    public function testTagsReturnsCorrectData()
+    {
+        $classWithTags = new ClassWithTags();
 
-		$this->assertTrue($method->invoke($entity) instanceof \JHelperTags);
-	}
+        $this->assertEquals(new Collection(), $classWithTags->tags());
 
-	/**
-	 * tags returns correct data.
-	 *
-	 * @return  void
-	 */
-	public function testTagsReturnsCorrectData()
-	{
-		$entity = new ClassWithTags;
+        $classWithTags->tagsIds = [999];
 
-		$this->assertEquals(new Collection, $entity->tags());
+        // Previous data with no reload
+        $this->assertEquals(new Collection(), $classWithTags->tags());
+        $this->assertEquals(new Collection([new Tag(999)]), $classWithTags->tags(true));
+    }
 
-		$entity->tagsIds = array(999);
+    /**
+     * hasTag returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasTagReturnsCorrectValue()
+    {
+        $classWithTags = new ClassWithTags();
 
-		// Previous data with no reload
-		$this->assertEquals(new Collection, $entity->tags());
-		$this->assertEquals(new Collection(array(new Tag(999))), $entity->tags(true));
-	}
+        $classWithTags->tagsIds = [999, 1001, 1003];
 
-	/**
-	 * hasTag returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasTagReturnsCorrectValue()
-	{
-		$entity = new ClassWithTags;
+        $this->assertFalse($classWithTags->hasTag(998));
+        $this->assertTrue($classWithTags->hasTag(999));
+        $this->assertFalse($classWithTags->hasTag(1000));
+        $this->assertTrue($classWithTags->hasTag(1001));
+        $this->assertFalse($classWithTags->hasTag(1002));
+        $this->assertTrue($classWithTags->hasTag(1003));
+    }
 
-		$entity->tagsIds = array(999, 1001, 1003);
+    /**
+     * hasTags returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasTagsReturnsCorrectValue()
+    {
+        $entity = new ClassWithTags();
 
-		$this->assertFalse($entity->hasTag(998));
-		$this->assertTrue($entity->hasTag(999));
-		$this->assertFalse($entity->hasTag(1000));
-		$this->assertTrue($entity->hasTag(1001));
-		$this->assertFalse($entity->hasTag(1002));
-		$this->assertTrue($entity->hasTag(1003));
-	}
+        $this->assertFalse($entity->hasTags());
 
-	/**
-	 * hasTags returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasTagsReturnsCorrectValue()
-	{
-		$entity = new ClassWithTags;
+        $entity = new ClassWithTags();
+        $entity->tagsIds = [999, 1001, 1003];
 
-		$this->assertFalse($entity->hasTags());
+        $this->assertTrue($entity->hasTags());
+    }
 
-		$entity = new ClassWithTags;
-		$entity->tagsIds = array(999, 1001, 1003);
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_tags', dirname(__DIR__).'/Stubs/Database/tags.csv');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_contentitem_tag_map', dirname(__DIR__).'/Stubs/Database/contentitem_tag_map.csv');
 
-		$this->assertTrue($entity->hasTags());
-	}
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

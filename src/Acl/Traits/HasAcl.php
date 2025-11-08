@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Acl\Traits;
+namespace Extly\Joomla\Entity\Acl\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Acl\Acl;
+use Extly\Joomla\Entity\Acl\Acl;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * Trait for entities with ACL.
@@ -20,40 +26,39 @@ use Phproberto\Joomla\Entity\Acl\Acl;
  */
 trait HasAcl
 {
-	/**
-	 * Acl instance.
-	 *
-	 * @param   User|null  $user  User to check ACL against.
-	 *
-	 * @return  Acl
-	 */
-	public function acl(User $user = null)
-	{
-		return new Acl($this, $user);
-	}
+    /**
+     * Acl instance.
+     *
+     * @param   User|null  $user  User to check ACL against.
+     *
+     * @return  Acl
+     */
+    public function acl(?User $user = null)
+    {
+        return new Acl($this, $user);
+    }
 
-	/**
-	 * Get the ACL prefix applied to this entity
-	 *
-	 * @return  string
-	 */
-	public function aclPrefix()
-	{
-		return 'core';
-	}
+    /**
+     * Get the ACL prefix applied to this entity
+     *
+     * @return  string
+     */
+    public function aclPrefix()
+    {
+        return 'core';
+    }
 
-	/**
-	 * Get the identifier of the associated asset
-	 *
-	 * @return  string
-	 */
-	public function aclAssetName()
-	{
-		if ($this->hasId())
-		{
-			return $this->component()->option() . '.' . $this->name() . '.' . $this->id();
-		}
+    /**
+     * Get the identifier of the associated asset
+     *
+     * @return  string
+     */
+    public function aclAssetName()
+    {
+        if ($this->hasId()) {
+            return $this->component()->option().'.'.$this->name().'.'.$this->id();
+        }
 
-		return $this->component()->option();
-	}
+        return $this->component()->option();
+    }
 }

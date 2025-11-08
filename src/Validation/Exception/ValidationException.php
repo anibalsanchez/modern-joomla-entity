@@ -1,18 +1,24 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Validation\Exception;
+namespace Extly\Joomla\Entity\Validation\Exception;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Validation\Contracts\Rule as RuleContract;
-use Phproberto\Joomla\Entity\Contracts\EntityInterface;
-use Phproberto\Joomla\Entity\Contracts\ExceptionInterface;
+use Extly\Joomla\Entity\Contracts\EntityInterface;
+use Extly\Joomla\Entity\Contracts\ExceptionInterface;
+use Extly\Joomla\Entity\Validation\Contracts\Rule as RuleContract;
 
 /**
  * Validation errors.
@@ -21,44 +27,42 @@ use Phproberto\Joomla\Entity\Contracts\ExceptionInterface;
  */
 class ValidationException extends \RuntimeException implements ExceptionInterface
 {
-	/**
-	 * Entity did not pass validation.
-	 *
-	 * @param   EntityInterface  $entity  Entity with empty data
-	 * @param   array            $errors  Validation errors
-	 *
-	 * @return  static
-	 */
-	public static function invalidEntity(EntityInterface $entity, array $errors = array())
-	{
-		$entityName = $entity->name() . ($entity->hasId() ? '::' . $entity->id() : null);
-		$msg = sprintf("`%s` is not valid:</br>* ", $entityName);
+    /**
+     * Entity did not pass validation.
+     *
+     * @param   EntityInterface  $entity  Entity with empty data
+     * @param   array            $errors  Validation errors
+     *
+     * @return  static
+     */
+    public static function invalidEntity(EntityInterface $entity, array $errors = [])
+    {
+        $entityName = $entity->name().($entity->hasId() ? '::'.$entity->id() : null);
+        $msg = sprintf('`%s` is not valid:</br>* ', $entityName);
 
-		if (count($errors))
-		{
-			$msg .= implode("</br>* ", $errors);
-		}
+        if ($errors !== []) {
+            $msg .= implode('</br>* ', $errors);
+        }
 
-		return new static($msg, 500);
-	}
+        return new static($msg, 500);
+    }
 
-	/**
-	 * Entity did not pass validation.
-	 *
-	 * @param   string          $column       Entity with empty data
-	 * @param   RuleContract[]  $failedRules  Rule failed
-	 *
-	 * @return  static
-	 */
-	public static function invalidColumn($column, array $failedRules)
-	{
-		$errors = array();
+    /**
+     * Entity did not pass validation.
+     *
+     * @param   string          $column       Entity with empty data
+     * @param   RuleContract[]  $failedRules  Rule failed
+     *
+     * @return  static
+     */
+    public static function invalidColumn($column, array $failedRules)
+    {
+        $errors = [];
 
-		foreach ($failedRules as $rule)
-		{
-			$errors[] = sprintf("`%s` does not pass `%s` validation rule", $column, $rule->name());
-		}
+        foreach ($failedRules as $failedRule) {
+            $errors[] = sprintf('`%s` does not pass `%s` validation rule', $column, $failedRule->name());
+        }
 
-		return new static(implode("</br>* ", $errors), 500);
-	}
+        return new static(implode('</br>* ', $errors), 500);
+    }
 }

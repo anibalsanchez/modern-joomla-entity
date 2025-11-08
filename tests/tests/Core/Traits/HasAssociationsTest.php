@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithAssociations;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithAssociations;
 
 /**
  * HasAssociations trait tests.
@@ -18,280 +24,280 @@ use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithAssociations;
  */
 class HasAssociationsTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		EntityWithAssociations::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        EntityWithAssociations::clearAll();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * Association throws exception when association does not exist.
-	 *
-	 * @return  void
-	 *
-	 * @expectedException  \InvalidArgumentException
-	 */
-	public function testAssociationThrowsExceptionWhenAssociationDoesNotExist()
-	{
-		$entity = new EntityWithAssociations;
+    /**
+     * Association throws exception when association does not exist.
+     *
+     * @return  void
+     *
+     * @expectedException  \InvalidArgumentException
+     */
+    public function testAssociationThrowsExceptionWhenAssociationDoesNotExist()
+    {
+        $entityWithAssociations = new EntityWithAssociations();
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithAssociations);
 
-		$associationsProperty = $reflection->getProperty('associations');
-		$associationsProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('associations');
+        $reflectionProperty->setAccessible(true);
 
-		$associationsProperty->setValue($entity, array());
+        $reflectionProperty->setValue($entityWithAssociations, []);
 
-		$entity->association('es-ES');
-	}
+        $entityWithAssociations->association('es-ES');
+    }
 
-	/**
-	 * association returns correct association.
-	 *
-	 * @return  void
-	 */
-	public function testAssociationReturnsCorrectAssociation()
-	{
-		$entity = new EntityWithAssociations;
+    /**
+     * association returns correct association.
+     *
+     * @return  void
+     */
+    public function testAssociationReturnsCorrectAssociation()
+    {
+        $entityWithAssociations = new EntityWithAssociations();
 
-		$cachedAssociations = array(
-			'es-ES' => new EntityWithAssociations(666),
-			'pt-BR' => new EntityWithAssociations(999)
-		);
+        $cachedAssociations = [
+            'es-ES' => new EntityWithAssociations(666),
+            'pt-BR' => new EntityWithAssociations(999),
+        ];
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithAssociations);
 
-		$associationsProperty = $reflection->getProperty('associations');
-		$associationsProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('associations');
+        $reflectionProperty->setAccessible(true);
 
-		$associationsProperty->setValue($entity, $cachedAssociations);
+        $reflectionProperty->setValue($entityWithAssociations, $cachedAssociations);
 
-		$this->assertSame($cachedAssociations['es-ES'], $entity->association('es-ES'));
-		$this->assertSame($cachedAssociations['pt-BR'], $entity->association('pt-BR'));
-	}
+        $this->assertSame($cachedAssociations['es-ES'], $entityWithAssociations->association('es-ES'));
+        $this->assertSame($cachedAssociations['pt-BR'], $entityWithAssociations->association('pt-BR'));
+    }
 
-	/**
-	 * Associations returns empty array for no associations.
-	 *
-	 * @return  void
-	 */
-	public function testAssociationsReturnsEmptyArrayForNoAssociations()
-	{
-		$entity = new EntityWithAssociations;
+    /**
+     * Associations returns empty array for no associations.
+     *
+     * @return  void
+     */
+    public function testAssociationsReturnsEmptyArrayForNoAssociations()
+    {
+        $entityWithAssociations = new EntityWithAssociations();
 
-		$this->assertSame(array(), $entity->associations());
-	}
+        $this->assertSame([], $entityWithAssociations->associations());
+    }
 
-	/**
-	 * Associations returns cached data.
-	 *
-	 * @return  void
-	 */
-	public function testAssociationsReturnsCachedData()
-	{
-		$entity = new EntityWithAssociations;
+    /**
+     * Associations returns cached data.
+     *
+     * @return  void
+     */
+    public function testAssociationsReturnsCachedData()
+    {
+        $entityWithAssociations = new EntityWithAssociations();
 
-		$cachedAssociations = array(
-			'es-ES' => new EntityWithAssociations(666),
-			'pt-BR' => new EntityWithAssociations(999)
-		);
+        $cachedAssociations = [
+            'es-ES' => new EntityWithAssociations(666),
+            'pt-BR' => new EntityWithAssociations(999),
+        ];
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithAssociations);
 
-		$associationsProperty = $reflection->getProperty('associations');
-		$associationsProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('associations');
+        $reflectionProperty->setAccessible(true);
 
-		$associationsProperty->setValue($entity, $cachedAssociations);
+        $reflectionProperty->setValue($entityWithAssociations, $cachedAssociations);
 
-		$this->assertSame($cachedAssociations, $entity->associations());
-	}
+        $this->assertSame($cachedAssociations, $entityWithAssociations->associations());
+    }
 
-	/**
-	 * associations calls loadAssociations when no cached associations.
-	 *
-	 * @return  void
-	 */
-	public function testAssociationsCallsLoadAssociationsWhenNoCachedAssociations()
-	{
-		$associations = array(
-			'es-ES' => new EntityWithAssociations(666),
-			'pt-BR' => new EntityWithAssociations(999)
-		);
+    /**
+     * associations calls loadAssociations when no cached associations.
+     *
+     * @return  void
+     */
+    public function testAssociationsCallsLoadAssociationsWhenNoCachedAssociations()
+    {
+        $associations = [
+            'es-ES' => new EntityWithAssociations(666),
+            'pt-BR' => new EntityWithAssociations(999),
+        ];
 
-		$entity = $this->getMockBuilder(EntityWithAssociations::class)
-			->setMethods(array('loadAssociations'))
-			->getMock();
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAssociations::class)
+            ->setMethods(['loadAssociations'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('loadAssociations')
-			->willReturn($associations);
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('loadAssociations')
+            ->willReturn($associations);
 
-		$this->assertSame($associations, $entity->associations());
-	}
+        $this->assertSame($associations, $phpUnitFrameworkMockObjectMockObject->associations());
+    }
 
-	/**
-	 * Associations reloads data when reload is true.
-	 *
-	 * @return  void
-	 */
-	public function testAssociationsReloadsDataWhenReloadIsTrue()
-	{
-		$associations = array(
-			'es-ES' => new EntityWithAssociations(666),
-			'pt-BR' => new EntityWithAssociations(999)
-		);
+    /**
+     * Associations reloads data when reload is true.
+     *
+     * @return  void
+     */
+    public function testAssociationsReloadsDataWhenReloadIsTrue()
+    {
+        $associations = [
+            'es-ES' => new EntityWithAssociations(666),
+            'pt-BR' => new EntityWithAssociations(999),
+        ];
 
-		$entity = $this->getMockBuilder(EntityWithAssociations::class)
-			->setMethods(array('loadAssociations'))
-			->getMock();
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAssociations::class)
+            ->setMethods(['loadAssociations'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('loadAssociations')
-			->willReturn($associations);
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('loadAssociations')
+            ->willReturn($associations);
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-		$associationsProperty = $reflection->getProperty('associations');
-		$associationsProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('associations');
+        $reflectionProperty->setAccessible(true);
 
-		$associationsProperty->setValue($entity, array());
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, []);
 
-		$this->assertSame(array(), $entity->associations());
-		$this->assertSame($associations, $entity->associations(true));
-	}
+        $this->assertSame([], $phpUnitFrameworkMockObjectMockObject->associations());
+        $this->assertSame($associations, $phpUnitFrameworkMockObjectMockObject->associations(true));
+    }
 
-	/**
-	 * associationsIds returns empty array for no associations.
-	 *
-	 * @return  void
-	 */
-	public function testAssociationsIdsReturnsEmptyArrayForNoAssociations()
-	{
-		$entity = new EntityWithAssociations;
+    /**
+     * associationsIds returns empty array for no associations.
+     *
+     * @return  void
+     */
+    public function testAssociationsIdsReturnsEmptyArrayForNoAssociations()
+    {
+        $entityWithAssociations = new EntityWithAssociations();
 
-		$this->assertSame(array(), $entity->associationsIds());
-	}
+        $this->assertSame([], $entityWithAssociations->associationsIds());
+    }
 
-	/**
-	 * associationsIdsReturnsCorrectData.
-	 *
-	 * @return  void
-	 */
-	public function testAssociationsIdsReturnsCorrectData()
-	{
-		$entity = new EntityWithAssociations;
+    /**
+     * associationsIdsReturnsCorrectData.
+     *
+     * @return  void
+     */
+    public function testAssociationsIdsReturnsCorrectData()
+    {
+        $entityWithAssociations = new EntityWithAssociations();
 
-		$cachedAssociations = array(
-			'es-ES' => new EntityWithAssociations(666),
-			'pt-BR' => new EntityWithAssociations(999)
-		);
+        $cachedAssociations = [
+            'es-ES' => new EntityWithAssociations(666),
+            'pt-BR' => new EntityWithAssociations(999),
+        ];
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithAssociations);
 
-		$associationsProperty = $reflection->getProperty('associations');
-		$associationsProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('associations');
+        $reflectionProperty->setAccessible(true);
 
-		$associationsProperty->setValue($entity, $cachedAssociations);
+        $reflectionProperty->setValue($entityWithAssociations, $cachedAssociations);
 
-		$this->assertSame(array('es-ES' => 666, 'pt-BR' => 999), $entity->associationsIds());
-	}
+        $this->assertSame(['es-ES' => 666, 'pt-BR' => 999], $entityWithAssociations->associationsIds());
+    }
 
-	/**
-	 * hasAssociation returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasAssociationReturnsCorrectValue()
-	{
-		$entity = new EntityWithAssociations;
+    /**
+     * hasAssociation returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasAssociationReturnsCorrectValue()
+    {
+        $entityWithAssociations = new EntityWithAssociations();
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithAssociations);
 
-		$associationsProperty = $reflection->getProperty('associations');
-		$associationsProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('associations');
+        $reflectionProperty->setAccessible(true);
 
-		$associationsProperty->setValue($entity, array());
+        $reflectionProperty->setValue($entityWithAssociations, []);
 
-		$this->assertSame(false, $entity->hasAssociation('es-ES'));
-		$this->assertSame(false, $entity->hasAssociation('pt-BR'));
-		$this->assertSame(false, $entity->hasAssociation('es-AR'));
+        $this->assertSame(false, $entityWithAssociations->hasAssociation('es-ES'));
+        $this->assertSame(false, $entityWithAssociations->hasAssociation('pt-BR'));
+        $this->assertSame(false, $entityWithAssociations->hasAssociation('es-AR'));
 
-		$associations = array(
-			'es-ES' => new EntityWithAssociations(666),
-			'pt-BR' => new EntityWithAssociations(999)
-		);
+        $associations = [
+            'es-ES' => new EntityWithAssociations(666),
+            'pt-BR' => new EntityWithAssociations(999),
+        ];
 
-		$associationsProperty->setValue($entity, $associations);
+        $reflectionProperty->setValue($entityWithAssociations, $associations);
 
-		$this->assertSame(true, $entity->hasAssociation('es-ES'));
-		$this->assertSame(true, $entity->hasAssociation('pt-BR'));
-		$this->assertSame(false, $entity->hasAssociation('es-AR'));
-	}
+        $this->assertSame(true, $entityWithAssociations->hasAssociation('es-ES'));
+        $this->assertSame(true, $entityWithAssociations->hasAssociation('pt-BR'));
+        $this->assertSame(false, $entityWithAssociations->hasAssociation('es-AR'));
+    }
 
-	/**
-	 * hasAssociationById returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasAssociationByIdReturnsCorrectValue()
-	{
-		$entity = new EntityWithAssociations;
+    /**
+     * hasAssociationById returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasAssociationByIdReturnsCorrectValue()
+    {
+        $entityWithAssociations = new EntityWithAssociations();
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithAssociations);
 
-		$associationsProperty = $reflection->getProperty('associations');
-		$associationsProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('associations');
+        $reflectionProperty->setAccessible(true);
 
-		$associationsProperty->setValue($entity, array());
+        $reflectionProperty->setValue($entityWithAssociations, []);
 
-		$this->assertSame(false, $entity->hasAssociationById(333));
-		$this->assertSame(false, $entity->hasAssociationById(666));
-		$this->assertSame(false, $entity->hasAssociationById(999));
+        $this->assertSame(false, $entityWithAssociations->hasAssociationById(333));
+        $this->assertSame(false, $entityWithAssociations->hasAssociationById(666));
+        $this->assertSame(false, $entityWithAssociations->hasAssociationById(999));
 
-		$associations = array(
-			'es-ES' => new EntityWithAssociations(666),
-			'pt-BR' => new EntityWithAssociations(999)
-		);
+        $associations = [
+            'es-ES' => new EntityWithAssociations(666),
+            'pt-BR' => new EntityWithAssociations(999),
+        ];
 
-		$associationsProperty->setValue($entity, $associations);
+        $reflectionProperty->setValue($entityWithAssociations, $associations);
 
-		$this->assertSame(false, $entity->hasAssociationById(333));
-		$this->assertSame(true, $entity->hasAssociationById(666));
-		$this->assertSame(true, $entity->hasAssociationById(999));
-	}
+        $this->assertSame(false, $entityWithAssociations->hasAssociationById(333));
+        $this->assertSame(true, $entityWithAssociations->hasAssociationById(666));
+        $this->assertSame(true, $entityWithAssociations->hasAssociationById(999));
+    }
 
-	/**
-	 * hasAssociations returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasAssociationsReturnsCorrectValue()
-	{
-		$entity = new EntityWithAssociations;
+    /**
+     * hasAssociations returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasAssociationsReturnsCorrectValue()
+    {
+        $entityWithAssociations = new EntityWithAssociations();
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithAssociations);
 
-		$associationsProperty = $reflection->getProperty('associations');
-		$associationsProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('associations');
+        $reflectionProperty->setAccessible(true);
 
-		$associationsProperty->setValue($entity, array());
+        $reflectionProperty->setValue($entityWithAssociations, []);
 
-		$this->assertSame(false, $entity->hasAssociations());
+        $this->assertSame(false, $entityWithAssociations->hasAssociations());
 
-		$associations = array(
-			'es-ES' => new EntityWithAssociations(666),
-			'pt-BR' => new EntityWithAssociations(999)
-		);
+        $associations = [
+            'es-ES' => new EntityWithAssociations(666),
+            'pt-BR' => new EntityWithAssociations(999),
+        ];
 
-		$associationsProperty->setValue($entity, $associations);
+        $reflectionProperty->setValue($entityWithAssociations, $associations);
 
-		$this->assertSame(true, $entity->hasAssociations());
-	}
+        $this->assertSame(true, $entityWithAssociations->hasAssociations());
+    }
 }

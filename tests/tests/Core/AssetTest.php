@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core;
+namespace Extly\Joomla\Entity\Tests\Core;
 
+use Extly\Joomla\Entity\Core\Asset;
+use Extly\Joomla\Entity\Exception\LoadEntityDataError;
 use Joomla\CMS\Factory;
-use Phproberto\Joomla\Entity\Core\Asset;
-use Phproberto\Joomla\Entity\Exception\LoadEntityDataError;
 
 /**
  * Asset entity tests.
@@ -19,97 +25,94 @@ use Phproberto\Joomla\Entity\Exception\LoadEntityDataError;
  */
 class AssetTest extends \TestCaseDatabase
 {
-	/**
-	 * instance loads an asset.
-	 *
-	 * @return  void
-	 */
-	public function testInstanceLoadsAnAsset()
-	{
-		$asset = Asset::find(1);
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-		$this->assertEquals(1, $asset->id());
-	}
+        $this->saveFactoryState();
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function crudWorks()
-	{
-		$asset = Asset::create(['name' => 'joomla.entity', 'title' => 'createWorks']);
+        Factory::$session = $this->getMockSession();
+        Factory::$config = $this->getMockConfig();
+        Factory::$application = $this->getMockCmsApp();
+    }
 
-		$this->assertTrue($asset->hasId());
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        Asset::clearAll();
 
-		$asset->assign('name', 'joomla.entity.edited');
-		$asset->save();
+        $this->restoreFactoryState();
 
-		$id = $asset->id();
-		Asset::clear($id);
-		$reloadedAsset = Asset::load($id);
+        parent::tearDown();
+    }
 
-		$this->assertSame('joomla.entity.edited', $reloadedAsset->get('name'));
+    /**
+     * instance loads an asset.
+     *
+     * @return  void
+     */
+    public function testInstanceLoadsAnAsset()
+    {
+        $asset = Asset::find(1);
 
-		Asset::clear($id);
-		Asset::delete($id);
+        $this->assertEquals(1, $asset->id());
+    }
 
-		$error = '';
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function crudWorks()
+    {
+        $asset = Asset::create(['name' => 'joomla.entity', 'title' => 'createWorks']);
 
-		try
-		{
-			$reloadedAsset = Asset::load($id);
-		}
-		catch (LoadEntityDataError $e)
-		{
-			$error = $e->getMessage();
-		}
+        $this->assertTrue($asset->hasId());
 
-		$this->assertNotEmpty($error);
-	}
+        $asset->assign('name', 'joomla.entity.edited');
+        $asset->save();
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_assets', JPATH_TEST_DATABASE . '/jos_assets.csv');
+        $id = $asset->id();
+        Asset::clear($id);
+        $reloadedAsset = Asset::load($id);
 
-		return $dataSet;
-	}
+        $this->assertSame('joomla.entity.edited', $reloadedAsset->get('name'));
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+        Asset::clear($id);
+        Asset::delete($id);
 
-		$this->saveFactoryState();
+        $error = '';
 
-		Factory::$session     = $this->getMockSession();
-		Factory::$config      = $this->getMockConfig();
-		Factory::$application = $this->getMockCmsApp();
-	}
+        try {
+            $reloadedAsset = Asset::load($id);
+        } catch (LoadEntityDataError $loadEntityDataError) {
+            $error = $loadEntityDataError->getMessage();
+        }
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		Asset::clearAll();
+        $this->assertNotEmpty($error);
+    }
 
-		$this->restoreFactoryState();
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_assets', JPATH_TEST_DATABASE.'/jos_assets.csv');
 
-		parent::tearDown();
-	}
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

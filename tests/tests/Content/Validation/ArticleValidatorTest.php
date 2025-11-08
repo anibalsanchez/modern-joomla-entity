@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Content\Validation;
+namespace Extly\Joomla\Entity\Tests\Content\Validation;
 
-use Phproberto\Joomla\Entity\Content\Article;
-use Phproberto\Joomla\Entity\Tests\Stubs\Entity;
-use Phproberto\Joomla\Entity\Content\Validation\ArticleValidator;
+use Extly\Joomla\Entity\Content\Article;
+use Extly\Joomla\Entity\Content\Validation\ArticleValidator;
+use Extly\Joomla\Entity\Tests\Stubs\Entity;
 
 /**
  * ArticleValidator tests.
@@ -19,22 +25,22 @@ use Phproberto\Joomla\Entity\Content\Validation\ArticleValidator;
  */
 class ArticleValidatorTest extends \TestCase
 {
-	/**
-	 * constructor adds rules.
-	 *
-	 * @return  void
-	 */
-	public function testConstructorAddsRules()
-	{
-		$entity = new Article;
+    /**
+     * constructor adds rules.
+     *
+     * @return  void
+     */
+    public function testConstructorAddsRules()
+    {
+        $article = new Article();
 
-		$validator = new ArticleValidator($entity);
+        $articleValidator = new ArticleValidator($article);
 
-		$reflection = new \ReflectionClass($validator);
+        $reflectionClass = new \ReflectionClass($articleValidator);
 
-		$rulesProperty = $reflection->getProperty('rules');
-		$rulesProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('rules');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertTrue(count($rulesProperty->getValue($validator)) > 0);
-	}
+        $this->assertTrue(count($reflectionProperty->getValue($articleValidator)) > 0);
+    }
 }

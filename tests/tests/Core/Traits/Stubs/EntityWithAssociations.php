@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Core\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Entity;
-use Phproberto\Joomla\Entity\Core\Traits\HasAssociations;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Core\Traits\HasAssociations;
+use Extly\Joomla\Entity\Entity;
 
 /**
  * Sample entity to test HasAssociations trait.
@@ -21,29 +27,28 @@ use Phproberto\Joomla\Entity\Core\Traits\HasAssociations;
  */
 class EntityWithAssociations extends Entity
 {
-	use HasAssociations;
+    use HasAssociations;
 
-	/**
-	 * Expected translations ids for testing.
-	 *
-	 * @var  array
-	 */
-	public $associationsIds = array();
+    /**
+     * Expected translations ids for testing.
+     *
+     * @var  array
+     */
+    public $associationsIds = [];
 
-	/**
-	 * Load associations from DB.
-	 *
-	 * @return  static[]
-	 */
-	protected function loadAssociations()
-	{
-		$associations = array();
+    /**
+     * Load associations from DB.
+     *
+     * @return  static[]
+     */
+    protected function loadAssociations()
+    {
+        $associations = [];
 
-		foreach ($this->associationsIds as $langTag => $id)
-		{
-			$associations[$langTag] = new static($id);
-		}
+        foreach ($this->associationsIds as $langTag => $id) {
+            $associations[$langTag] = new static($id);
+        }
 
-		return $associations;
-	}
+        return $associations;
+    }
 }

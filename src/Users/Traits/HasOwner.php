@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Users\Traits;
+namespace Extly\Joomla\Entity\Users\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Users\Column;
+use Extly\Joomla\Entity\Users\Column;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * Trait for entities with an owner.
@@ -20,82 +26,78 @@ use Phproberto\Joomla\Entity\Users\Column;
  */
 trait HasOwner
 {
-	/**
-	 * Onwer of this entity.
-	 *
-	 * @var  User
-	 */
-	protected $owner;
+    /**
+     * Onwer of this entity.
+     *
+     * @var  User
+     */
+    protected $owner;
 
-	/**
-	 * Get the owner of this entity.
-	 *
-	 * @param   boolean  $reload  Force data reloading
-	 *
-	 * @return  User
-	 */
-	public function owner($reload = false)
-	{
-		if ($reload || null === $this->owner)
-		{
-			$this->owner = $this->loadOwner();
-		}
+    /**
+     * Get the owner of this entity.
+     *
+     * @param   bool  $reload  Force data reloading
+     *
+     * @return  User
+     */
+    public function owner($reload = false)
+    {
+        if ($reload || null === $this->owner) {
+            $this->owner = $this->loadOwner();
+        }
 
-		return $this->owner;
-	}
+        return $this->owner;
+    }
 
-	/**
-	 * Check if this entity has an owner.
-	 *
-	 * @return  boolean
-	 */
-	public function hasOwner()
-	{
-		if (!$this->has($this->columnAlias(Column::OWNER)))
-		{
-			return false;
-		}
+    /**
+     * Check if this entity has an owner.
+     *
+     * @return  bool
+     */
+    public function hasOwner()
+    {
+        if (!$this->has($this->columnAlias(Column::OWNER))) {
+            return false;
+        }
 
-		return 0 !== (int) $this->get($this->columnAlias(Column::OWNER));
-	}
+        return 0 !== (int) $this->get($this->columnAlias(Column::OWNER));
+    }
 
-	/**
-	 * Check if an user is this entity owner.
-	 *
-	 * @param   User  $user  User to check for ownership. Defaults to active user.
-	 *
-	 * @return  boolean
-	 */
-	public function isOwner(User $user = null)
-	{
-		$user = $user ?: User::active();
+    /**
+     * Check if an user is this entity owner.
+     *
+     * @param   User  $user  User to check for ownership. Defaults to active user.
+     *
+     * @return  bool
+     */
+    public function isOwner(?User $user = null)
+    {
+        $user = $user ?: User::active();
 
-		if ($user->isGuest() || !$this->hasOwner())
-		{
-			return false;
-		}
+        if ($user->isGuest() || !$this->hasOwner()) {
+            return false;
+        }
 
-		return $this->owner()->id() === $user->id();
-	}
+        return $this->owner()->id() === $user->id();
+    }
 
-	/**
-	 * Load owner from DB.
-	 *
-	 * @return  User
-	 *
-	 * @throws  \InvalidArgumentException
-	 */
-	protected function loadOwner()
-	{
-		$ownerId = (int) $this->get($this->columnAlias(Column::OWNER));
+    /**
+     * Load owner from DB.
+     *
+     * @return  User
+     *
+     * @throws  \InvalidArgumentException
+     */
+    protected function loadOwner()
+    {
+        $ownerId = (int) $this->get($this->columnAlias(Column::OWNER));
 
-		if (!$ownerId)
-		{
-			$msg = sprintf('Entity %s does not have an owner', get_class($this));
+        if ($ownerId === 0) {
+            $msg = sprintf('Entity %s does not have an owner', get_class($this));
 
-			throw new \InvalidArgumentException($msg);
-		}
+            throw new \InvalidArgumentException($msg);
+        }
 
-		return User::find($ownerId);
-	}
+        return User::find($ownerId);
+    }
 }

@@ -1,23 +1,29 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Translation;
+namespace Extly\Joomla\Entity\Translation;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Decorator;
-use Phproberto\Joomla\Entity\Core\Column;
-use Phproberto\Joomla\Entity\Validation\Validator;
-use Phproberto\Joomla\Entity\Contracts\EntityInterface;
-use Phproberto\Joomla\Entity\Validation\Rule\IsNotNull;
-use Phproberto\Joomla\Entity\Translation\Contracts\Translatable;
-use Phproberto\Joomla\Entity\Translation\Contracts\Translator as TranslatorContract;
-use Phproberto\Joomla\Entity\Validation\Contracts\Validator as ValidatorContract;
+use Extly\Joomla\Entity\Contracts\EntityInterface;
+use Extly\Joomla\Entity\Core\Column;
+use Extly\Joomla\Entity\Decorator;
+use Extly\Joomla\Entity\Translation\Contracts\Translatable;
+use Extly\Joomla\Entity\Translation\Contracts\Translator as TranslatorContract;
+use Extly\Joomla\Entity\Validation\Contracts\Validator as ValidatorContract;
+use Extly\Joomla\Entity\Validation\Rule\IsNotNull;
+use Extly\Joomla\Entity\Validation\Validator;
 
 /**
  * Entity translation.
@@ -26,121 +32,119 @@ use Phproberto\Joomla\Entity\Validation\Contracts\Validator as ValidatorContract
  */
 class Translator extends Decorator implements TranslatorContract
 {
-	/**
-	 * Translation language tag.
-	 *
-	 * @var  string
-	 */
-	protected $langTag;
+    /**
+     * Translation language tag.
+     *
+     * @var  string
+     */
+    protected $langTag;
 
-	/**
-	 * Entity translation.
-	 *
-	 * @var  EntityInterface
-	 */
-	protected $translation;
+    /**
+     * Entity translation.
+     *
+     * @var  EntityInterface
+     */
+    protected $translation;
 
-	/**
-	 * Translation validator.
-	 *
-	 * @var  Validator
-	 */
-	protected $validator;
+    /**
+     * Translation validator.
+     *
+     * @var  Validator
+     */
+    protected $validator;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   Translatable  $entity   Entity to decorate.
-	 * @param   string        $langTag  Language tag. Example: es-ES
-	 */
-	public function __construct(Translatable $entity, $langTag = null)
-	{
-		parent::__construct($entity);
+    /**
+     * Constructor.
+     *
+     * @param Translatable $translatable Entity to decorate.
+     * @param   string        $langTag  Language tag. Example: es-ES
+     */
+    public function __construct(Translatable $translatable, $langTag = null)
+    {
+        parent::__construct($translatable);
 
-		$this->langTag = $langTag ?: $this->activeLanguage()->getTag();
-	}
+        $this->langTag = $langTag ?: $this->activeLanguage()->getTag();
+    }
 
-	/**
-	 * Get the active language.
-	 *
-	 * @return  \Joomla\CMS\Language\Language
-	 *
-	 * @codeCoverageIgnore
-	 */
-	public function activeLanguage()
-	{
-		return \JFactory::getLanguage();
-	}
+    /**
+     * Get the active language.
+     *
+     * @return  \Joomla\CMS\Language\Language
+     *
+     * @codeCoverageIgnore
+     */
+    public function activeLanguage()
+    {
+        return \Joomla\CMS\Factory::getLanguage();
+    }
 
-	/**
-	 * Check if entity language is the translation language.
-	 *
-	 * @return  boolean
-	 */
-	public function isEntityLanguage()
-	{
-		$languageColumn = $this->entity->columnAlias(Column::LANGUAGE);
+    /**
+     * Check if entity language is the translation language.
+     *
+     * @return  bool
+     */
+    public function isEntityLanguage()
+    {
+        $languageColumn = $this->entity->columnAlias(Column::LANGUAGE);
 
-		return $this->entity->get($languageColumn) === $this->langTag;
-	}
+        return $this->entity->get($languageColumn) === $this->langTag;
+    }
 
-	/**
-	 * Set the active validator for the translations.
-	 *
-	 * @param   ValidatorContract  $validator  Desired validator
-	 *
-	 * @return  self
-	 */
-	public function setValidator(ValidatorContract $validator)
-	{
-		$this->validator = $validator;
+    /**
+     * Set the active validator for the translations.
+     *
+     * @param ValidatorContract $validatorContract Desired validator
+     *
+     * @return  self
+     */
+    public function setValidator(ValidatorContract $validatorContract)
+    {
+        $this->validator = $validatorContract;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Translate a column.
-	 *
-	 * @param   string  $column   Column to translate
-	 * @param   mixed   $default  Default value
-	 *
-	 * @return  mixed
-	 */
-	public function translate($column, $default = null)
-	{
-		$value = $this->isEntityLanguage() ? $this->entity->get($column) : $this->translation()->get($column);
+    /**
+     * Translate a column.
+     *
+     * @param   string  $column   Column to translate
+     * @param   mixed   $default  Default value
+     *
+     * @return  mixed
+     */
+    public function translate($column, $default = null)
+    {
+        $value = $this->isEntityLanguage() ? $this->entity->get($column) : $this->translation()->get($column);
 
-		if ($this->validator()->isValidColumnValue($column, $value))
-		{
-			return $value;
-		}
+        if ($this->validator()->isValidColumnValue($column, $value)) {
+            return $value;
+        }
 
-		return $default;
-	}
+        return $default;
+    }
 
-	/**
-	 * Retrieve translation entity.
-	 *
-	 * @return  EntityInterface
-	 */
-	protected function translation()
-	{
-		return $this->entity->translation($this->langTag);
-	}
+    /**
+     * Retrieve the translation validator.
+     *
+     * @return  ValidatorContract
+     */
+    public function validator()
+    {
+        if (null === $this->validator) {
+            $this->validator = new Validator($this->entity);
+            $this->validator->addGlobalRule(new IsNotNull());
+        }
 
-	/**
-	 * Retrieve the translation validator.
-	 *
-	 * @return  ValidatorContract
-	 */
-	public function validator()
-	{
-		if (null === $this->validator)
-		{
-			$this->validator = new Validator($this->entity);
-			$this->validator->addGlobalRule(new IsNotNull);
-		}
+        return $this->validator;
+    }
 
-		return $this->validator;
-	}
+    /**
+     * Retrieve translation entity.
+     *
+     * @return  EntityInterface
+     */
+    protected function translation()
+    {
+        return $this->entity->translation($this->langTag);
+    }
 }

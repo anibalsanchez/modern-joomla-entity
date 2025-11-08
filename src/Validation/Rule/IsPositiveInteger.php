@@ -1,18 +1,24 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Validation\Rule;
+namespace Extly\Joomla\Entity\Validation\Rule;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Validation\Rule\IsInteger;
-use Phproberto\Joomla\Entity\Validation\Exception\ValidationException;
-use Phproberto\Joomla\Entity\Validation\Contracts\Rule as RuleContract;
+use Extly\Joomla\Entity\Validation\Contracts\Rule as RuleContract;
+use Extly\Joomla\Entity\Validation\Exception\ValidationException;
+use Extly\Joomla\Entity\Validation\Rule\IsInteger;
 
 /**
  * Check that value is a positive integer.
@@ -21,15 +27,15 @@ use Phproberto\Joomla\Entity\Validation\Contracts\Rule as RuleContract;
  */
 class IsPositiveInteger extends IsInteger implements RuleContract
 {
-	/**
-	 * Check if a value is valid.
-	 *
-	 * @param   mixed  $value  Value to check
-	 *
-	 * @return  boolean
-	 */
-	public function passes($value)
-	{
-		return parent::passes($value) && (int) $value > 0;
-	}
+    /**
+     * Check if a value is valid.
+     *
+     * @param   mixed  $value  Value to check
+     *
+     * @return  bool
+     */
+    public function passes($value)
+    {
+        return parent::passes($value) && (int) $value > 0;
+    }
 }

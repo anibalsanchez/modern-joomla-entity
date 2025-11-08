@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users\Traits;
+namespace Extly\Joomla\Entity\Tests\Users\Traits;
 
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithUser;
+use Extly\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithUser;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * HasUser trait tests.
@@ -18,161 +24,161 @@ use Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithUser;
  */
 class HasUserTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * Column to use to load/store user.
-	 *
-	 * @const
-	 */
-	const COLUMN_USER = 'userid';
+    /**
+     * Column to use to load/store user.
+     *
+     * @const
+     */
+    public const COLUMN_USER = 'userid';
 
-	/**
-	 * Get a mocked entity.
-	 *
-	 * @param   array  $row  Row returned by the entity as data
-	 *
-	 * @return  \PHPUnit_Framework_MockObject_MockObject
-	 */
-	private function getEntity($row = array())
-	{
-		$entity = $this->getMockBuilder(EntityWithUser::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * user returns cached data.
+     *
+     * @return  void
+     */
+    public function testUserReturnsCachedData()
+    {
+        $entityWithUser = new EntityWithUser();
 
-		$entity->method('columnAlias')
-			->willReturn(static::COLUMN_USER);
+        $reflectionClass = new \ReflectionClass($entityWithUser);
 
-		$entity->bind($row);
+        $reflectionProperty = $reflectionClass->getProperty('user');
+        $reflectionProperty->setAccessible(true);
 
-		return $entity;
-	}
+        $this->assertSame(null, $reflectionProperty->getValue($entityWithUser));
 
-	/**
-	 * user returns cached data.
-	 *
-	 * @return  void
-	 */
-	public function testUserReturnsCachedData()
-	{
-		$entity = new EntityWithUser;
+        $user = new User(666);
+        $reflectionProperty->setValue($entityWithUser, $user);
 
-		$reflection = new \ReflectionClass($entity);
+        $this->assertSame($user, $entityWithUser->user());
+    }
 
-		$userProperty = $reflection->getProperty('user');
-		$userProperty->setAccessible(true);
+    /**
+     * user returns loadUser result when not cached.
+     *
+     * @return  void
+     */
+    public function testUserReturnsLoadUserResultWhenNotCached()
+    {
+        $user = new User(999);
 
-		$this->assertSame(null, $userProperty->getValue($entity));
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithUser::class)
+            ->setMethods(['loadUser'])
+            ->getMock();
 
-		$user = new User(666);
-		$userProperty->setValue($entity, $user);
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('loadUser')
+            ->willReturn($user);
 
-		$this->assertSame($user, $entity->user());
-	}
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-	/**
-	 * user returns loadUser result when not cached.
-	 *
-	 * @return  void
-	 */
-	public function testUserReturnsLoadUserResultWhenNotCached()
-	{
-		$user = new User(999);
+        $reflectionProperty = $reflectionClass->getProperty('user');
+        $reflectionProperty->setAccessible(true);
 
-		$entity = $this->getMockBuilder(EntityWithUser::class)
-			->setMethods(array('loadUser'))
-			->getMock();
+        $this->assertSame(null, $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+        $this->assertSame($user, $phpUnitFrameworkMockObjectMockObject->user());
+    }
 
-		$entity->expects($this->once())
-			->method('loadUser')
-			->willReturn($user);
+    /**
+     * HasUser returns false for empty entity.
+     *
+     * @return  void
+     */
+    public function testHasUserReturnsFalseForEmptyEntity()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity();
 
-		$reflection = new \ReflectionClass($entity);
+        $this->assertFalse($phpUnitFrameworkMockObjectMockObject->hasUser());
+    }
 
-		$userProperty = $reflection->getProperty('user');
-		$userProperty->setAccessible(true);
+    /**
+     * hasUser returns true for entities with user id.
+     *
+     * @return  void
+     */
+    public function testHasUserReturnsTrueForEntitiesWithUserId()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(
+            [
+                'id' => 23,
+                self::COLUMN_USER => 666,
+            ]
+        );
 
-		$this->assertSame(null, $userProperty->getValue($entity));
-		$this->assertSame($user, $entity->user());
-	}
+        $this->assertTrue($phpUnitFrameworkMockObjectMockObject->hasUser());
+    }
 
-	/**
-	 * HasUser returns false for empty entity.
-	 *
-	 * @return  void
-	 */
-	public function testHasUserReturnsFalseForEmptyEntity()
-	{
-		$entity = $this->getEntity();
+    /**
+     * loadUser returns correct value for entities with user id.
+     *
+     * @return  void
+     */
+    public function testLoadUserReturnsCorrectValueForEntitiesWithUserId()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(
+            [
+                'id' => 23,
+                self::COLUMN_USER => 666,
+            ]
+        );
 
-		$this->assertFalse($entity->hasUser());
-	}
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-	/**
-	 * hasUser returns true for entities with user id.
-	 *
-	 * @return  void
-	 */
-	public function testHasUserReturnsTrueForEntitiesWithUserId()
-	{
-		$entity = $this->getEntity(
-			array(
-				'id' => 23,
-				self::COLUMN_USER => 666
-			)
-		);
+        $reflectionMethod = $reflectionClass->getMethod('loadUser');
+        $reflectionMethod->setAccessible(true);
 
-		$this->assertTrue($entity->hasUser());
-	}
+        $this->assertEquals(User::find(666), $reflectionMethod->invoke($phpUnitFrameworkMockObjectMockObject));
+    }
 
-	/**
-	 * loadUser returns correct value for entities with user id.
-	 *
-	 * @return  void
-	 */
-	public function testLoadUserReturnsCorrectValueForEntitiesWithUserId()
-	{
-		$entity = $this->getEntity(
-			array(
-				'id' => 23,
-				self::COLUMN_USER => 666
-			)
-		);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function userIdReturnsZeroForNotLoadedUser()
+    {
+        $entityWithUser = new EntityWithUser();
 
-		$reflection = new \ReflectionClass($entity);
+        $this->assertSame(0, $entityWithUser->userId());
+    }
 
-		$method = $reflection->getMethod('loadUser');
-		$method->setAccessible(true);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function userIdReturnsSetUserId()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity();
 
-		$this->assertEquals(User::find(666), $method->invoke($entity));
-	}
+        $phpUnitFrameworkMockObjectMockObject->bind(
+            [
+                'id'              => 999,
+                self::COLUMN_USER => '939',
+            ]
+        );
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function userIdReturnsZeroForNotLoadedUser()
-	{
-		$entity = new EntityWithUser;
+        $this->assertSame(939, $phpUnitFrameworkMockObjectMockObject->userId());
+    }
 
-		$this->assertSame(0, $entity->userId());
-	}
+    /**
+     * Get a mocked entity.
+     *
+     * @param   array  $row  Row returned by the entity as data
+     *
+     * @return  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getEntity($row = [])
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithUser::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function userIdReturnsSetUserId()
-	{
-		$entity = $this->getEntity();
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn(static::COLUMN_USER);
 
-		$entity->bind(
-			[
-				'id'              => 999,
-				self::COLUMN_USER => '939'
-			]
-		);
+        $phpUnitFrameworkMockObjectMockObject->bind($row);
 
-		$this->assertSame(939, $entity->userId());
-	}
+        return $phpUnitFrameworkMockObjectMockObject;
+    }
 }

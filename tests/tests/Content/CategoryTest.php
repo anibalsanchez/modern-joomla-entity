@@ -1,21 +1,27 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Content;
+namespace Extly\Joomla\Entity\Tests\Content;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Acl\Acl;
-use Phproberto\Joomla\Entity\Tags\Tag;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Content\Article;
-use Phproberto\Joomla\Entity\Content\Category;
+use Extly\Joomla\Entity\Acl\Acl;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Content\Article;
+use Extly\Joomla\Entity\Content\Category;
+use Extly\Joomla\Entity\Tags\Tag;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * Content category entity tests.
@@ -24,277 +30,276 @@ use Phproberto\Joomla\Entity\Content\Category;
  */
 class CategoryTest extends \TestCaseDatabase
 {
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function contentTypeAliasReturnsExpectedValue()
-	{
-		$this->assertSame('com_content.category', Category::contentTypeAlias());
-	}
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        Category::clearAll();
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function searchArticlesReturnsEmptyCollectionForEntityWithoutId()
-	{
-		$category = new Category;
+        parent::tearDown();
+    }
 
-		$articles = $category->searchArticles();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function contentTypeAliasReturnsExpectedValue()
+    {
+        $this->assertSame('com_content.category', Category::contentTypeAlias());
+    }
 
-		$this->assertInstanceOf(Collection::class, $articles);
-		$this->assertTrue($articles->isEmpty());
-	}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function searchArticlesReturnsEmptyCollectionForEntityWithoutId()
+    {
+        $category = new Category();
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function searchArticlesReturnsExpectedArticles()
-	{
-		$category = Category::find(29);
+        $collection = $category->searchArticles();
 
-		$articles = $category->searchArticles();
+        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertTrue($collection->isEmpty());
+    }
 
-		$this->assertInstanceOf(Collection::class, $articles);
-		$this->assertFalse($articles->isEmpty());
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function searchArticlesReturnsExpectedArticles()
+    {
+        $category = Category::find(29);
 
-		foreach ($articles as $article)
-		{
-			$this->assertSame(29, (int) $article->get('catid'));
-		}
-	}
+        $collection = $category->searchArticles();
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		Category::clearAll();
+        $this->assertInstanceOf(Collection::class, $collection);
+        $this->assertFalse($collection->isEmpty());
 
-		parent::tearDown();
-	}
+        foreach ($collection as $article) {
+            $this->assertSame(29, (int) $article->get('catid'));
+        }
+    }
 
-	/**
-	 * Acl can be retrieved.
-	 *
-	 * @return  void
-	 */
-	public function testAclCanBeRetrieved()
-	{
-		$entity = new Category(666);
-		$user = new User(999);
+    /**
+     * Acl can be retrieved.
+     *
+     * @return  void
+     */
+    public function testAclCanBeRetrieved()
+    {
+        $category = new Category(666);
+        $user = new User(999);
 
-		$acl = $entity->acl($user);
+        $acl = $category->acl($user);
 
-		$reflection = new \ReflectionClass($acl);
-		$entityProperty = $reflection->getProperty('entity');
-		$entityProperty->setAccessible(true);
-		$userProperty = $reflection->getProperty('user');
-		$userProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($acl);
+        $reflectionProperty = $reflectionClass->getProperty('entity');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertInstanceOf(Acl::class, $acl);
-		$this->assertSame($user, $userProperty->getValue($acl));
-		$this->assertSame($entity, $entityProperty->getValue($acl));
-	}
+        $userProperty = $reflectionClass->getProperty('user');
+        $userProperty->setAccessible(true);
 
-	/**
-	 * loadArticles returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testLoadArticlesReturnsCorrectValue()
-	{
-		$category = new Category;
+        $this->assertInstanceOf(Acl::class, $acl);
+        $this->assertSame($user, $userProperty->getValue($acl));
+        $this->assertSame($category, $reflectionProperty->getValue($acl));
+    }
 
-		$reflection = new \ReflectionClass($category);
-		$method = $reflection->getMethod('loadArticles');
-		$method->setAccessible(true);
+    /**
+     * loadArticles returns correct value.
+     *
+     * @return  void
+     */
+    public function testLoadArticlesReturnsCorrectValue()
+    {
+        $category = new Category();
 
-		$this->assertEquals(new Collection, $method->invoke($category));
+        $reflectionClass = new \ReflectionClass($category);
+        $reflectionMethod = $reflectionClass->getMethod('loadArticles');
+        $reflectionMethod->setAccessible(true);
 
-		$articlesItems = array(
-			(object) array(
-				'id' => 999,
-				'Sample article'
-			),
-			(object) array(
-				'id' => 1000,
-				'Sample 1000 article'
-			)
-		);
+        $this->assertEquals(new Collection(), $reflectionMethod->invoke($category));
 
-		$category = $this->getCategoryMock(666, $articlesItems);
+        $articlesItems = [
+            (object) [
+                'id' => 999,
+                'Sample article',
+            ],
+            (object) [
+                'id' => 1000,
+                'Sample 1000 article',
+            ],
+        ];
 
-		$expectedCollection = new Collection;
+        $category = $this->getCategoryMock(666, $articlesItems);
 
-		$articles = $method->invoke($category);
+        $expectedCollection = new Collection();
 
-		$this->assertInstanceOf(Collection::class, $articles);
-		$this->assertSame(2, $articles->count());
-		$this->assertTrue($articles->has(999));
-		$this->assertTrue($articles->has(1000));
-	}
+        $articles = $reflectionMethod->invoke($category);
 
-	/**
-	 * getArticlesModel returns correct model.
-	 *
-	 * @return  void
-	 */
-	public function testGetArticlesModelReturnsCorrectModel()
-	{
-		$category = new Category;
+        $this->assertInstanceOf(Collection::class, $articles);
+        $this->assertSame(2, $articles->count());
+        $this->assertTrue($articles->has(999));
+        $this->assertTrue($articles->has(1000));
+    }
 
-		$reflection = new \ReflectionClass($category);
-		$method = $reflection->getMethod('getArticlesModel');
-		$method->setAccessible(true);
+    /**
+     * getArticlesModel returns correct model.
+     *
+     * @return  void
+     */
+    public function testGetArticlesModelReturnsCorrectModel()
+    {
+        $category = new Category();
 
-		$model = $method->invoke($category);
+        $reflectionClass = new \ReflectionClass($category);
+        $reflectionMethod = $reflectionClass->getMethod('getArticlesModel');
+        $reflectionMethod->setAccessible(true);
 
-		$this->assertInstanceOf('ContentModelArticles', $model);
-		$this->assertSame(null, $model->getState('filter.category_id'));
+        $model = $reflectionMethod->invoke($category);
 
-		$category = new Category(34);
+        $this->assertInstanceOf('ContentModelArticles', $model);
+        $this->assertSame(null, $model->getState('filter.category_id'));
 
-		$model = $method->invoke($category);
+        $category = new Category(34);
 
-		$this->assertInstanceOf('ContentModelArticles', $model);
-		$this->assertSame(34, $model->getState('filter.category_id'));
-	}
+        $model = $reflectionMethod->invoke($category);
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_categories', JPATH_TEST_DATABASE . '/jos_categories.csv');
-		$dataSet->addTable('jos_content', JPATH_TEST_DATABASE . '/jos_content.csv');
+        $this->assertInstanceOf('ContentModelArticles', $model);
+        $this->assertSame(34, $model->getState('filter.category_id'));
+    }
 
-		return $dataSet;
-	}
+    /**
+     * loadTags returns empty collection for missing id.
+     *
+     * @return  void
+     */
+    public function testLoadTagsReturnsEmptyCollectionForMissingId()
+    {
+        $category = new Category();
 
-	/**
-	 * Get a mock of the articles model returning specific items.
-	 *
-	 * @param   array  $items  Items returned
-	 *
-	 * @return  \PHPUnit_Framework_MockObject_MockObject
-	 */
-	private function getArticlesModelMock(array $items = array())
-	{
-		$mock = $this->getMockBuilder('ArticlesModelMock')
-			->disableOriginalConstructor()
-			->setMethods(array('getItems'))
-			->getMock();
+        $reflectionClass = new \ReflectionClass($category);
+        $reflectionMethod = $reflectionClass->getMethod('loadTags');
+        $reflectionMethod->setAccessible(true);
 
-		$mock->expects($this->once())
-			->method('getItems')
-			->willReturn($items);
+        $this->assertEquals(new Collection(), $reflectionMethod->invoke($category));
+    }
 
-		return $mock;
-	}
+    /**
+     * loadTags loads correct data for existing id.
+     *
+     * @return  void
+     */
+    public function testLoadTagsReturnsCorrectDataForExistingId()
+    {
+        $helperMock = $this->getMockBuilder(\Joomla\CMS\Helper\TagsHelper::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getItemTags'])
+            ->getMock();
 
-	/**
-	 * Get a mock of a categoryy returning specific items.
-	 *
-	 * @param   integer  $id     Identifier to assign
-	 * @param   array    $items  Items returned
-	 *
-	 * @return  \PHPUnit_Framework_MockObject_MockObject
-	 */
-	private function getCategoryMock($id = null, array $items = array())
-	{
-		$category = $this->getMockBuilder(Category::class)
-			->setMethods(array('getArticlesModel'))
-			->getMock();
+        $helperMock->method('getItemTags')
+            ->willReturn(
+                [
+                    (object) [
+                        'id' => 23,
+                        'title' => 'Sample tag',
+                    ],
+                ]
+            );
 
-		$category->expects($this->once())
-			->method('getArticlesModel')
-			->willReturn($this->getArticlesModelMock($items));
+        $entity = $this->getMockBuilder(Category::class)
+            ->setMethods(['getTagsHelperInstance'])
+            ->getMock();
 
-		if ($id)
-		{
-			$reflection = new \ReflectionClass($category);
-			$idProperty = $reflection->getProperty('id');
-			$idProperty->setAccessible(true);
-			$idProperty->setValue($category, $id);
-		}
+        $entity
+            ->method('getTagsHelperInstance')
+            ->willReturn($helperMock);
 
-		return $category;
-	}
+        $reflection = new \ReflectionClass($entity);
+        $reflectionProperty = $reflection->getProperty('id');
+        $reflectionProperty->setAccessible(true);
 
-	/**
-	 * loadTags returns empty collection for missing id.
-	 *
-	 * @return  void
-	 */
-	public function testLoadTagsReturnsEmptyCollectionForMissingId()
-	{
-		$category = new Category;
+        $reflectionProperty->setValue($entity, 999);
 
-		$reflection = new \ReflectionClass($category);
-		$method = $reflection->getMethod('loadTags');
-		$method->setAccessible(true);
+        $reflectionMethod = $reflection->getMethod('loadTags');
+        $reflectionMethod->setAccessible(true);
 
-		$this->assertEquals(new Collection, $method->invoke($category));
-	}
+        $tag = new Tag(23);
 
-	/**
-	 * loadTags loads correct data for existing id.
-	 *
-	 * @return  void
-	 */
-	public function testLoadTagsReturnsCorrectDataForExistingId()
-	{
-		$helperMock = $this->getMockBuilder(\JHelperTags::class)
-			->disableOriginalConstructor()
-			->setMethods(array('getItemTags'))
-			->getMock();
+        $tagReflection = new \ReflectionClass($tag);
+        $rowProperty = $reflection->getProperty('row');
+        $rowProperty->setAccessible(true);
+        $rowProperty->setValue($tag, ['id' => 23, 'title' => 'Sample tag']);
 
-		$helperMock->method('getItemTags')
-			->willReturn(
-				array(
-					(object) array(
-						'id' => 23,
-						'title' => 'Sample tag'
-					)
-				)
-			);
+        $this->assertEquals(new Collection([$tag]), $reflectionMethod->invoke($entity));
+    }
 
-		$entity = $this->getMockBuilder(Category::class)
-			->setMethods(array('getTagsHelperInstance'))
-			->getMock();
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_categories', JPATH_TEST_DATABASE.'/jos_categories.csv');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_content', JPATH_TEST_DATABASE.'/jos_content.csv');
 
-		$entity
-			->method('getTagsHelperInstance')
-			->willReturn($helperMock);
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 
-		$reflection = new \ReflectionClass($entity);
-		$idProperty = $reflection->getProperty('id');
-		$idProperty->setAccessible(true);
+    /**
+     * Get a mock of the articles model returning specific items.
+     *
+     * @param   array  $items  Items returned
+     *
+     * @return  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getArticlesModelMock(array $items = [])
+    {
+        $mock = $this->getMockBuilder('ArticlesModelMock')
+            ->disableOriginalConstructor()
+            ->setMethods(['getItems'])
+            ->getMock();
 
-		$idProperty->setValue($entity, 999);
+        $mock->expects($this->once())
+            ->method('getItems')
+            ->willReturn($items);
 
-		$method = $reflection->getMethod('loadTags');
-		$method->setAccessible(true);
+        return $mock;
+    }
 
-		$tag = new Tag(23);
+    /**
+     * Get a mock of a categoryy returning specific items.
+     *
+     * @param   int  $id     Identifier to assign
+     * @param   array    $items  Items returned
+     *
+     * @return  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getCategoryMock($id = null, array $items = [])
+    {
+        $category = $this->getMockBuilder(Category::class)
+            ->setMethods(['getArticlesModel'])
+            ->getMock();
 
-		$tagReflection = new \ReflectionClass($tag);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-		$rowProperty->setValue($tag, array('id' => 23, 'title' => 'Sample tag'));
+        $category->expects($this->once())
+            ->method('getArticlesModel')
+            ->willReturn($this->getArticlesModelMock($items));
 
-		$this->assertEquals(new Collection(array($tag)), $method->invoke($entity));
-	}
+        if ($id) {
+            $reflectionClass = new \ReflectionClass($category);
+            $idProperty = $reflectionClass->getProperty('id');
+            $idProperty->setAccessible(true);
+            $idProperty->setValue($category, $id);
+        }
+
+        return $category;
+    }
 }

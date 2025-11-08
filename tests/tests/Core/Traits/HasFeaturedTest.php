@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
-use Phproberto\Joomla\Entity\Core\Column;
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithFeatured;
+use Extly\Joomla\Entity\Core\Column;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithFeatured;
 
 /**
  * HasFeatured trait tests.
@@ -18,65 +24,65 @@ use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithFeatured;
  */
 class HasFeaturedTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		EntityWithFeatured::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        EntityWithFeatured::clearAll();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * isFeatured returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testIsFeaturedReturnsCorrectValue()
-	{
-		$entity = $this->getEntity(array('id' => 999, Column::FEATURED => 0));
+    /**
+     * isFeatured returns correct value.
+     *
+     * @return  void
+     */
+    public function testIsFeaturedReturnsCorrectValue()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(['id' => 999, Column::FEATURED => 0]);
 
-		$reflection = new \ReflectionClass($entity);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertFalse($entity->isFeatured(true));
+        $this->assertFalse($phpUnitFrameworkMockObjectMockObject->isFeatured(true));
 
-		$rowProperty->setValue($entity, array('id' => 999, Column::FEATURED => '0'));
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, Column::FEATURED => '0']);
 
-		$this->assertFalse($entity->isFeatured(true));
+        $this->assertFalse($phpUnitFrameworkMockObjectMockObject->isFeatured(true));
 
-		$rowProperty->setValue($entity, array('id' => 999, Column::FEATURED => '1'));
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, Column::FEATURED => '1']);
 
-		$this->assertTrue($entity->isFeatured(true));
+        $this->assertTrue($phpUnitFrameworkMockObjectMockObject->isFeatured(true));
 
-		$rowProperty->setValue($entity, array('id' => 999, Column::FEATURED => 1));
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, Column::FEATURED => 1]);
 
-		$this->assertTrue($entity->isFeatured(true));
-	}
+        $this->assertTrue($phpUnitFrameworkMockObjectMockObject->isFeatured(true));
+    }
 
-	/**
-	 * Get a mocked entity.
-	 *
-	 * @param   array  $row  Row returned by the entity as data
-	 *
-	 * @return  \PHPUnit_Framework_MockObject_MockObject
-	 */
-	private function getEntity($row = array())
-	{
-		$entity = $this->getMockBuilder(EntityWithFeatured::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * Get a mocked entity.
+     *
+     * @param   array  $row  Row returned by the entity as data
+     *
+     * @return  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getEntity($row = [])
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithFeatured::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$entity->method('columnAlias')
-			->willReturn('featured');
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('featured');
 
-		$entity->bind($row);
+        $phpUnitFrameworkMockObjectMockObject->bind($row);
 
-		return $entity;
-	}
+        return $phpUnitFrameworkMockObjectMockObject;
+    }
 }

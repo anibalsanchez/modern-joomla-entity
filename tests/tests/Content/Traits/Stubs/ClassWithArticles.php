@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Content\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Content\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Entity;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Content\Article;
-use Phproberto\Joomla\Entity\Content\Traits\HasArticles;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Content\Article;
+use Extly\Joomla\Entity\Content\Traits\HasArticles;
+use Extly\Joomla\Entity\Entity;
 
 /**
  * Sample class to test HasArticles trait.
@@ -20,29 +26,28 @@ use Phproberto\Joomla\Entity\Content\Traits\HasArticles;
  */
 class ClassWithArticles extends Entity
 {
-	use HasArticles;
+    use HasArticles;
 
-	/**
-	 * Expected articles ids for testing.
-	 *
-	 * @var  array
-	 */
-	public $articlesIds = array();
+    /**
+     * Expected articles ids for testing.
+     *
+     * @var  array
+     */
+    public $articlesIds = [];
 
-	/**
-	 * Load associated articles from DB.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadArticles()
-	{
-		$collection = new Collection;
+    /**
+     * Load associated articles from DB.
+     *
+     * @return  Collection
+     */
+    protected function loadArticles()
+    {
+        $collection = new Collection();
 
-		foreach ($this->articlesIds as $id)
-		{
-			$collection->add(new Article($id));
-		}
+        foreach ($this->articlesIds as $articleId) {
+            $collection->add(new Article($articleId));
+        }
 
-		return $collection;
-	}
+        return $collection;
+    }
 }

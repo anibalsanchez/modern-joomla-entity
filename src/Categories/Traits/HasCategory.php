@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Categories\Traits;
+namespace Extly\Joomla\Entity\Categories\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Categories\Column;
-use Phproberto\Joomla\Entity\Categories\Category;
+use Extly\Joomla\Entity\Categories\Category;
+use Extly\Joomla\Entity\Categories\Column;
 
 /**
  * Trait for entities that have an asset. Based on category_id|catid column.
@@ -20,77 +26,75 @@ use Phproberto\Joomla\Entity\Categories\Category;
  */
 trait HasCategory
 {
-	/**
-	 * Associated category.
-	 *
-	 * @var  Category
-	 */
-	protected $category;
+    /**
+     * Associated category.
+     *
+     * @var  Category
+     */
+    protected $category;
 
-	/**
-	 * Get the attached database row.
-	 *
-	 * @return  array
-	 */
-	abstract public function all();
+    /**
+     * Get the attached database row.
+     *
+     * @return  array
+     */
+    abstract public function all();
 
-	/**
-	 * Get the associated category.
-	 *
-	 * @param   boolean  $reload  Force reloading
-	 *
-	 * @return  Category
-	 */
-	public function category($reload = false)
-	{
-		if ($reload || null === $this->category)
-		{
-			$this->category = $this->loadCategory();
-		}
+    /**
+     * Get the associated category.
+     *
+     * @param   bool  $reload  Force reloading
+     *
+     * @return  Category
+     */
+    public function category($reload = false)
+    {
+        if ($reload || null === $this->category) {
+            $this->category = $this->loadCategory();
+        }
 
-		return $this->category;
-	}
+        return $this->category;
+    }
 
-	/**
-	 * Get associated category identifier.
-	 *
-	 * @return  integer
-	 *
-	 * @since   1.7.2
-	 */
-	public function categoryId()
-	{
-		$column = $this->getColumnCategory();
+    /**
+     * Get associated category identifier.
+     *
+     * @return  int
+     *
+     * @since   1.7.2
+     */
+    public function categoryId()
+    {
+        $column = $this->getColumnCategory();
 
-		if (!$this->has($column))
-		{
-			return 0;
-		}
+        if (!$this->has($column)) {
+            return 0;
+        }
 
-		return (int) $this->get($column);
-	}
+        return (int) $this->get($column);
+    }
 
-	/**
-	 * Get the name of the column that stores category.
-	 *
-	 * @return  string
-	 *
-	 * @deprecated  1.7.2  Use column aliases
-	 */
-	protected function getColumnCategory()
-	{
-		return $this->columnAlias(Column::CATEGORY);
-	}
+    /**
+     * Get the name of the column that stores category.
+     *
+     * @return  string
+     *
+     * @deprecated  1.7.2  Use column aliases
+     */
+    protected function getColumnCategory()
+    {
+        return $this->columnAlias(Column::CATEGORY);
+    }
 
-	/**
-	 * Load the category from the database.
-	 *
-	 * @return  Category
-	 */
-	protected function loadCategory()
-	{
-		$id = $this->categoryId();
+    /**
+     * Load the category from the database.
+     *
+     * @return  Category
+     */
+    protected function loadCategory()
+    {
+        $id = $this->categoryId();
 
-		return $id ? Category::find($id) : new Category;
-	}
+        return $id ? Category::find($id) : new Category();
+    }
 }

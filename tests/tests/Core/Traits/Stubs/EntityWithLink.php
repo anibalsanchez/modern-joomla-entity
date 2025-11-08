@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Core\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Entity;
-use Phproberto\Joomla\Entity\Core\Traits\HasLink;
+use Extly\Joomla\Entity\Core\Traits\HasLink;
+use Extly\Joomla\Entity\Entity;
 
 /**
  * Sample entity to test HasLink trait.
@@ -18,22 +24,21 @@ use Phproberto\Joomla\Entity\Core\Traits\HasLink;
  */
 class EntityWithLink extends Entity
 {
-	use HasLink;
+    use HasLink;
 
-	/**
-	 * Load the link to this entity.
-	 *
-	 * @return  atring
-	 */
-	protected function loadLink()
-	{
-		$slug = $this->slug();
+    /**
+     * Load the link to this entity.
+     *
+     * @return  atring
+     */
+    protected function loadLink()
+    {
+        $slug = $this->slug();
 
-		if (!$slug)
-		{
-			return null;
-		}
+        if (!$slug) {
+            return null;
+        }
 
-		return \JUri::root(true) . '/' . $slug;
-	}
+        return \Joomla\CMS\Uri\Uri::root(true).'/'.$slug;
+    }
 }

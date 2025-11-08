@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Translation\Traits;
+namespace Extly\Joomla\Entity\Tests\Translation\Traits;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Tests\Translation\Traits\Stubs\EntityWithTranslations;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Tests\Translation\Traits\Stubs\EntityWithTranslations;
 
 /**
  * HasTranslations trait tests.
@@ -18,195 +24,196 @@ use Phproberto\Joomla\Entity\Tests\Translation\Traits\Stubs\EntityWithTranslatio
  */
 class HasTranslationsTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		EntityWithTranslations::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        EntityWithTranslations::clearAll();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * hasTranslation returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHastranslationReturnsCorrectValue()
-	{
-		$entity = new EntityWithTranslations;
+    /**
+     * hasTranslation returns correct value.
+     *
+     * @return  void
+     */
+    public function testHastranslationReturnsCorrectValue()
+    {
+        $entity = new EntityWithTranslations();
 
-		$this->assertSame(false, $entity->hasTranslation('es-ES'));
-		$this->assertSame(false, $entity->hasTranslation('es-AR'));
-		$this->assertSame(false, $entity->hasTranslation('pt-BR'));
+        $this->assertSame(false, $entity->hasTranslation('es-ES'));
+        $this->assertSame(false, $entity->hasTranslation('es-AR'));
+        $this->assertSame(false, $entity->hasTranslation('pt-BR'));
 
-		$translations = array(
-			'es-ES' => EntityWithTranslations::find(666),
-			'pt-BR' => EntityWithTranslations::find(999)
-		);
+        $translations = [
+            'es-ES' => EntityWithTranslations::find(666),
+            'pt-BR' => EntityWithTranslations::find(999),
+        ];
 
-		$entity = $this->getMockBuilder(EntityWithTranslations::class)
-			->setMethods(array('translationsByTag'))
-			->getMock();
+        $entity = $this->getMockBuilder(EntityWithTranslations::class)
+            ->setMethods(['translationsByTag'])
+            ->getMock();
 
-		$entity->expects($this->exactly(3))
-			->method('translationsByTag')
-			->willReturn($translations);
+        $entity->expects($this->exactly(3))
+            ->method('translationsByTag')
+            ->willReturn($translations);
 
-		$this->assertSame(true, $entity->hasTranslation('es-ES'));
-		$this->assertSame(false, $entity->hasTranslation('es-AR'));
-		$this->assertSame(true, $entity->hasTranslation('pt-BR'));
-	}
+        $this->assertSame(true, $entity->hasTranslation('es-ES'));
+        $this->assertSame(false, $entity->hasTranslation('es-AR'));
+        $this->assertSame(true, $entity->hasTranslation('pt-BR'));
+    }
 
-	/**
-	 * hasTranslations returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasTranslationsReturnsCorrectValue()
-	{
-		$entity = new EntityWithTranslations;
+    /**
+     * hasTranslations returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasTranslationsReturnsCorrectValue()
+    {
+        $entity = new EntityWithTranslations();
 
-		$this->assertSame(false, $entity->hasTranslations());
+        $this->assertSame(false, $entity->hasTranslations());
 
-		$translations = new Collection(
-			array(
-				EntityWithTranslations::find(666),
-				EntityWithTranslations::find(999)
-			)
-		);
+        $collection = new Collection(
+            [
+                EntityWithTranslations::find(666),
+                EntityWithTranslations::find(999),
+            ]
+        );
 
-		$entity = $this->getMockBuilder(EntityWithTranslations::class)
-			->setMethods(array('translations'))
-			->getMock();
+        $entity = $this->getMockBuilder(EntityWithTranslations::class)
+            ->setMethods(['translations'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('translations')
-			->willReturn($translations);
+        $entity->expects($this->once())
+            ->method('translations')
+            ->willReturn($collection);
 
-		$this->assertSame(true, $entity->hasTranslations());
-	}
+        $this->assertSame(true, $entity->hasTranslations());
+    }
 
-	/**
-	 * translation returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testTranslationRetursnCorrectValue()
-	{
-		$translations = array(
-			'es-ES' => EntityWithTranslations::find(666),
-			'pt-BR' => EntityWithTranslations::find(999)
-		);
+    /**
+     * translation returns correct value.
+     *
+     * @return  void
+     */
+    public function testTranslationRetursnCorrectValue()
+    {
+        $translations = [
+            'es-ES' => EntityWithTranslations::find(666),
+            'pt-BR' => EntityWithTranslations::find(999),
+        ];
 
-		$entity = new EntityWithTranslations;
-		$reflection = new \ReflectionClass($entity);
+        $entityWithTranslations = new EntityWithTranslations();
+        $reflectionClass = new \ReflectionClass($entityWithTranslations);
 
-		$translationsProperty = $reflection->getProperty('translationsByTag');
-		$translationsProperty->setAccessible(true);
-		$translationsProperty->setValue($entity, $translations);
+        $reflectionProperty = $reflectionClass->getProperty('translationsByTag');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($entityWithTranslations, $translations);
 
-		$this->assertSame(EntityWithTranslations::find(666), $entity->translation('es-ES'));
-	}
+        $this->assertSame(EntityWithTranslations::find(666), $entityWithTranslations->translation('es-ES'));
+    }
 
-	/**
-	 * translation throws an exception trying to retrieve a missing translation.
-	 *
-	 * @return  void
-	 *
-	 * @expectedException  \InvalidArgumentException
-	 */
-	public function testTranslationThrowsExceptionForMissingTranslation()
-	{
-		$entity = new EntityWithTranslations;
+    /**
+     * translation throws an exception trying to retrieve a missing translation.
+     *
+     * @return  void
+     *
+     * @expectedException  \InvalidArgumentException
+     */
+    public function testTranslationThrowsExceptionForMissingTranslation()
+    {
+        $entityWithTranslations = new EntityWithTranslations();
 
-		$entity->translation('es-ES');
-	}
+        $entityWithTranslations->translation('es-ES');
+    }
 
-	/**
-	 * translationsByTag returns correct data.
-	 *
-	 * @return  void
-	 */
-	public function testTranslationsByTagReturnsCorrectData()
-	{
-		$entity = new EntityWithTranslations;
+    /**
+     * translationsByTag returns correct data.
+     *
+     * @return  void
+     */
+    public function testTranslationsByTagReturnsCorrectData()
+    {
+        $entity = new EntityWithTranslations();
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entity);
 
-		$idProperty = $reflection->getProperty('id');
-		$idProperty->setAccessible(true);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('id');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertEquals(array(), $entity->translationsByTag());
+        $rowProperty = $reflectionClass->getProperty('row');
+        $rowProperty->setAccessible(true);
 
-		$entities = array(
-			666 => array('id' => 666, 'title' => 'Spanish translation', 'lang' => 'es-ES'),
-			999 => array('id' => 999, 'title' => 'Brasialian translation', 'lang' => 'pt-BR')
-		);
+        $this->assertEquals([], $entity->translationsByTag());
 
-		$spanish = new EntityWithTranslations(666);
-		$rowProperty->setValue($spanish, $entities[666]);
+        $entities = [
+            666 => ['id' => 666, 'title' => 'Spanish translation', 'lang' => 'es-ES'],
+            999 => ['id' => 999, 'title' => 'Brasialian translation', 'lang' => 'pt-BR'],
+        ];
 
-		$brasilian = new EntityWithTranslations(999);
-		$rowProperty->setValue($brasilian, $entities[999]);
+        $spanish = new EntityWithTranslations(666);
+        $rowProperty->setValue($spanish, $entities[666]);
 
-		$tableMock = $this->getMockBuilder('TableMock')
-			->disableOriginalConstructor()
-			->setMethods(array('getColumnAlias'))
-			->getMock();
+        $brasilian = new EntityWithTranslations(999);
+        $rowProperty->setValue($brasilian, $entities[999]);
 
-		$tableMock->expects($this->exactly(2))
-			->method('getColumnAlias')
-			->willReturn('lang');
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder('TableMock')
+            ->disableOriginalConstructor()
+            ->setMethods(['getColumnAlias'])
+            ->getMock();
 
-		$entity = $this->getMockBuilder(EntityWithTranslations::class)
-			->setMethods(array('table', 'translations'))
-			->getMock();
+        $phpUnitFrameworkMockObjectMockObject->expects($this->exactly(2))
+            ->method('getColumnAlias')
+            ->willReturn('lang');
 
-		$entity->expects($this->exactly(2))
-			->method('table')
-			->willReturn($tableMock);
+        $entity = $this->getMockBuilder(EntityWithTranslations::class)
+            ->setMethods(['table', 'translations'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('translations')
-			->willReturn(new Collection(array($spanish, $brasilian)));
+        $entity->expects($this->exactly(2))
+            ->method('table')
+            ->willReturn($phpUnitFrameworkMockObjectMockObject);
 
-		$expected = array(
-			'es-ES' => $spanish,
-			'pt-BR' => $brasilian
-		);
+        $entity->expects($this->once())
+            ->method('translations')
+            ->willReturn(new Collection([$spanish, $brasilian]));
 
-		$this->assertSame($expected, $entity->translationsByTag());
-	}
+        $expected = [
+            'es-ES' => $spanish,
+            'pt-BR' => $brasilian,
+        ];
 
-	/**
-	 * translations returns expected translations.
-	 *
-	 * @return  void
-	 */
-	public function testTranslationsReturnsExpectedTranslatons()
-	{
-		$entity = new EntityWithTranslations;
+        $this->assertSame($expected, $entity->translationsByTag());
+    }
 
-		$this->assertEquals(new Collection, $entity->translations());
+    /**
+     * translations returns expected translations.
+     *
+     * @return  void
+     */
+    public function testTranslationsReturnsExpectedTranslatons()
+    {
+        $entityWithTranslations = new EntityWithTranslations();
 
-		$entity->translationsIds = array(666, 999);
+        $this->assertEquals(new Collection(), $entityWithTranslations->translations());
 
-		$expected = new Collection(
-			array(
-				EntityWithTranslations::find(666),
-				EntityWithTranslations::find(999)
-			)
-		);
+        $entityWithTranslations->translationsIds = [666, 999];
 
-		// No reload = same data
-		$this->assertEquals(new Collection, $entity->translations());
-		$this->assertEquals($expected, $entity->translations(true));
-	}
+        $collection = new Collection(
+            [
+                EntityWithTranslations::find(666),
+                EntityWithTranslations::find(999),
+            ]
+        );
+
+        // No reload = same data
+        $this->assertEquals(new Collection(), $entityWithTranslations->translations());
+        $this->assertEquals($collection, $entityWithTranslations->translations(true));
+    }
 }

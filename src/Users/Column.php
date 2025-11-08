@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Users;
+namespace Extly\Joomla\Entity\Users;
 
 defined('_JEXEC') || die;
 
@@ -17,31 +23,31 @@ defined('_JEXEC') || die;
  */
 abstract class Column
 {
-	/**
-	 * Default column used to store author.
-	 *
-	 * @const
-	 */
-	const AUTHOR = 'created_by';
+    /**
+     * Default column used to store author.
+     *
+     * @const
+     */
+    public const AUTHOR = 'created_by';
 
-	/**
-	 * Default column used to store editor.
-	 *
-	 * @const
-	 */
-	const EDITOR = 'modified_by';
+    /**
+     * Default column used to store editor.
+     *
+     * @const
+     */
+    public const EDITOR = 'modified_by';
 
-	/**
-	 * Default column used to store owner.
-	 *
-	 * @const
-	 */
-	const OWNER = 'created_by';
+    /**
+     * Default column used to store owner.
+     *
+     * @const
+     */
+    public const OWNER = 'created_by';
 
-	/**
-	 * Default column used to store user.
-	 *
-	 * @const
-	 */
-	const USER = 'user_id';
+    /**
+     * Default column used to store user.
+     *
+     * @const
+     */
+    public const USER = 'user_id';
 }

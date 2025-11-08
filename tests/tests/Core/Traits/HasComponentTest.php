@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
-use Phproberto\Joomla\Client\Administrator;
-use Phproberto\Joomla\Client\Site;
-use Phproberto\Joomla\Entity\Core\Extension\Component;
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\ClassWithComponent;
+use Extly\Joomla\Client\Administrator;
+use Extly\Joomla\Client\Site;
+use Extly\Joomla\Entity\Core\Extension\Component;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\ClassWithComponent;
 
 /**
  * HasComponent trait tests.
@@ -20,146 +26,146 @@ use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\ClassWithComponent;
  */
 class HasComponentTest extends \TestCaseDatabase
 {
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-		$this->saveFactoryState();
+        $this->saveFactoryState();
 
-		\JFactory::$session     = $this->getMockSession();
-		\JFactory::$config      = $this->getMockConfig();
-		\JFactory::$application = $this->getMockCmsApp();
-	}
+        \Joomla\CMS\Factory::$session = $this->getMockSession();
+        \Joomla\CMS\Factory::$config = $this->getMockConfig();
+        \Joomla\CMS\Factory::$application = $this->getMockCmsApp();
+    }
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		ClassWithComponent::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        ClassWithComponent::clearAll();
 
-		$this->restoreFactoryState();
+        $this->restoreFactoryState();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_extensions', JPATH_TEST_DATABASE . '/jos_extensions.csv');
+    /**
+     * component calls loadComponent.
+     *
+     * @return  void
+     */
+    public function testComponentClassLoadComponent()
+    {
+        $dummyComponent = new Component(999);
 
-		return $dataSet;
-	}
+        $class = $this->getMockBuilder(ClassWithComponent::class)
+            ->setMethods(['loadComponent'])
+            ->getMock();
 
-	/**
-	 * component calls loadComponent.
-	 *
-	 * @return  void
-	 */
-	public function testComponentClassLoadComponent()
-	{
-		$dummyComponent = new Component(999);
+        $class->expects($this->once())
+            ->method('loadComponent')
+            ->willReturn($dummyComponent);
 
-		$class = $this->getMockBuilder(ClassWithComponent::class)
-			->setMethods(array('loadComponent'))
-			->getMock();
+        $this->assertSame($dummyComponent, $class->component());
+    }
 
-		$class->expects($this->once())
-			->method('loadComponent')
-			->willReturn($dummyComponent);
+    /**
+     * component returns cached component.
+     *
+     * @return  void
+     */
+    public function testComponentReturnsCachedComponent()
+    {
+        $class = $this->getMockBuilder(ClassWithComponent::class)
+            ->setMethods(['loadComponent'])
+            ->getMock();
 
-		$this->assertSame($dummyComponent, $class->component());
-	}
+        $class->expects($this->never())
+            ->method('loadComponent');
 
-	/**
-	 * component returns cached component.
-	 *
-	 * @return  void
-	 */
-	public function testComponentReturnsCachedComponent()
-	{
-		$class = $this->getMockBuilder(ClassWithComponent::class)
-			->setMethods(array('loadComponent'))
-			->getMock();
+        $reflectionClass = new \ReflectionClass($class);
 
-		$class->expects($this->never())
-			->method('loadComponent');
+        $reflectionProperty = $reflectionClass->getProperty('component');
+        $reflectionProperty->setAccessible(true);
 
-		$reflection = new \ReflectionClass($class);
+        $dummyComponent = new Component(999);
 
-		$rowProperty = $reflection->getProperty('component');
-		$rowProperty->setAccessible(true);
+        $reflectionProperty->setValue($class, $dummyComponent);
 
-		$dummyComponent = new Component(999);
+        $this->assertSame($dummyComponent, $class->component());
+    }
 
-		$rowProperty->setValue($class, $dummyComponent);
+    /**
+     * componentOption returns correct value.
+     *
+     * @return  void
+     */
+    public function testComponentOptionFromClass()
+    {
+        $class = new ClassWithComponent();
 
-		$this->assertSame($dummyComponent, $class->component());
-	}
+        $reflection = new \ReflectionClass($class);
+        $method = $reflection->getMethod('componentOption');
+        $method->setAccessible(true);
 
-	/**
-	 * componentOption returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testComponentOptionFromClass()
-	{
-		$class = new ClassWithComponent;
+        $this->assertSame('com_tests', $method->invoke($class));
 
-		$reflection = new \ReflectionClass($class);
-		$method = $reflection->getMethod('componentOption');
-		$method->setAccessible(true);
+        require_once __DIR__.'/Stubs/ContentEntityComponent.php';
 
-		$this->assertSame('com_tests', $method->invoke($class));
+        $class = new \ContentEntityComponent();
 
-		require_once __DIR__ . '/Stubs/ContentEntityComponent.php';
+        $reflection = new \ReflectionClass($class);
+        $method = $reflection->getMethod('componentOption');
+        $method->setAccessible(true);
 
-		$class = new \ContentEntityComponent;
+        $this->assertSame('com_content', $method->invoke($class));
+    }
 
-		$reflection = new \ReflectionClass($class);
-		$method = $reflection->getMethod('componentOption');
-		$method->setAccessible(true);
+    /**
+     * loadComponent returns correct value.
+     *
+     * @return  void
+     */
+    public function testLoadComponentReturnsCorrectValue()
+    {
+        $class = $this->getMockBuilder(ClassWithComponent::class)
+            ->setMethods(['componentOption'])
+            ->getMock();
 
-		$this->assertSame('com_content', $method->invoke($class));
-	}
+        $class->expects($this->once())
+            ->method('componentOption')
+            ->willReturn('com_content');
 
-	/**
-	 * loadComponent returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testLoadComponentReturnsCorrectValue()
-	{
-		$class = $this->getMockBuilder(ClassWithComponent::class)
-			->setMethods(array('componentOption'))
-			->getMock();
+        $reflectionClass = new \ReflectionClass($class);
 
-		$class->expects($this->once())
-			->method('componentOption')
-			->willReturn('com_content');
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$reflection = new \ReflectionClass($class);
+        $reflectionMethod = $reflectionClass->getMethod('loadComponent');
+        $reflectionMethod->setAccessible(true);
 
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $this->assertInstanceOf(Component::class, $reflectionMethod->invoke($class));
+    }
 
-		$method = $reflection->getMethod('loadComponent');
-		$method->setAccessible(true);
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_extensions', JPATH_TEST_DATABASE.'/jos_extensions.csv');
 
-		$this->assertInstanceOf(Component::class, $method->invoke($class));
-	}
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

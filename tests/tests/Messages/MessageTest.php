@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Messages;
+namespace Extly\Joomla\Entity\Tests\Messages;
 
 defined('_JEXEC') || die;
 
+use Extly\Joomla\Entity\Messages\Message;
 use Joomla\CMS\Factory;
-use Phproberto\Joomla\Entity\Messages\Message;
 
 /**
  * Message entity tests.
@@ -20,93 +26,92 @@ use Phproberto\Joomla\Entity\Messages\Message;
  */
 class MessageTest extends \TestCaseDatabase
 {
-	/**
-	 * Preloaded message for tests.
-	 *
-	 * @var  Message
-	 */
-	private $message;
+    /**
+     * Preloaded message for tests.
+     *
+     * @var  Message
+     */
+    private $message;
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_messages', JPATH_TESTS_PHPROBERTO . '/tests/Messages/Stubs/Database/messages.csv');
+    /**
+     * This method is called before the first test of this test class is run.
+     *
+     * @return  void
+     */
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
 
-		return $dataSet;
-	}
+        $sqlFiles = [
+            JPATH_TESTS_PHPROBERTO.'/tests/Messages/Stubs/Database/schema/messages.sql',
+        ];
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+        foreach ($sqlFiles as $sqlFile) {
+            static::$driver->setQuery(
+                file_get_contents($sqlFile)
+            );
 
-		$this->saveFactoryState();
+            static::$driver->execute();
+        }
 
-		Factory::$session     = $this->getMockSession();
-		Factory::$config      = $this->getMockConfig();
-		Factory::$application = $this->getMockCmsApp();
+        Factory::$database = static::$driver;
+    }
 
-		$this->message = Message::find(1);
-	}
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-	/**
-	 * This method is called before the first test of this test class is run.
-	 *
-	 * @return  void
-	 */
-	public static function setUpBeforeClass()
-	{
-		parent::setUpBeforeClass();
+        $this->saveFactoryState();
 
-		$sqlFiles = [
-			JPATH_TESTS_PHPROBERTO . '/tests/Messages/Stubs/Database/schema/messages.sql'
-		];
+        Factory::$session = $this->getMockSession();
+        Factory::$config = $this->getMockConfig();
+        Factory::$application = $this->getMockCmsApp();
 
-		foreach ($sqlFiles as $sqlFile)
-		{
-			static::$driver->setQuery(
-				file_get_contents($sqlFile)
-			);
+        $this->message = Message::find(1);
+    }
 
-			static::$driver->execute();
-		}
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        $this->message = null;
+        Message::clearAll();
 
-		Factory::$database = static::$driver;
-	}
+        $this->restoreFactoryState();
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		$this->message = null;
-		Message::clearAll();
+        parent::tearDown();
+    }
 
-		$this->restoreFactoryState();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function messageIsLoaded()
+    {
+        $this->assertNotSame(0, $this->message->get('user_id_from'));
+    }
 
-		parent::tearDown();
-	}
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_messages', JPATH_TESTS_PHPROBERTO.'/tests/Messages/Stubs/Database/messages.csv');
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function messageIsLoaded()
-	{
-		$this->assertNotSame(0, $this->message->get('user_id_from'));
-	}
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

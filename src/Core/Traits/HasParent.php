@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
-defined('_JEXEC') or die;
+defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Core\Column;
-use Phproberto\Joomla\Entity\Contracts\EntityInterface;
+use Extly\Joomla\Entity\Contracts\EntityInterface;
+use Extly\Joomla\Entity\Core\Column;
 
 /**
  * Trait for entities with a parent entity.
@@ -20,82 +26,79 @@ use Phproberto\Joomla\Entity\Contracts\EntityInterface;
  */
 trait HasParent
 {
-	/**
-	 * Entitiy parent.
-	 *
-	 * @var  EntityInterface
-	 */
-	protected $parent;
+    /**
+     * Entitiy parent.
+     *
+     * @var  EntityInterface
+     */
+    protected $parent;
 
-	/**
-	 * Check if this entity has an assigned parent.
-	 *
-	 * @return  boolean
-	 *
-	 * @since   1.8
-	 */
-	public function hasParent()
-	{
-		return $this->parentId() > 0;
-	}
+    /**
+     * Check if this entity has an assigned parent.
+     *
+     * @return  bool
+     *
+     * @since   1.8
+     */
+    public function hasParent()
+    {
+        return $this->parentId() > 0;
+    }
 
-	/**
-	 * Load the parent entity.
-	 *
-	 * @return  EntityInterface
-	 */
-	protected function loadParent()
-	{
-		$column = $this->parentColumn();
-		$data = $this->all();
+    /**
+     * Retrieve the parent entity.
+     *
+     * @return  EntityInterface
+     */
+    public function parent()
+    {
+        if (null === $this->parent) {
+            $this->parent = $this->loadParent();
+        }
 
-		if (empty($data[$column]))
-		{
-			return new static;
-		}
+        return $this->parent;
+    }
 
-		return static::find($data[$column]);
-	}
+    /**
+     * Retrieve parent identifier.
+     *
+     * @return  int
+     */
+    public function parentId()
+    {
+        $column = $this->parentColumn();
 
-	/**
-	 * Retrieve the parent entity.
-	 *
-	 * @return  EntityInterface
-	 */
-	public function parent()
-	{
-		if (null === $this->parent)
-		{
-			$this->parent = $this->loadParent();
-		}
+        if (!$this->has($column)) {
+            return 0;
+        }
 
-		return $this->parent;
-	}
+        return (int) $this->get($column);
+    }
 
-	/**
-	 * Retrieve parent identifier.
-	 *
-	 * @return  integer
-	 */
-	public function parentId()
-	{
-		$column = $this->parentColumn();
+    /**
+     * Column used to store the parent identifier.
+     *
+     * @return  string
+     */
+    public function parentColumn()
+    {
+        return $this->columnAlias(Column::PARENT);
+    }
 
-		if (!$this->has($column))
-		{
-			return 0;
-		}
+    /**
+     * Load the parent entity.
+     *
+     * @return  EntityInterface
+     */
+    protected function loadParent()
+    {
+        $column = $this->parentColumn();
+        $data = $this->all();
 
-		return (int) $this->get($column);
-	}
+        if (empty($data[$column])) {
+            return new static();
+        }
 
-	/**
-	 * Column used to store the parent identifier.
-	 *
-	 * @return  string
-	 */
-	public function parentColumn()
-	{
-		return $this->columnAlias(Column::PARENT);
-	}
+        return static::find($data[$column]);
+    }
 }

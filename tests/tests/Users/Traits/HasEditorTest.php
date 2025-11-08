@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users\Traits;
+namespace Extly\Joomla\Entity\Tests\Users\Traits;
 
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithAuthorAndEditor;
+use Extly\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithAuthorAndEditor;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * HasEditor trait tests.
@@ -18,193 +24,193 @@ use Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithAuthorAndEditor;
  */
 class HasEditorTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * Name of the editor column.
-	 *
-	 * @const
-	 */
-	const EDITOR_COLUMN = 'modified_by';
+    /**
+     * Name of the editor column.
+     *
+     * @const
+     */
+    public const EDITOR_COLUMN = 'modified_by';
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function editorIdReturnsZeroForMissingEditorColumn()
-	{
-		$class = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
-			->disableOriginalConstructor()
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function editorIdReturnsZeroForMissingEditorColumn()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$class->method('columnAlias')
-			->willReturn(static::EDITOR_COLUMN);
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn(static::EDITOR_COLUMN);
 
-		$this->assertSame(0, $class->editorId());
-	}
+        $this->assertSame(0, $phpUnitFrameworkMockObjectMockObject->editorId());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function editorIdReturnsCorrectId()
-	{
-		$entity = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
-			->disableOriginalConstructor()
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function editorIdReturnsCorrectId()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$entity->method('columnAlias')
-			->willReturn(static::EDITOR_COLUMN);
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn(static::EDITOR_COLUMN);
 
-		$entity->bind(
-			[
-				'id' => 99,
-				static::EDITOR_COLUMN => 34
-			]
-		);
+        $phpUnitFrameworkMockObjectMockObject->bind(
+            [
+                'id' => 99,
+                static::EDITOR_COLUMN => 34,
+            ]
+        );
 
-		$this->assertSame(34, $entity->editorId());
+        $this->assertSame(34, $phpUnitFrameworkMockObjectMockObject->editorId());
 
-		$entity->bind(
-			[
-				'id' => 99,
-				static::EDITOR_COLUMN => 333
-			]
-		);
+        $phpUnitFrameworkMockObjectMockObject->bind(
+            [
+                'id' => 99,
+                static::EDITOR_COLUMN => 333,
+            ]
+        );
 
-		$this->assertSame(333, $entity->editorId());
-	}
+        $this->assertSame(333, $phpUnitFrameworkMockObjectMockObject->editorId());
+    }
 
-	/**
-	 * editor calls loadEditor.
-	 *
-	 * @return  void
-	 */
-	public function testEditorCallsLoadEditor()
-	{
-		$editor = new User(24);
+    /**
+     * editor calls loadEditor.
+     *
+     * @return  void
+     */
+    public function testEditorCallsLoadEditor()
+    {
+        $user = new User(24);
 
-		$class = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
-			->disableOriginalConstructor()
-			->setMethods(array('loadEditor'))
-			->getMock();
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['loadEditor'])
+            ->getMock();
 
-		$class->expects($this->once())
-			->method('loadEditor')
-			->willReturn($editor);
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('loadEditor')
+            ->willReturn($user);
 
-		$this->assertSame($editor, $class->editor());
-	}
+        $this->assertSame($user, $phpUnitFrameworkMockObjectMockObject->editor());
+    }
 
-	/**
-	 * editor returns cached instance.
-	 *
-	 * @return  void
-	 */
-	public function testAuthorReturnsCachedInstance()
-	{
-		$editor = new User(999);
+    /**
+     * editor returns cached instance.
+     *
+     * @return  void
+     */
+    public function testAuthorReturnsCachedInstance()
+    {
+        $user = new User(999);
 
-		$class = new EntityWithAuthorAndEditor;
+        $entityWithAuthorAndEditor = new EntityWithAuthorAndEditor();
 
-		$reflection = new \ReflectionClass($class);
+        $reflectionClass = new \ReflectionClass($entityWithAuthorAndEditor);
 
-		$editorProperty = $reflection->getProperty('editor');
-		$editorProperty->setAccessible(true);
-		$editorProperty->setValue($class, $editor);
+        $reflectionProperty = $reflectionClass->getProperty('editor');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($entityWithAuthorAndEditor, $user);
 
-		$this->assertSame($editor, $class->editor());
-	}
+        $this->assertSame($user, $entityWithAuthorAndEditor->editor());
+    }
 
-	/**
-	 * editor reloads data.
-	 *
-	 * @return  void
-	 */
-	public function testEditorReloadsData()
-	{
-		$editor = new User(24);
-		$reloadedEditor = new User(999);
+    /**
+     * editor reloads data.
+     *
+     * @return  void
+     */
+    public function testEditorReloadsData()
+    {
+        $editor = new User(24);
+        $reloadedEditor = new User(999);
 
-		$class = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
-			->disableOriginalConstructor()
-			->setMethods(array('loadEditor'))
-			->getMock();
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['loadEditor'])
+            ->getMock();
 
-		$class->expects($this->at(0))
-			->method('loadEditor')
-			->willReturn($editor);
+        $phpUnitFrameworkMockObjectMockObject->expects($this->at(0))
+            ->method('loadEditor')
+            ->willReturn($editor);
 
-		$class->expects($this->at(1))
-			->method('loadEditor')
-			->willReturn($reloadedEditor);
+        $phpUnitFrameworkMockObjectMockObject->expects($this->at(1))
+            ->method('loadEditor')
+            ->willReturn($reloadedEditor);
 
-		$this->assertSame($editor, $class->editor());
-		$this->assertSame($reloadedEditor, $class->editor(true));
-		$this->assertSame($reloadedEditor, $class->editor());
-	}
+        $this->assertSame($editor, $phpUnitFrameworkMockObjectMockObject->editor());
+        $this->assertSame($reloadedEditor, $phpUnitFrameworkMockObjectMockObject->editor(true));
+        $this->assertSame($reloadedEditor, $phpUnitFrameworkMockObjectMockObject->editor());
+    }
 
-	/**
-	 * hasEditor returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasEditorReturnsCorrectValue()
-	{
-		$class = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
-			->disableOriginalConstructor()
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * hasEditor returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasEditorReturnsCorrectValue()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$class->method('columnAlias')
-			->willReturn(static::EDITOR_COLUMN);
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn(static::EDITOR_COLUMN);
 
-		$reflection = new \ReflectionClass($class);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-		$idProperty = $reflection->getProperty('id');
-		$idProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('id');
+        $reflectionProperty->setAccessible(true);
 
-		$idProperty->setValue($class, 999);
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, 999);
 
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $rowProperty = $reflectionClass->getProperty('row');
+        $rowProperty->setAccessible(true);
 
-		$rowProperty->setValue($class, array('id' => 999, static::EDITOR_COLUMN => 22));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, static::EDITOR_COLUMN => 22]);
 
-		$this->assertSame(true, $class->hasEditor());
-	}
+        $this->assertSame(true, $phpUnitFrameworkMockObjectMockObject->hasEditor());
+    }
 
-	/**
-	 * loadEditor returns correct user.
-	 *
-	 * @return  void
-	 */
-	public function testLoadEditorReturnsCorrectUser()
-	{
-		$class = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
-			->disableOriginalConstructor()
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * loadEditor returns correct user.
+     *
+     * @return  void
+     */
+    public function testLoadEditorReturnsCorrectUser()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAuthorAndEditor::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$class->expects($this->once())
-			->method('columnAlias')
-			->willReturn(static::EDITOR_COLUMN);
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('columnAlias')
+            ->willReturn(static::EDITOR_COLUMN);
 
-		$reflection = new \ReflectionClass($class);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-		$idProperty = $reflection->getProperty('id');
-		$idProperty->setAccessible(true);
-		$idProperty->setValue($class, 999);
+        $reflectionProperty = $reflectionClass->getProperty('id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, 999);
 
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-		$rowProperty->setValue($class, array('id' => 999, static::EDITOR_COLUMN => 22));
+        $rowProperty = $reflectionClass->getProperty('row');
+        $rowProperty->setAccessible(true);
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, static::EDITOR_COLUMN => 22]);
 
-		$method = $reflection->getMethod('loadEditor');
-		$method->setAccessible(true);
+        $reflectionMethod = $reflectionClass->getMethod('loadEditor');
+        $reflectionMethod->setAccessible(true);
 
-		$this->assertSame(User::find(22), $method->invoke($class));
-	}
+        $this->assertSame(User::find(22), $reflectionMethod->invoke($phpUnitFrameworkMockObjectMockObject));
+    }
 }

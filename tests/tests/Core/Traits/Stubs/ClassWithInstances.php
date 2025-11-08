@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! common library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    GNU/GPL 2, http://www.gnu.org/licenses/gpl-2.0.htm
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Core\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Core\Traits\HasInstances;
+use Extly\Joomla\Entity\Core\Traits\HasInstances;
 
 /**
  * Sample class to test HasInstances trait.
@@ -17,63 +23,63 @@ use Phproberto\Joomla\Entity\Core\Traits\HasInstances;
  */
 class ClassWithInstances
 {
-	use HasInstances;
+    use HasInstances;
 
-	/**
-	 * Class identifier
-	 *
-	 * @var  integer
-	 */
-	protected $id;
+    /**
+     * Class identifier
+     *
+     * @var  int
+     */
+    protected $id;
 
-	/**
-	 * Name property.
-	 *
-	 * @var  string
-	 */
-	protected $name;
+    /**
+     * Name property.
+     *
+     * @var  string
+     */
+    protected $name;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   integer  $id  Identifier
-	 */
-	public function __construct($id)
-	{
-		$this->id = $id;
-	}
+    /**
+     * Constructor.
+     *
+     * @param   int  $id  Identifier
+     */
+    public function __construct($id)
+    {
+        $this->id = $id;
+    }
 
-	/**
-	 * Gets the Class identifier.
-	 *
-	 * @return  integer
-	 */
-	public function getId()
-	{
-		return $this->id;
-	}
+    /**
+     * Gets the Class identifier.
+     *
+     * @return  int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * Gets the Name property.
-	 *
-	 * @return  string
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * Gets the Name property.
+     *
+     * @return  string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * Sets the Name property.
-	 *
-	 * @param   string  $name  the name
-	 *
-	 * @return self
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
+    /**
+     * Sets the Name property.
+     *
+     * @param   string  $name  the name
+     *
+     * @return self
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
 
-		return $this;
-	}
+        return $this;
+    }
 }

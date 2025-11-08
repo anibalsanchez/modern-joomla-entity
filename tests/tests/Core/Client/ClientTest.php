@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Client;
+namespace Extly\Joomla\Entity\Tests\Core\Client;
 
-use Phproberto\Joomla\Entity\Core\Client\Administrator;
-use Phproberto\Joomla\Entity\Core\Client\Client;
-use Phproberto\Joomla\Entity\Core\Client\Site;
+use Extly\Joomla\Entity\Core\Client\Administrator;
+use Extly\Joomla\Entity\Core\Client\Client;
+use Extly\Joomla\Entity\Core\Client\Site;
 
 /**
  * Tests for HasExtension trait.
@@ -19,85 +25,85 @@ use Phproberto\Joomla\Entity\Core\Client\Site;
  */
 class ClientTest extends \TestCase
 {
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-		$this->saveFactoryState();
+        $this->saveFactoryState();
 
-		$app = $this->getMockCmsApp();
+        $app = $this->getMockCmsApp();
 
-		\JFactory::$application = $app;
-	}
+        \Joomla\CMS\Factory::$application = $app;
+    }
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		$this->restoreFactoryState();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        $this->restoreFactoryState();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * Test administrator client can be retrieved.
-	 *
-	 * @return  void
-	 */
-	public function testAdminReturnsAdminClient()
-	{
-		$client = Client::admin();
-		$this->assertEquals(get_class($client), get_class(new Administrator));
-	}
+    /**
+     * Test administrator client can be retrieved.
+     *
+     * @return  void
+     */
+    public function testAdminReturnsAdminClient()
+    {
+        $admin = Client::admin();
+        $this->assertEquals(get_class($admin), get_class(new Administrator()));
+    }
 
-	/**
-	 * Test getActive return site client when active application is site.
-	 *
-	 * @return  void
-	 */
-	public function testGetActiveReturnsSiteClient()
-	{
-		$this->getMockCmsApp()
-			->method('isAdmin')
-			->willReturn(false);
+    /**
+     * Test getActive return site client when active application is site.
+     *
+     * @return  void
+     */
+    public function testGetActiveReturnsSiteClient()
+    {
+        $this->getMockCmsApp()
+            ->method('isAdmin')
+            ->willReturn(false);
 
-		$client = Client::active();
-		$this->assertEquals(get_class($client), get_class(new Site));
-	}
+        $client = Client::active();
+        $this->assertEquals(get_class($client), get_class(new Site()));
+    }
 
-	/**
-	 * Test getActive return site client when active application is site.
-	 *
-	 * @return  void
-	 */
-	public function testGetActiveReturnsAdminClient()
-	{
-		$this->getMockCmsApp()
-			->method('isAdmin')
-			->willReturn(true);
+    /**
+     * Test getActive return site client when active application is site.
+     *
+     * @return  void
+     */
+    public function testGetActiveReturnsAdminClient()
+    {
+        $this->getMockCmsApp()
+            ->method('isAdmin')
+            ->willReturn(true);
 
-		$client = Client::active();
-		$this->assertEquals(get_class($client), get_class(new Site));
-	}
+        $client = Client::active();
+        $this->assertEquals(get_class($client), get_class(new Site()));
+    }
 
-	/**
-	 * Test site client can be retrieved.
-	 *
-	 * @return  void
-	 */
-	public function testSiteReturnsSiteClient()
-	{
-		$client = Client::site();
-		$this->assertEquals(get_class($client), get_class(new Site));
-	}
+    /**
+     * Test site client can be retrieved.
+     *
+     * @return  void
+     */
+    public function testSiteReturnsSiteClient()
+    {
+        $site = Client::site();
+        $this->assertEquals(get_class($site), get_class(new Site()));
+    }
 }

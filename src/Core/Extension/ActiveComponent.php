@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Extension;
+namespace Extly\Joomla\Entity\Core\Extension;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Exception\InvalidEntityData;
-use Phproberto\Joomla\Entity\Exception\LoadEntityDataError;
+use Extly\Joomla\Entity\Exception\InvalidEntityData;
+use Extly\Joomla\Entity\Exception\LoadEntityDataError;
 
 /**
  * Component entity.
@@ -20,49 +26,46 @@ use Phproberto\Joomla\Entity\Exception\LoadEntityDataError;
  */
 class ActiveComponent extends Component
 {
-	/**
-	 * Load the entity from the database.
-	 *
-	 * @return  array
-	 *
-	 * @throws  LoadEntityDataError  Table error loading row
-	 * @throws  InvalidEntityData    Incorrect data received
-	 */
-	protected function fetchRow()
-	{
-		$option = $this->option();
+    /**
+     * Get the active option.
+     *
+     * @return  string
+     */
+    public function option()
+    {
+        return \Joomla\CMS\Application\ApplicationHelper::getComponentName();
+    }
 
-		if (!$option)
-		{
-			throw new \RuntimeException('Unable to detect active component option');
-		}
+    /**
+     * Load the entity from the database.
+     *
+     * @return  array
+     *
+     * @throws  LoadEntityDataError  Table error loading row
+     * @throws  InvalidEntityData    Incorrect data received
+     */
+    protected function fetchRow()
+    {
+        $option = $this->option();
 
-		$table = $this->table();
+        if (!$option) {
+            throw new \RuntimeException('Unable to detect active component option');
+        }
 
-		if (!$table->load(array('element' => $option, 'type' => 'component')))
-		{
-			throw LoadEntityDataError::tableError($this, $table->getError());
-		}
+        $table = $this->table();
 
-		$data = $table->getProperties(true);
+        if (!$table->load(['element' => $option, 'type' => 'component'])) {
+            throw LoadEntityDataError::tableError($this, $table->getError());
+        }
 
-		if (!array_key_exists($this->primaryKey(), $data))
-		{
-			throw InvalidEntityData::missingPrimaryKey($this);
-		}
+        $data = $table->getProperties(true);
 
-		$this->id = (int) $data[$this->primaryKey()];
+        if (!array_key_exists($this->primaryKey(), $data)) {
+            throw InvalidEntityData::missingPrimaryKey($this);
+        }
 
-		return $data;
-	}
+        $this->id = (int) $data[$this->primaryKey()];
 
-	/**
-	 * Get the active option.
-	 *
-	 * @return  string
-	 */
-	public function option()
-	{
-		return \JApplicationHelper::getComponentName();
-	}
+        return $data;
+    }
 }

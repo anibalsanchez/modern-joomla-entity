@@ -1,35 +1,41 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Content;
+namespace Extly\Joomla\Entity\Content;
 
 defined('_JEXEC') || die;
 
+use Extly\Joomla\Entity\Acl\Contracts\Aclable;
+use Extly\Joomla\Entity\Acl\Traits\HasAcl;
+use Extly\Joomla\Entity\Categories\Traits\HasCategory;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\ComponentEntity;
+use Extly\Joomla\Entity\Content\Category;
+use Extly\Joomla\Entity\Content\Validation\ArticleValidator;
+use Extly\Joomla\Entity\Core\Contracts\Publishable;
+use Extly\Joomla\Entity\Core\Traits as CoreTraits;
+use Extly\Joomla\Entity\Fields\Field;
+use Extly\Joomla\Entity\Fields\Traits\HasFields;
+use Extly\Joomla\Entity\Tags\Tag;
+use Extly\Joomla\Entity\Tags\Traits\HasTags;
+use Extly\Joomla\Entity\Translation\Contracts\Translatable;
+use Extly\Joomla\Entity\Translation\Traits\HasTranslations;
+use Extly\Joomla\Entity\Users\Contracts\Ownerable;
+use Extly\Joomla\Entity\Users\Traits as UsersTraits;
+use Extly\Joomla\Entity\Validation\Contracts\Validable;
+use Extly\Joomla\Entity\Validation\Traits\HasValidation;
 use Joomla\Registry\Registry;
-use Phproberto\Joomla\Entity\Tags\Tag;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Fields\Field;
-use Phproberto\Joomla\Entity\ComponentEntity;
-use Phproberto\Joomla\Entity\Content\Category;
-use Phproberto\Joomla\Entity\Acl\Traits\HasAcl;
-use Phproberto\Joomla\Entity\Tags\Traits\HasTags;
-use Phproberto\Joomla\Entity\Acl\Contracts\Aclable;
-use Phproberto\Joomla\Entity\Fields\Traits\HasFields;
-use Phproberto\Joomla\Entity\Core\Traits as CoreTraits;
-use Phproberto\Joomla\Entity\Users\Contracts\Ownerable;
-use Phproberto\Joomla\Entity\Core\Contracts\Publishable;
-use Phproberto\Joomla\Entity\Users\Traits as UsersTraits;
-use Phproberto\Joomla\Entity\Categories\Traits\HasCategory;
-use Phproberto\Joomla\Entity\Validation\Contracts\Validable;
-use Phproberto\Joomla\Entity\Validation\Traits\HasValidation;
-use Phproberto\Joomla\Entity\Translation\Contracts\Translatable;
-use Phproberto\Joomla\Entity\Translation\Traits\HasTranslations;
-use Phproberto\Joomla\Entity\Content\Validation\ArticleValidator;
 
 /**
  * Article entity.
@@ -38,198 +44,203 @@ use Phproberto\Joomla\Entity\Content\Validation\ArticleValidator;
  */
 class Article extends ComponentEntity implements Aclable, Ownerable, Publishable, Translatable, Validable
 {
-	use HasAcl, HasCategory, HasFields, HasTags, HasTranslations, HasValidation;
-	use CoreTraits\HasAccess, CoreTraits\HasAsset, CoreTraits\HasAssociations, CoreTraits\HasFeatured, CoreTraits\HasMetadata;
-	use CoreTraits\HasImages, CoreTraits\HasLink, CoreTraits\HasParams, CoreTraits\HasPublishDown, CoreTraits\HasPublishUp, CoreTraits\HasState;
-	use CoreTraits\HasUrls;
-	use UsersTraits\HasAuthor, UsersTraits\HasEditor, UsersTraits\HasOwner;
+    use HasAcl;
+    use HasCategory;
+    use HasFields;
+    use HasTags;
+    use HasTranslations;
+    use HasValidation;
+    use CoreTraits\HasAccess;
+    use CoreTraits\HasAsset;
+    use CoreTraits\HasAssociations;
+    use CoreTraits\HasFeatured;
+    use CoreTraits\HasMetadata;
+    use CoreTraits\HasImages;
+    use CoreTraits\HasLink;
+    use CoreTraits\HasParams;
+    use CoreTraits\HasPublishDown;
+    use CoreTraits\HasPublishUp;
+    use CoreTraits\HasState;
+    use CoreTraits\HasUrls;
+    use UsersTraits\HasAuthor;
+    use UsersTraits\HasEditor;
+    use UsersTraits\HasOwner;
 
-	/**
-	 * Get the list of column aliases.
-	 *
-	 * @return  array
-	 */
-	public function columnAliases()
-	{
-		return array(
-			'category_id' => 'catid',
-			'params'      => 'attribs'
-		);
-	}
+    /**
+     * Get the list of column aliases.
+     *
+     * @return  array
+     */
+    public function columnAliases()
+    {
+        return [
+            'category_id' => 'catid',
+            'params'      => 'attribs',
+        ];
+    }
 
-	/**
-	 * Retrieve the alias of content type associated with this entity.
-	 *
-	 * @return  string
-	 *
-	 * @since   1.6.0
-	 */
-	public static function contentTypeAlias()
-	{
-		return 'com_content.article';
-	}
+    /**
+     * Retrieve the alias of content type associated with this entity.
+     *
+     * @return  string
+     *
+     * @since   1.6.0
+     */
+    public static function contentTypeAlias()
+    {
+        return 'com_content.article';
+    }
 
-	/**
-	 * Get an instance of the articles model.
-	 *
-	 * @param   array  $state  State to populate in the model
-	 *
-	 * @return  \JModelList
-	 */
-	protected function getArticlesModel(array $state = array())
-	{
-		\JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_content/models', 'ContentModel');
+    /**
+     * Check if this entity is published.
+     *
+     * @return  bool
+     */
+    public function isPublished()
+    {
+        if (!$this->isOnState(self::STATE_PUBLISHED)) {
+            return false;
+        }
 
-		$model = \JModelLegacy::getInstance('Articles', 'ContentModel', array('ignore_request' => true));
+        if (!$this->isPublishedUp() || $this->isPublishedDown()) {
+            return false;
+        }
 
-		$params = isset($state['params']) ? $state['params'] : new Registry;
+        return $this->category()->isPublished();
+    }
 
-		$model->setState('params', $params);
+    /**
+     * Get a table instance. Defauts to \JTableContent.
+     *
+     * @param   string  $name     Table name. Optional.
+     * @param   string  $prefix   Class prefix. Optional.
+     * @param   array   $options  Configuration array for the table. Optional.
+     *
+     * @return  \JTable
+     *
+     * @throws  \InvalidArgumentException
+     */
+    public function table($name = '', $prefix = null, $options = [])
+    {
+        $name = $name ?: 'Content';
+        $prefix = $prefix ?: 'JTable';
 
-		foreach ($state as $key => $value)
-		{
-			$model->setState($key, $value);
-		}
+        return parent::table($name, $prefix, $options);
+    }
 
-		return $model;
-	}
+    /**
+     * Retrieve entity validator.
+     *
+     * @return  ArticleValidator
+     */
+    public function validator()
+    {
+        if (null === $this->validator) {
+            $this->validator = new ArticleValidator($this);
+        }
 
-	/**
-	 * Check if this entity is published.
-	 *
-	 * @return  boolean
-	 */
-	public function isPublished()
-	{
-		if (!$this->isOnState(self::STATE_PUBLISHED))
-		{
-			return false;
-		}
+        return $this->validator;
+    }
 
-		if (!$this->isPublishedUp() || $this->isPublishedDown())
-		{
-			return false;
-		}
+    /**
+     * Get an instance of the articles model.
+     *
+     * @param   array  $state  State to populate in the model
+     *
+     * @return  \JModelList
+     */
+    protected function getArticlesModel(array $state = [])
+    {
+        \Joomla\CMS\MVC\Model\BaseDatabaseModel::addIncludePath(JPATH_SITE.'/components/com_content/models', 'ContentModel');
 
-		return $this->category()->isPublished();
-	}
+        $model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('Articles', 'ContentModel', ['ignore_request' => true]);
 
-	/**
-	 * Load associations from DB.
-	 *
-	 * @return  \stdClass[]
-	 *
-	 * @codeCoverageIgnore
-	 */
-	protected function loadAssociations()
-	{
-		if (!$this->hasId())
-		{
-			return array();
-		}
+        $params = $state['params'] ?? new Registry();
 
-		return \JLanguageAssociations::getAssociations('com_content', '#__content', 'com_content.item', $this->id());
-	}
+        $model->setState('params', $params);
 
-	/**
-	 * Load the category from the database.
-	 *
-	 * @return  Category
-	 */
-	protected function loadCategory()
-	{
-		$column = $this->columnAlias('category_id');
-		$data   = $this->all();
+        foreach ($state as $key => $value) {
+            $model->setState($key, $value);
+        }
 
-		if (array_key_exists($column, $data))
-		{
-			return Category::find($data[$column]);
-		}
+        return $model;
+    }
 
-		return new Category;
-	}
+    /**
+     * Load associations from DB.
+     *
+     * @return  \stdClass[]
+     *
+     * @codeCoverageIgnore
+     */
+    protected function loadAssociations()
+    {
+        if (!$this->hasId()) {
+            return [];
+        }
 
-	/**
-	 * Load the link to this entity.
-	 *
-	 * @return  atring
-	 *
-	 * @codeCoverageIgnore
-	 */
-	protected function loadLink()
-	{
-		$slug = $this->slug();
+        return \Joomla\CMS\Language\Associations::getAssociations('com_content', '#__content', 'com_content.item', $this->id());
+    }
 
-		if (!$slug)
-		{
-			return null;
-		}
+    /**
+     * Load the category from the database.
+     *
+     * @return  Category
+     */
+    protected function loadCategory()
+    {
+        $column = $this->columnAlias('category_id');
+        $data = $this->all();
 
-		\JLoader::register('ContentHelperRoute', JPATH_SITE . '/components/com_content/helpers/route.php');
+        if (array_key_exists($column, $data)) {
+            return Category::find($data[$column]);
+        }
 
-		return \JRoute::_(\ContentHelperRoute::getArticleRoute($slug, (int) $this->get('catid'), $this->get('language')));
-	}
+        return new Category();
+    }
 
-	/**
-	 * Load associated translations from DB.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadTranslations()
-	{
-		$ids = $this->associationsIds();
+    /**
+     * Load the link to this entity.
+     *
+     * @return  atring
+     *
+     * @codeCoverageIgnore
+     */
+    protected function loadLink()
+    {
+        $slug = $this->slug();
 
-		if (empty($ids))
-		{
-			return new Collection;
-		}
+        if (!$slug) {
+            return null;
+        }
 
-		$state = array(
-			'filter.article_id' => array_values($ids)
-		);
+        \JLoader::register('ContentHelperRoute', JPATH_SITE.'/components/com_content/helpers/route.php');
 
-		$articles = array_map(
-			function ($item)
-			{
-				return static::find($item->id)->bind($item);
-			},
-			$this->getArticlesModel($state)->getItems() ?: array()
-		);
+        return \Joomla\CMS\Router\Route::_(\Joomla\Component\Content\Site\Helper\RouteHelper::getArticleRoute($slug, (int) $this->get('catid'), $this->get('language')));
+    }
 
-		return new Collection($articles);
-	}
+    /**
+     * Load associated translations from DB.
+     *
+     * @return  Collection
+     */
+    protected function loadTranslations()
+    {
+        $ids = $this->associationsIds();
 
-	/**
-	 * Get a table instance. Defauts to \JTableContent.
-	 *
-	 * @param   string  $name     Table name. Optional.
-	 * @param   string  $prefix   Class prefix. Optional.
-	 * @param   array   $options  Configuration array for the table. Optional.
-	 *
-	 * @return  \JTable
-	 *
-	 * @throws  \InvalidArgumentException
-	 */
-	public function table($name = '', $prefix = null, $options = array())
-	{
-		$name   = $name ?: 'Content';
-		$prefix = $prefix ?: 'JTable';
+        if (empty($ids)) {
+            return new Collection();
+        }
 
-		return parent::table($name, $prefix, $options);
-	}
+        $state = [
+            'filter.article_id' => array_values($ids),
+        ];
 
-	/**
-	 * Retrieve entity validator.
-	 *
-	 * @return  ArticleValidator
-	 */
-	public function validator()
-	{
-		if (null === $this->validator)
-		{
-			$this->validator = new ArticleValidator($this);
-		}
+        $articles = array_map(
+            fn ($item) => static::find($item->id)->bind($item),
+            $this->getArticlesModel($state)->getItems() ?: []
+        );
 
-		return $this->validator;
-	}
+        return new Collection($articles);
+    }
 }

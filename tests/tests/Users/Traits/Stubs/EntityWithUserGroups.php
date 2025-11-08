@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Users\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Entity;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Users\Traits\HasUserGroups;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Entity;
+use Extly\Joomla\Entity\Users\Traits\HasUserGroups;
 
 /**
  * Sample class to test HasUserGroups traits.
@@ -21,22 +27,22 @@ use Phproberto\Joomla\Entity\Users\Traits\HasUserGroups;
  */
 class EntityWithUserGroups extends Entity
 {
-	use HasUserGroups;
+    use HasUserGroups;
 
-	/**
-	 * Expected loadUserGroups result.
-	 *
-	 * @var  Collection
-	 */
-	public $loadableUserGroups;
+    /**
+     * Expected loadUserGroups result.
+     *
+     * @var  Collection
+     */
+    public $loadableUserGroups;
 
-	/**
-	 * Load associated user groups from DB.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadUserGroups()
-	{
-		return null === $this->loadableUserGroups ? new Collection : $this->loadableUserGroups;
-	}
+    /**
+     * Load associated user groups from DB.
+     *
+     * @return  Collection
+     */
+    protected function loadUserGroups()
+    {
+        return $this->loadableUserGroups ?? new Collection();
+    }
 }

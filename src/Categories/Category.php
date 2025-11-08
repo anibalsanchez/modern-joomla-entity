@@ -1,28 +1,34 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Categories;
+namespace Extly\Joomla\Entity\Categories;
 
 defined('_JEXEC') || die;
 
+use Extly\Joomla\Entity\Categories\Validation\CategoryValidator;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\ComponentEntity;
+use Extly\Joomla\Entity\Core\Contracts\Publishable;
+use Extly\Joomla\Entity\Core\Traits as CoreTraits;
+use Extly\Joomla\Entity\Traits as EntityTraits;
+use Extly\Joomla\Entity\Translation\Contracts\Translatable;
+use Extly\Joomla\Entity\Translation\Traits\HasTranslations;
+use Extly\Joomla\Entity\Users\Traits as UsersTraits;
+use Extly\Joomla\Entity\Validation\Contracts\Validable;
+use Extly\Joomla\Entity\Validation\Traits\HasValidation;
 use Joomla\CMS\Factory;
 use Joomla\Utilities\ArrayHelper;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\ComponentEntity;
-use Phproberto\Joomla\Entity\Traits as EntityTraits;
-use Phproberto\Joomla\Entity\Core\Traits as CoreTraits;
-use Phproberto\Joomla\Entity\Core\Contracts\Publishable;
-use Phproberto\Joomla\Entity\Users\Traits as UsersTraits;
-use Phproberto\Joomla\Entity\Validation\Contracts\Validable;
-use Phproberto\Joomla\Entity\Validation\Traits\HasValidation;
-use Phproberto\Joomla\Entity\Translation\Contracts\Translatable;
-use Phproberto\Joomla\Entity\Translation\Traits\HasTranslations;
-use Phproberto\Joomla\Entity\Categories\Validation\CategoryValidator;
 
 /**
  * Stub to test Entity class.
@@ -31,178 +37,178 @@ use Phproberto\Joomla\Entity\Categories\Validation\CategoryValidator;
  */
 class Category extends ComponentEntity implements Publishable, Translatable, Validable
 {
-	use CoreTraits\HasAccess, CoreTraits\HasAncestors, CoreTraits\HasAsset, CoreTraits\HasAssociations, CoreTraits\HasChildren;
-	use CoreTraits\HasDescendants, CoreTraits\HasLevel, CoreTraits\HasMetadata, CoreTraits\HasParams, CoreTraits\HasParent;
-	use CoreTraits\HasState;
-	use HasTranslations, HasValidation;
-	use UsersTraits\HasAuthor, UsersTraits\HasEditor;
+    use CoreTraits\HasAccess;
+    use CoreTraits\HasAncestors;
+    use CoreTraits\HasAsset;
+    use CoreTraits\HasAssociations;
+    use CoreTraits\HasChildren;
+    use CoreTraits\HasDescendants;
+    use CoreTraits\HasLevel;
+    use CoreTraits\HasMetadata;
+    use CoreTraits\HasParams;
+    use CoreTraits\HasParent;
+    use CoreTraits\HasState;
+    use HasTranslations;
+    use HasValidation;
+    use UsersTraits\HasAuthor;
+    use UsersTraits\HasEditor;
 
-	/**
-	 * Get the list of column aliases.
-	 *
-	 * @return  array
-	 */
-	public function columnAliases()
-	{
-		return array(
-			'created_by'  => 'created_user_id',
-			'modified_by' => 'modified_user_id'
-		);
-	}
+    /**
+     * Get the list of column aliases.
+     *
+     * @return  array
+     */
+    public function columnAliases()
+    {
+        return [
+            'created_by'  => 'created_user_id',
+            'modified_by' => 'modified_user_id',
+        ];
+    }
 
-	/**
-	 * Get a table.
-	 *
-	 * @param   string  $name     The table name. Optional.
-	 * @param   string  $prefix   The class prefix. Optional.
-	 * @param   array   $options  Configuration array for model. Optional.
-	 *
-	 * @return  \JTable
-	 */
-	public function table($name = '', $prefix = null, $options = array())
-	{
-		\JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_categories/tables');
+    /**
+     * Get a table.
+     *
+     * @param   string  $name     The table name. Optional.
+     * @param   string  $prefix   The class prefix. Optional.
+     * @param   array   $options  Configuration array for model. Optional.
+     *
+     * @return  \JTable
+     */
+    public function table($name = '', $prefix = null, $options = [])
+    {
+        \Joomla\CMS\Table\Table::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_categories/tables');
 
-		$name = $name ?: 'Category';
-		$prefix = $prefix ?: 'CategoriesTable';
+        $name = $name ?: 'Category';
+        $prefix = $prefix ?: 'CategoriesTable';
 
-		return parent::table($name, $prefix, $options);
-	}
+        return parent::table($name, $prefix, $options);
+    }
 
-	/**
-	 * Load associations from DB.
-	 *
-	 * @return  array
-	 *
-	 * @codeCoverageIgnore
-	 */
-	protected function loadAssociations()
-	{
-		if (!$this->hasId())
-		{
-			return array();
-		}
+    /**
+     * Search entity ancestors.
+     *
+     * @param   array  $options  Search options. For filters, limit, ordering, etc.
+     *
+     * @return  Collection
+     */
+    public function searchAncestors(array $options = [])
+    {
+        if (!$this->hasId()) {
+            return new Collection();
+        }
 
-		return \JLanguageAssociations::getAssociations(
-			$this->get('extension'),
-			'#__categories',
-			'com_categories.item',
-			$this->id(),
-			'id',
-			'alias',
-			''
-		);
-	}
+        $options = array_merge(['list.limit' => 0], $options);
+        $options['filter.descendant_id'] = $this->id();
 
+        return Collection::fromData(CategorySearcher::instance($options)->search(), self::class);
+    }
 
-	/**
-	 * Load associated translations from DB.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadTranslations()
-	{
-		$ids = $this->associationsIds();
+    /**
+     * Search entity children.
+     *
+     * @param   array  $options  Search options. For filters, limit, ordering, etc.
+     *
+     * @return  Collection
+     */
+    public function searchChildren(array $options = [])
+    {
+        if (!$this->hasId()) {
+            return new Collection();
+        }
 
-		if (empty($ids))
-		{
-			return new Collection;
-		}
+        $options = array_merge(['list.limit' => 0], $options);
+        $options['filter.parent_id'] = $this->id();
 
-		$db = $this->getDbo();
+        return Collection::fromData(CategorySearcher::instance($options)->search(), self::class);
+    }
 
-		$query = $db->getQuery(true)
-			->select('c.*')
-			->from($db->qn('#__categories', 'c'))
-			->where('c.id IN (' . implode(',', ArrayHelper::toInteger($ids)) . ')');
+    /**
+     * Search entity descendants.
+     *
+     * @param   array  $options  Search options. For filters, limit, ordering, etc.
+     *
+     * @return  Collection
+     */
+    public function searchDescendants(array $options = [])
+    {
+        if (!$this->hasId()) {
+            return new Collection();
+        }
 
-		$db->setQuery($query);
+        $options = array_merge(['list.limit' => 0], $options);
+        $options['filter.ancestor_id'] = $this->id();
 
-		$categories = array_map(
-			function ($item)
-			{
-				return static::find($item->id)->bind($item);
-			},
-			$db->loadObjectList() ?: array()
-		);
+        return Collection::fromData(CategorySearcher::instance($options)->search(), self::class);
+    }
 
-		return new Collection($categories);
-	}
+    /**
+     * Retrieve entity validator.
+     *
+     * @return  CategoryValidator
+     *
+     * @since   1.7.0
+     */
+    public function validator()
+    {
+        if (null === $this->validator) {
+            $this->validator = new CategoryValidator($this);
+        }
 
-	/**
-	 * Search entity ancestors.
-	 *
-	 * @param   array  $options  Search options. For filters, limit, ordering, etc.
-	 *
-	 * @return  Collection
-	 */
-	public function searchAncestors(array $options = [])
-	{
-		if (!$this->hasId())
-		{
-			return new Collection;
-		}
+        return $this->validator;
+    }
 
-		$options = array_merge(['list.limit' => 0], $options);
-		$options['filter.descendant_id'] = $this->id();
+    /**
+     * Load associations from DB.
+     *
+     * @return  array
+     *
+     * @codeCoverageIgnore
+     */
+    protected function loadAssociations()
+    {
+        if (!$this->hasId()) {
+            return [];
+        }
 
-		return Collection::fromData(CategorySearcher::instance($options)->search(), self::class);
-	}
+        return \Joomla\CMS\Language\Associations::getAssociations(
+            $this->get('extension'),
+            '#__categories',
+            'com_categories.item',
+            $this->id(),
+            'id',
+            'alias',
+            ''
+        );
+    }
 
-	/**
-	 * Search entity children.
-	 *
-	 * @param   array  $options  Search options. For filters, limit, ordering, etc.
-	 *
-	 * @return  Collection
-	 */
-	public function searchChildren(array $options = [])
-	{
-		if (!$this->hasId())
-		{
-			return new Collection;
-		}
+    /**
+     * Load associated translations from DB.
+     *
+     * @return  Collection
+     */
+    protected function loadTranslations()
+    {
+        $ids = $this->associationsIds();
 
-		$options = array_merge(['list.limit' => 0], $options);
-		$options['filter.parent_id'] = $this->id();
+        if (empty($ids)) {
+            return new Collection();
+        }
 
-		return Collection::fromData(CategorySearcher::instance($options)->search(), self::class);
-	}
+        $jDatabaseDriver = $this->getDbo();
 
-	/**
-	 * Search entity descendants.
-	 *
-	 * @param   array  $options  Search options. For filters, limit, ordering, etc.
-	 *
-	 * @return  Collection
-	 */
-	public function searchDescendants(array $options = [])
-	{
-		if (!$this->hasId())
-		{
-			return new Collection;
-		}
+        $query = $jDatabaseDriver->getQuery(true)
+            ->select('c.*')
+            ->from($jDatabaseDriver->qn('#__categories', 'c'))
+            ->where('c.id IN ('.implode(',', ArrayHelper::toInteger($ids)).')');
 
-		$options = array_merge(['list.limit' => 0], $options);
-		$options['filter.ancestor_id'] = $this->id();
+        $jDatabaseDriver->setQuery($query);
 
-		return Collection::fromData(CategorySearcher::instance($options)->search(), self::class);
-	}
+        $categories = array_map(
+            fn ($item) => static::find($item->id)->bind($item),
+            $jDatabaseDriver->loadObjectList() ?: []
+        );
 
-	/**
-	 * Retrieve entity validator.
-	 *
-	 * @return  CategoryValidator
-	 *
-	 * @since   1.7.0
-	 */
-	public function validator()
-	{
-		if (null === $this->validator)
-		{
-			$this->validator = new CategoryValidator($this);
-		}
-
-		return $this->validator;
-	}
+        return new Collection($categories);
+    }
 }

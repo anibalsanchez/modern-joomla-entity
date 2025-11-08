@@ -1,20 +1,26 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Fields;
+namespace Extly\Joomla\Entity\Tests\Fields;
 
+use Extly\Joomla\Entity\Core\Column;
+use Extly\Joomla\Entity\Core\Extension\Component;
+use Extly\Joomla\Entity\Fields\Column as FieldsColumn;
+use Extly\Joomla\Entity\Fields\Field;
+use Extly\Joomla\Entity\Fields\FieldGroup;
 use Joomla\CMS\Factory;
 use Joomla\Registry\Registry;
-use Phproberto\Joomla\Entity\Core\Column;
-use Phproberto\Joomla\Entity\Fields\Field;
-use Phproberto\Joomla\Entity\Fields\FieldGroup;
-use Phproberto\Joomla\Entity\Core\Extension\Component;
-use Phproberto\Joomla\Entity\Fields\Column as FieldsColumn;
 
 /**
  * Field entity tests.
@@ -23,254 +29,254 @@ use Phproberto\Joomla\Entity\Fields\Column as FieldsColumn;
  */
 class FieldTest extends \TestCaseDatabase
 {
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		Field::clearAll();
+    /**
+     * This method is called before the first test of this test class is run.
+     *
+     * @return  void
+     */
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
 
-		parent::tearDown();
-	}
+        $test = static::$driver->getConnection()->exec(file_get_contents(JPATH_TESTS_PHPROBERTO.'/db/schema/fields.sql'));
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function fieldGroupReturnsCorrectFieldGroup()
-	{
-		$field = new Field(12);
-		$field->bind(['id' => 12, 'title' => 'Test field', FieldsColumn::FIELD_GROUP => 66]);
+        Factory::$database = static::$driver;
+    }
 
-		$fieldGroup = $field->fieldGroup();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        Field::clearAll();
 
-		$this->assertInstanceOf(FieldGroup::class, $fieldGroup);
-		$this->assertSame(66, $fieldGroup->id());
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_extensions', JPATH_TESTS_PHPROBERTO . '/db/data/extensions.csv');
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function fieldGroupReturnsCorrectFieldGroup()
+    {
+        $field = new Field(12);
+        $field->bind(['id' => 12, 'title' => 'Test field', FieldsColumn::FIELD_GROUP => 66]);
 
-		return $dataSet;
-	}
+        $fieldGroup = $field->fieldGroup();
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function hasFieldGroupReturnsCorrectValue()
-	{
-		$field = new Field(12);
-		$field->bind(['id' => 12, 'title' => 'Test field']);
+        $this->assertInstanceOf(FieldGroup::class, $fieldGroup);
+        $this->assertSame(66, $fieldGroup->id());
+    }
 
-		$this->assertFalse($field->hasFieldGroup());
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function hasFieldGroupReturnsCorrectValue()
+    {
+        $field = new Field(12);
+        $field->bind(['id' => 12, 'title' => 'Test field']);
 
-		$field = new Field(12);
-		$field->bind(['id' => 12, 'title' => 'Test field', FieldsColumn::FIELD_GROUP => 66]);
+        $this->assertFalse($field->hasFieldGroup());
 
-		$this->assertTrue($field->hasFieldGroup());
+        $field = new Field(12);
+        $field->bind(['id' => 12, 'title' => 'Test field', FieldsColumn::FIELD_GROUP => 66]);
 
-		$field = new Field(12);
-		$field->bind(['id' => 12, 'title' => 'Test field', FieldsColumn::FIELD_GROUP => '']);
+        $this->assertTrue($field->hasFieldGroup());
 
-		$this->assertFalse($field->hasFieldGroup());
-	}
+        $field = new Field(12);
+        $field->bind(['id' => 12, 'title' => 'Test field', FieldsColumn::FIELD_GROUP => '']);
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function hasRawValueReturnsCorrectValue()
-	{
-		$field = new Field(12);
-		$field->bind(['id' => 12, 'title' => 'Test field']);
+        $this->assertFalse($field->hasFieldGroup());
+    }
 
-		$this->assertFalse($field->hasRawValue());
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function hasRawValueReturnsCorrectValue()
+    {
+        $field = new Field(12);
+        $field->bind(['id' => 12, 'title' => 'Test field']);
 
-		$field = new Field(14);
-		$field->bind(['id' => 14, 'title' => 'Another field', 'rawvalue' => 'My value']);
+        $this->assertFalse($field->hasRawValue());
 
-		$this->assertTrue($field->hasRawValue());
-	}
+        $field = new Field(14);
+        $field->bind(['id' => 14, 'title' => 'Another field', 'rawvalue' => 'My value']);
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function hasValueReturnsCorrectValue()
-	{
-		$field = new Field(12);
-		$field->bind(['id' => 12, 'title' => 'Test field']);
+        $this->assertTrue($field->hasRawValue());
+    }
 
-		$this->assertFalse($field->hasValue());
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function hasValueReturnsCorrectValue()
+    {
+        $field = new Field(12);
+        $field->bind(['id' => 12, 'title' => 'Test field']);
 
-		$field = new Field(14);
-		$field->bind(['id' => 14, 'title' => 'Another field', 'value' => 'My value']);
+        $this->assertFalse($field->hasValue());
 
-		$this->assertTrue($field->hasValue());
-	}
+        $field = new Field(14);
+        $field->bind(['id' => 14, 'title' => 'Another field', 'value' => 'My value']);
 
-	/**
-	 * @test
-	 *
-	 * @return  void
-	 */
-	public function paramsReturnsParameters()
-	{
-		$field = $this->getMockBuilder(Field::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
+        $this->assertTrue($field->hasValue());
+    }
 
-		$field->method('columnAlias')
-			->willReturn(Column::PARAMS);
+    /**
+     * @test
+     *
+     * @return  void
+     */
+    public function paramsReturnsParameters()
+    {
+        $field = $this->getMockBuilder(Field::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$field->bind(array('id' => 999, 'params' => '{"foo":"var"}'));
+        $field->method('columnAlias')
+            ->willReturn(Column::PARAMS);
 
-		$this->assertEquals(new Registry(array('foo' => 'var')), $field->params());
-	}
+        $field->bind(['id' => 999, 'params' => '{"foo":"var"}']);
 
-	/**
-	 * @test
-	 *
-	 * @return  void
-	 */
-	public function stateReturnsCorrectValue()
-	{
-		$field = $this->getMockBuilder(Field::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
+        $this->assertEquals(new Registry(['foo' => 'var']), $field->params());
+    }
 
-		$field->method('columnAlias')
-			->willReturn(Column::STATE);
+    /**
+     * @test
+     *
+     * @return  void
+     */
+    public function stateReturnsCorrectValue()
+    {
+        $field = $this->getMockBuilder(Field::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$field->bind(array('id' => 999, 'published' => '0'));
+        $field->method('columnAlias')
+            ->willReturn(Column::STATE);
 
-		$this->assertEquals(0, $field->state());
+        $field->bind(['id' => 999, 'published' => '0']);
 
-		$field->bind(array('id' => 999, 'published' => '1'));
+        $this->assertEquals(0, $field->state());
 
-		$this->assertEquals(1, $field->state());
-	}
+        $field->bind(['id' => 999, 'published' => '1']);
 
-	/**
-	 * @test
-	 *
-	 * @return  void
-	 */
-	public function tableReturnsCorrectInstance()
-	{
-		$component = $this->getMockBuilder(Component::class)
-			->setMethods(array('table'))
-			->getMock();
+        $this->assertEquals(1, $field->state());
+    }
 
-		$component->expects($this->once())
-			->method('table')
-			->with($this->equalTo('Field'))
-			->willReturn('componentTable');
+    /**
+     * @test
+     *
+     * @return  void
+     */
+    public function tableReturnsCorrectInstance()
+    {
+        $component = $this->getMockBuilder(Component::class)
+            ->setMethods(['table'])
+            ->getMock();
 
-		$field = $this->getMockBuilder(Field::class)
-			->setMethods(array('component'))
-			->getMock();
+        $component->expects($this->once())
+            ->method('table')
+            ->with($this->equalTo('Field'))
+            ->willReturn('componentTable');
 
-		$field->method('component')
-			->willReturn($component);
+        $field = $this->getMockBuilder(Field::class)
+            ->setMethods(['component'])
+            ->getMock();
 
-		$this->assertSame('componentTable', $field->table());
-	}
+        $field->method('component')
+            ->willReturn($component);
 
-	/**
-	 * @test
-	 *
-	 * @return  void
-	 */
-	public function tableReturnsSpecificTableInstance()
-	{
-		$field = new Field;
+        $this->assertSame('componentTable', $field->table());
+    }
 
-		$this->assertInstanceOf('JTableUser', $field->table('User', 'JTable'));
-	}
+    /**
+     * @test
+     *
+     * @return  void
+     */
+    public function tableReturnsSpecificTableInstance()
+    {
+        $field = new Field();
 
-	/**
-	 * @test
-	 *
-	 * @return  void
-	 */
-	public function nameRetrieved()
-	{
-		$field = new Field(999);
+        $this->assertInstanceOf('JTableUser', $field->table('User', 'JTable'));
+    }
 
-		$reflection = new \ReflectionClass($field);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+    /**
+     * @test
+     *
+     * @return  void
+     */
+    public function nameRetrieved()
+    {
+        $field = new Field(999);
 
-		$rowProperty->setValue($field, array('id' => 999, 'name' => 'field_name'));
+        $reflectionClass = new \ReflectionClass($field);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertSame('field_name', $field->fieldName());
-	}
+        $reflectionProperty->setValue($field, ['id' => 999, 'name' => 'field_name']);
 
-	/**
-	 * @test
-	 *
-	 * @return  void
-	 */
-	public function valueRetrieved()
-	{
-		$field = new Field(999);
+        $this->assertSame('field_name', $field->fieldName());
+    }
 
-		$reflection = new \ReflectionClass($field);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+    /**
+     * @test
+     *
+     * @return  void
+     */
+    public function valueRetrieved()
+    {
+        $field = new Field(999);
 
-		$rowProperty->setValue($field, array('id' => 999, 'value' => 100));
+        $reflectionClass = new \ReflectionClass($field);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertSame(100, $field->value());
-	}
+        $reflectionProperty->setValue($field, ['id' => 999, 'value' => 100]);
 
-	/**
-	 * @test
-	 *
-	 * @return  void
-	 */
-	public function rawValueRetrieved()
-	{
-		$field = new Field(999);
+        $this->assertSame(100, $field->value());
+    }
 
-		$reflection = new \ReflectionClass($field);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+    /**
+     * @test
+     *
+     * @return  void
+     */
+    public function rawValueRetrieved()
+    {
+        $field = new Field(999);
 
-		$rowProperty->setValue($field, array('id' => 999, 'rawvalue' => array('x' => 'dummy')));
+        $reflectionClass = new \ReflectionClass($field);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$expected = array('x' => 'dummy');
+        $reflectionProperty->setValue($field, ['id' => 999, 'rawvalue' => ['x' => 'dummy']]);
 
-		$this->assertEquals($expected, $field->rawValue());
-	}
+        $expected = ['x' => 'dummy'];
 
-	/**
-	 * This method is called before the first test of this test class is run.
-	 *
-	 * @return  void
-	 */
-	public static function setUpBeforeClass()
-	{
-		parent::setUpBeforeClass();
+        $this->assertEquals($expected, $field->rawValue());
+    }
 
-		$test = static::$driver->getConnection()->exec(file_get_contents(JPATH_TESTS_PHPROBERTO . '/db/schema/fields.sql'));
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_extensions', JPATH_TESTS_PHPROBERTO.'/db/data/extensions.csv');
 
-		Factory::$database = static::$driver;
-	}
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

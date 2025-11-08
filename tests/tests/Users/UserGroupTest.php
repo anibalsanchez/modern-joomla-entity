@@ -1,18 +1,24 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users;
+namespace Extly\Joomla\Entity\Tests\Users;
 
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Users\Column;
+use Extly\Joomla\Entity\Users\User;
+use Extly\Joomla\Entity\Users\UserGroup;
 use Joomla\Registry\Registry;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Users\Column;
-use Phproberto\Joomla\Entity\Users\UserGroup;
 
 /**
  * UserGroup entity tests.
@@ -21,158 +27,159 @@ use Phproberto\Joomla\Entity\Users\UserGroup;
  */
 class UserGroupTest extends \TestCaseDatabase
 {
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-		$this->saveFactoryState();
+        $this->saveFactoryState();
 
-		\JFactory::$session     = $this->getMockSession();
-		\JFactory::$config      = $this->getMockConfig();
-		\JFactory::$application = $this->getMockCmsApp();
-	}
+        \Joomla\CMS\Factory::$session = $this->getMockSession();
+        \Joomla\CMS\Factory::$config = $this->getMockConfig();
+        \Joomla\CMS\Factory::$application = $this->getMockCmsApp();
+    }
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		UserGroup::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        UserGroup::clearAll();
 
-		$this->restoreFactoryState();
+        $this->restoreFactoryState();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_users', JPATH_TEST_DATABASE . '/jos_users.csv');
-		$dataSet->addTable('jos_usergroups', JPATH_TEST_DATABASE . '/jos_usergroups.csv');
-		$dataSet->addTable('jos_user_usergroup_map', JPATH_TEST_DATABASE . '/jos_user_usergroup_map.csv');
+    /**
+     * loadUsers returns empty collection for entities without id.
+     *
+     * @return  void
+     */
+    public function testLoadUsersReturnsEmptyCollectionForEntitiesWithoutId()
+    {
+        $userGroup = new UserGroup();
 
-		return $dataSet;
-	}
+        $reflectionClass = new \ReflectionClass($userGroup);
+        $reflectionMethod = $reflectionClass->getMethod('loadUsers');
+        $reflectionMethod->setAccessible(true);
 
-	/**
-	 * loadUsers returns empty collection for entities without id.
-	 *
-	 * @return  void
-	 */
-	public function testLoadUsersReturnsEmptyCollectionForEntitiesWithoutId()
-	{
-		$entity = new UserGroup;
+        $this->assertEquals(new Collection(), $reflectionMethod->invoke($userGroup));
+    }
 
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('loadUsers');
-		$method->setAccessible(true);
+    /**
+     * loadUsers returns correct collection for entities with id.
+     *
+     * @return  void
+     */
+    public function testLoadUsersReturnsCorrectCollectionForEntitiesWithId()
+    {
+        $users = [
+            333 => ['id' => 333, 'name' => 'Héctor Tilla'],
+            666 => ['id' => 666, 'name' => 'Carmelo Cotón'],
+            999 => ['id' => 999, 'name' => 'Ricardo Borriquero'],
+        ];
 
-		$this->assertEquals(new Collection, $method->invoke($entity));
-	}
+        $items = [
+            (object) $users[666],
+            (object) $users[999],
+        ];
 
-	/**
-	 * loadUsers returns correct collection for entities with id.
-	 *
-	 * @return  void
-	 */
-	public function testLoadUsersReturnsCorrectCollectionForEntitiesWithId()
-	{
-		$users = array(
-			333 => array('id' => 333, 'name' => 'Héctor Tilla'),
-			666 => array('id' => 666, 'name' => 'Carmelo Cotón'),
-			999 => array('id' => 999, 'name' => 'Ricardo Borriquero')
-		);
+        $usersModel = $this->getMockBuilder('UsersModelMock')
+            ->disableOriginalConstructor()
+            ->setMethods(['getItems'])
+            ->getMock();
 
-		$items = array(
-			(object) $users[666],
-			(object) $users[999]
-		);
+        $usersModel->expects($this->once())
+            ->method('getItems')
+            ->willReturn($items);
 
-		$usersModel = $this->getMockBuilder('UsersModelMock')
-			->disableOriginalConstructor()
-			->setMethods(array('getItems'))
-			->getMock();
+        $entity = $this->getMockBuilder(UserGroup::class)
+            ->setMethods(['usersModel'])
+            ->getMock();
 
-		$usersModel->expects($this->once())
-			->method('getItems')
-			->willReturn($items);
+        $entity->expects($this->once())
+            ->method('usersModel')
+            ->willReturn($usersModel);
 
-		$entity = $this->getMockBuilder(UserGroup::class)
-			->setMethods(array('usersModel'))
-			->getMock();
+        $reflectionClass = new \ReflectionClass($entity);
 
-		$entity->expects($this->once())
-			->method('usersModel')
-			->willReturn($usersModel);
+        $reflectionProperty = $reflectionClass->getProperty('id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($entity, 333);
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionMethod = $reflectionClass->getMethod('loadUsers');
+        $reflectionMethod->setAccessible(true);
 
-		$idProperty = $reflection->getProperty('id');
-		$idProperty->setAccessible(true);
-		$idProperty->setValue($entity, 333);
+        $user666 = new User(666);
+        $user666->bind($users[666]);
 
-		$method = $reflection->getMethod('loadUsers');
-		$method->setAccessible(true);
+        $user999 = new User(999);
+        $user999->bind($users[999]);
 
-		$user666 = new User(666);
-		$user666->bind($users[666]);
-		$user999 = new User(999);
-		$user999->bind($users[999]);
+        $collection = new Collection([$user666, $user999]);
 
-		$expected = new Collection(array($user666, $user999));
+        $this->assertEquals($collection, $reflectionMethod->invoke($entity));
+    }
 
-		$this->assertEquals($expected, $method->invoke($entity));
-	}
+    /**
+     * table returns correct table instance.
+     *
+     * @return  void
+     */
+    public function testTableReturnsCorrectTableInstance()
+    {
+        $userGroup = new UserGroup();
 
-	/**
-	 * table returns correct table instance.
-	 *
-	 * @return  void
-	 */
-	public function testTableReturnsCorrectTableInstance()
-	{
-		$entity = new UserGroup;
+        $this->assertInstanceOf('JTableUsergroup', $userGroup->table());
+    }
 
-		$this->assertInstanceOf('JTableUsergroup', $entity->table());
-	}
+    /**
+     * usersModel returns correct value.
+     *
+     * @return  void
+     */
+    public function testUsersModelReturnsCorrectValue()
+    {
+        $entity = new UserGroup();
 
-	/**
-	 * usersModel returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testUsersModelReturnsCorrectValue()
-	{
-		$entity = new Usergroup;
+        $reflectionClass = new \ReflectionClass($entity);
+        $reflectionMethod = $reflectionClass->getMethod('usersModel');
+        $reflectionMethod->setAccessible(true);
 
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('usersModel');
-		$method->setAccessible(true);
+        $model = $reflectionMethod->invoke($entity);
 
-		$model = $method->invoke($entity);
+        $this->assertInstanceOf('UsersModelUsers', $model);
+        $this->assertSame(null, $model->getState('filter.group_id'));
 
-		$this->assertInstanceOf('UsersModelUsers', $model);
-		$this->assertSame(null, $model->getState('filter.group_id'));
+        $entity = new UserGroup(34);
 
-		$entity = new Usergroup(34);
+        $model = $reflectionMethod->invoke($entity);
 
-		$model = $method->invoke($entity);
+        $this->assertInstanceOf('UsersModelUsers', $model);
+        $this->assertSame(34, $model->getState('filter.group_id'));
+    }
 
-		$this->assertInstanceOf('UsersModelUsers', $model);
-		$this->assertSame(34, $model->getState('filter.group_id'));
-	}
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_users', JPATH_TEST_DATABASE.'/jos_users.csv');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_usergroups', JPATH_TEST_DATABASE.'/jos_usergroups.csv');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_user_usergroup_map', JPATH_TEST_DATABASE.'/jos_user_usergroup_map.csv');
+
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation;
+namespace Extly\Joomla\Entity\Tests\Validation;
 
-use Phproberto\Joomla\Entity\Validation\Validator;
-use Phproberto\Joomla\Entity\Validation\Rule;
-use Phproberto\Joomla\Entity\Tests\Stubs\Entity;
+use Extly\Joomla\Entity\Tests\Stubs\Entity;
+use Extly\Joomla\Entity\Validation\Rule;
+use Extly\Joomla\Entity\Validation\Validator;
 
 /**
  * Base rule tests.
@@ -19,23 +25,23 @@ use Phproberto\Joomla\Entity\Tests\Stubs\Entity;
  */
 class RuleTest extends \TestCase
 {
-	/**
-	 * fails returns true when passes returns false.
-	 *
-	 * @return  void
-	 */
-	public function testFailsReturnsTruenWhenPassesReturnsFalse()
-	{
-		$rule = $this->getMockBuilder(Rule::class)
-			->setMethods(array('passes'))
-			->getMockForAbstractClass();
+    /**
+     * fails returns true when passes returns false.
+     *
+     * @return  void
+     */
+    public function testFailsReturnsTruenWhenPassesReturnsFalse()
+    {
+        $rule = $this->getMockBuilder(Rule::class)
+            ->setMethods(['passes'])
+            ->getMockForAbstractClass();
 
-		$rule->expects($this->exactly(2))
-			->method('passes')
-			->with('value')
-			->will($this->onConsecutiveCalls(false, true));
+        $rule->expects($this->exactly(2))
+            ->method('passes')
+            ->with('value')
+            ->will($this->onConsecutiveCalls(false, true));
 
-		$this->assertTrue($rule->fails('value'));
-		$this->assertFalse($rule->fails('value'));
-	}
+        $this->assertTrue($rule->fails('value'));
+        $this->assertFalse($rule->fails('value'));
+    }
 }

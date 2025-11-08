@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithParams;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithParams;
 use Joomla\Registry\Registry;
 
 /**
@@ -18,472 +24,473 @@ use Joomla\Registry\Registry;
  */
 class HasParamsTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * clearParmas sets params property to null.
-	 *
-	 * @return  void
-	 */
-	public function testClearParamsSetsParamsPropertyToNull()
-	{
-		$entity = $this->getEntity(array('id' => 999, 'params' => '{"foo":"bar"}'));
+    /**
+     * clearParmas sets params property to null.
+     *
+     * @return  void
+     */
+    public function testClearParamsSetsParamsPropertyToNull()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(['id' => 999, 'params' => '{"foo":"bar"}']);
 
-		$reflection = new \ReflectionClass($entity);
-
-		$paramsProperty = $reflection->getProperty('params');
-		$paramsProperty->setAccessible(true);
-
-		$this->assertSame(null, $paramsProperty->getValue($entity));
-
-		$loadedParams = new Registry('{"foo":"bar-modified"}');
-		$paramsProperty->setValue($entity, $loadedParams);
-
-		$this->assertSame($loadedParams, $paramsProperty->getValue($entity));
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+
+        $reflectionProperty = $reflectionClass->getProperty('params');
+        $reflectionProperty->setAccessible(true);
+
+        $this->assertSame(null, $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+
+        $registry = new Registry('{"foo":"bar-modified"}');
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, $registry);
+
+        $this->assertSame($registry, $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject));
 
-		$entity->clearParams();
-
-		$this->assertSame(null, $paramsProperty->getValue($entity));
-	}
-
-	/**
-	 * loadParams returns row params if they are already there as string.
-	 *
-	 * @return  void
-	 */
-	public function testLoadParamsReturnsRowParamsIfTheyAreAlreadyThereAsString()
-	{
-		$row = array('id' => 999, 'title' => 'test entity', 'attribs' => '{"foo":"var"}', 'params' => '{"bar":"foo"}');
-
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
-
-		$entity->method('columnAlias')
-			->willReturn('attribs');
-
-		$entity->bind($row);
-
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('loadParams');
-		$method->setAccessible(true);
-
-		$this->assertSame('foo', $method->invoke($entity)->get('bar'));
-	}
-
-	/**
-	 * loadParams returns row params if they are already there as Registry.
-	 *
-	 * @return  void
-	 */
-	public function testLoadParamsReturnsRowParamsIfTheyAreAlreadyThereAsRegistry()
-	{
-		$params = new Registry('{"bar":"foo"}');
-
-		$row = array('id' => 999, 'title' => 'test entity', 'params' => $params);
-
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
-
-		$entity->method('columnAlias')
-			->willReturn('params');
-
-		$entity->bind($row);
-
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('loadParams');
-		$method->setAccessible(true);
-
-		$this->assertSame($params, $method->invoke($entity));
-	}
-
-	/**
-	 * loadParams returns Registry if table loads params as Registry.
-	 *
-	 * @return  void
-	 */
-	public function testLoadParamsReturnsRegistryIfTableLoadsParamsAsRegistry()
-	{
-		$params = new Registry('{"bar":"foo"}');
-
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(['columnAlias', 'get'])
-			->getMock();
-
-		$entity->method('columnAlias')
-			->willReturn('params');
-
-		$entity->method('get')
-			->with('params')
-			->willReturn($params);
-
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('loadParams');
-		$method->setAccessible(true);
-
-		$this->assertSame($params, $method->invoke($entity));
-	}
-
-	/**
-	 * @return  void
-	 */
-	public function testLoadParamsReturnsRegistryIfTableReturnsParamsAsStringWithSpaces()
-	{
-		$params = '        {"bar":"foo"}     ';
-
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(['columnAlias', 'get'])
-			->getMock();
-
-		$entity->method('columnAlias')
-			->willReturn('params');
-
-		$entity->method('get')
-			->with('params')
-			->willReturn($params);
-
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('loadParams');
-		$method->setAccessible(true);
-
-		$this->assertSame('foo', $method->invoke($entity)->get('bar'));
-	}
-
-	/**
-	 * @return  void
-	 */
-	public function testLoadParamsReturnsRegistryIfTableReturnsParamsAsArray()
-	{
-		$params = ['bar' => 'fromArray'];
-
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(['columnAlias', 'get'])
-			->getMock();
-
-		$entity->method('columnAlias')
-			->willReturn('params');
-
-		$entity->method('get')
-			->with('params')
-			->willReturn($params);
-
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('loadParams');
-		$method->setAccessible(true);
-
-		$this->assertSame('fromArray', $method->invoke($entity)->get('bar'));
-	}
-
-	/**
-	 * param returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testParamReturnsCorrectValue()
-	{
-		$entity = $this->getEntity(array('id' => 999, 'params' => '{"foo":"var"}'));
-
-		$this->assertSame('var', $entity->param('foo'));
-		$this->assertSame(null, $entity->param('unknown'));
-		$this->assertSame('default', $entity->param('use-default', 'default'));
-	}
-
-	/**
-	 * params works with attribs column.
-	 *
-	 * @return  void
-	 */
-	public function testParamsWorksWithAttribsColumn()
-	{
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
-
-		$entity->expects($this->once())
-			->method('columnAlias')
-			->willReturn('attribs');
-
-		$reflection = new \ReflectionClass($entity);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-
-		$rowProperty->setValue($entity, array('id' => 999, 'attribs' => '{"foo":"var"}'));
-
-		$this->assertEquals(new Registry(array('foo' => 'var')), $entity->params());
-	}
-
-	/**
-	 * params works for unset params.
-	 *
-	 * @return  void
-	 */
-	public function testParamsWorksForUnsetParams()
-	{
-		$entity = $this->getEntity(array('id' => 999, 'name' => 'Roberto Segura', 'params' => ''));
-
-		$this->assertEquals(new Registry, $entity->params());
-	}
-
-	/**
-	 * params works with params column.
-	 *
-	 * @return  void
-	 */
-	public function testParamsWorksWithParamsColumn()
-	{
-		$entity = $this->getEntity(array('id' => 999, 'params' => '{"foo":"bar"}'));
-
-		$this->assertEquals(new Registry(array('foo' => 'bar')), $entity->params());
-	}
-
-	/**
-	 * saveParams throws an exception when column is not present in database row.
-	 *
-	 * @return  void
-	 *
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testSaveParamsThrowsExceptionIfParamsColumnIsNotPresentInRow()
-	{
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
-
-		$entity->method('columnAlias')
-			->willReturn('attribs');
-
-		$reflection = new \ReflectionClass($entity);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-
-		$rowProperty->setValue($entity, array('id' => 999, 'params' => '{"test":"var"}'));
-
-		$entity->saveParams();
-	}
-
-	/**
-	 * saveParams stores correct value.
-	 *
-	 * @return  void
-	 *
-	 * @expectedException \RuntimeException
-	 */
-	public function testSaveParamsThrowsExceptionIfTableSaveFails()
-	{
-		$tableMock = $this->getMockBuilder(\JTable::class)
-			->disableOriginalConstructor()
-			->setMethods(array('save', 'getError'))
-			->getMock();
-
-		$tableMock->expects($this->at(0))
-			->method('save')
-			->willReturn(false);
-
-		$tableMock->expects($this->at(1))
-			->method('getError')
-			->willReturn('En un lugar de La Mancha de cuyo nombre no quiero acordarme');
-
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(array('table'))
-			->getMock();
-
-		$entity->method('table')
-			->willReturn($tableMock);
-
-		$reflection = new \ReflectionClass($entity);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-
-		$rowProperty->setValue($entity, array('id' => 999, 'params' => '{"test":"var"}'));
-
-		$entity->saveParams();
-	}
-
-	/**
-	 * saveParams returns true when table saves data.
-	 *
-	 * @return  void
-	 */
-	public function testSaveParamsReturnsTrueWhenTableSavesData()
-	{
-		$tableMock = $this->getMockBuilder(\JTable::class)
-			->disableOriginalConstructor()
-			->setMethods(array('save', 'load'))
-			->getMock();
-
-		$tableMock
-			->method('load')
-			->willReturn(true);
-
-		$tableMock
-			->method('save')
-			->willReturn(true);
-
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(array('table'))
-			->getMock();
-
-		$entity->method('table')
-			->willReturn($tableMock);
-
-		$reflection = new \ReflectionClass($entity);
-		$idProperty = $reflection->getProperty('id');
-		$idProperty->setAccessible(true);
-		$idProperty->setValue($entity, 999);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-
-		$rowProperty->setValue($entity, array('id' => 999, 'params' => '{"test":"var"}'));
-
-		$this->assertTrue($entity->saveParams());
-	}
-
-	/**
-	 * setParam sets the correct param value.
-	 *
-	 * @return  void
-	 */
-	public function testSetParamSetsCorrectParamValue()
-	{
-		$entity = $this->getEntity(array('id' => 999, 'params' => '{"test":"var"}'));
-
-		$reflection = new \ReflectionClass($entity);
-
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-
-		$paramsProperty = $reflection->getProperty('params');
-		$paramsProperty->setAccessible(true);
-
-		$this->assertSame(null, $paramsProperty->getValue($entity));
-
-		$entity->setParam('foo', 'foobar');
-
-		$this->assertEquals(new Registry(array('test' => 'var', 'foo' => 'foobar')), $entity->params());
-
-		$entity->setParam('test', 'modified-var');
-
-		$expectedParams = new Registry(array('test' => 'modified-var', 'foo' => 'foobar'));
-
-		$this->assertEquals($expectedParams, $entity->params());
-		$this->assertEquals($expectedParams->toString(), $rowProperty->getValue($entity)['params']);
-	}
-
-	/**
-	 * setParam updates row parameters.
-	 *
-	 * @return  void
-	 */
-	public function testSetParamSetsCorrectParamValueWithCustomParamsColumn()
-	{
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
-
-		$entity->method('columnAlias')
-			->willReturn('attribs');
-
-		$reflection = new \ReflectionClass($entity);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-
-		$rowProperty->setValue($entity, array('id' => 999, 'attribs' => '{"test":"var"}'));
-
-		$reflection = new \ReflectionClass($entity);
-		$paramsProperty = $reflection->getProperty('params');
-		$paramsProperty->setAccessible(true);
-
-		$this->assertSame(null, $paramsProperty->getValue($entity));
-
-		$entity->setParam('foo', 'foobar');
-
-		$this->assertEquals(new Registry(array('test' => 'var', 'foo' => 'foobar')), $paramsProperty->getValue($entity));
-
-		$entity->setParam('test', 'modified-var');
-
-		$expectedParams = new Registry(array('test' => 'modified-var', 'foo' => 'foobar'));
-
-		$this->assertEquals($expectedParams, $paramsProperty->getValue($entity));
-		$this->assertEquals($expectedParams->toString(), $rowProperty->getValue($entity)['attribs']);
-	}
-
-	/**
-	 * setParam sets the correct param value.
-	 *
-	 * @return  void
-	 */
-	public function testSetParamsSetsCorrectValue()
-	{
-		$entity = $this->getEntity(array('id' => 999, 'params' => '{"test":"var"}'));
-
-		$reflection = new \ReflectionClass($entity);
-
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-
-		$paramsProperty = $reflection->getProperty('params');
-		$paramsProperty->setAccessible(true);
-
-		$this->assertSame(null, $paramsProperty->getValue($entity));
-
-		$expectedParams = new Registry(array('test' => 'modified-var', 'foo' => 'foobar'));
-		$entity->setParams($expectedParams);
-
-		$this->assertEquals($expectedParams, $paramsProperty->getValue($entity));
-		$this->assertEquals($expectedParams->toString(), $rowProperty->getValue($entity)['params']);
-	}
-
-	/**
-	 * setParam updates row parameters.
-	 *
-	 * @return  void
-	 */
-	public function testSetParamsSetsCorrectValueWithCustomParamsColumn()
-	{
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
-
-		$entity->method('columnAlias')
-			->willReturn('attribs');
-
-		$reflection = new \ReflectionClass($entity);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-
-		$rowProperty->setValue($entity, array('id' => 999, 'attribs' => '{"test":"var"}'));
-
-		$reflection = new \ReflectionClass($entity);
-		$paramsProperty = $reflection->getProperty('params');
-		$paramsProperty->setAccessible(true);
-
-		$this->assertSame(null, $paramsProperty->getValue($entity));
-
-		$expectedParams = new Registry(array('test' => 'modified-var', 'foo' => 'foobar'));
-
-		$entity->setParams($expectedParams);
-
-		$this->assertEquals($expectedParams, $paramsProperty->getValue($entity));
-		$this->assertEquals($expectedParams->toString(), $rowProperty->getValue($entity)['attribs']);
-	}
-
-	/**
-	 * Get a mocked entity.
-	 *
-	 * @param   array  $row  Row returned by the entity as data
-	 *
-	 * @return  \PHPUnit_Framework_MockObject_MockObject
-	 */
-	private function getEntity($row = array())
-	{
-		$entity = $this->getMockBuilder(EntityWithParams::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
-
-		$entity->method('columnAlias')
-			->willReturn('params');
-
-		$entity->bind($row);
-
-		return $entity;
-	}
+        $phpUnitFrameworkMockObjectMockObject->clearParams();
+
+        $this->assertSame(null, $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+    }
+
+    /**
+     * loadParams returns row params if they are already there as string.
+     *
+     * @return  void
+     */
+    public function testLoadParamsReturnsRowParamsIfTheyAreAlreadyThereAsString()
+    {
+        $row = ['id' => 999, 'title' => 'test entity', 'attribs' => '{"foo":"var"}', 'params' => '{"bar":"foo"}'];
+
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('attribs');
+
+        $phpUnitFrameworkMockObjectMockObject->bind($row);
+
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionMethod = $reflectionClass->getMethod('loadParams');
+        $reflectionMethod->setAccessible(true);
+
+        $this->assertSame('foo', $reflectionMethod->invoke($phpUnitFrameworkMockObjectMockObject)->get('bar'));
+    }
+
+    /**
+     * loadParams returns row params if they are already there as Registry.
+     *
+     * @return  void
+     */
+    public function testLoadParamsReturnsRowParamsIfTheyAreAlreadyThereAsRegistry()
+    {
+        $registry = new Registry('{"bar":"foo"}');
+
+        $row = ['id' => 999, 'title' => 'test entity', 'params' => $registry];
+
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('params');
+
+        $phpUnitFrameworkMockObjectMockObject->bind($row);
+
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionMethod = $reflectionClass->getMethod('loadParams');
+        $reflectionMethod->setAccessible(true);
+
+        $this->assertSame($registry, $reflectionMethod->invoke($phpUnitFrameworkMockObjectMockObject));
+    }
+
+    /**
+     * loadParams returns Registry if table loads params as Registry.
+     *
+     * @return  void
+     */
+    public function testLoadParamsReturnsRegistryIfTableLoadsParamsAsRegistry()
+    {
+        $registry = new Registry('{"bar":"foo"}');
+
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['columnAlias', 'get'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('params');
+
+        $phpUnitFrameworkMockObjectMockObject->method('get')
+            ->with('params')
+            ->willReturn($registry);
+
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionMethod = $reflectionClass->getMethod('loadParams');
+        $reflectionMethod->setAccessible(true);
+
+        $this->assertSame($registry, $reflectionMethod->invoke($phpUnitFrameworkMockObjectMockObject));
+    }
+
+    /**
+     * @return  void
+     */
+    public function testLoadParamsReturnsRegistryIfTableReturnsParamsAsStringWithSpaces()
+    {
+        $params = '        {"bar":"foo"}     ';
+
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['columnAlias', 'get'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('params');
+
+        $phpUnitFrameworkMockObjectMockObject->method('get')
+            ->with('params')
+            ->willReturn($params);
+
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionMethod = $reflectionClass->getMethod('loadParams');
+        $reflectionMethod->setAccessible(true);
+
+        $this->assertSame('foo', $reflectionMethod->invoke($phpUnitFrameworkMockObjectMockObject)->get('bar'));
+    }
+
+    /**
+     * @return  void
+     */
+    public function testLoadParamsReturnsRegistryIfTableReturnsParamsAsArray()
+    {
+        $params = ['bar' => 'fromArray'];
+
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['columnAlias', 'get'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('params');
+
+        $phpUnitFrameworkMockObjectMockObject->method('get')
+            ->with('params')
+            ->willReturn($params);
+
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionMethod = $reflectionClass->getMethod('loadParams');
+        $reflectionMethod->setAccessible(true);
+
+        $this->assertSame('fromArray', $reflectionMethod->invoke($phpUnitFrameworkMockObjectMockObject)->get('bar'));
+    }
+
+    /**
+     * param returns correct value.
+     *
+     * @return  void
+     */
+    public function testParamReturnsCorrectValue()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(['id' => 999, 'params' => '{"foo":"var"}']);
+
+        $this->assertSame('var', $phpUnitFrameworkMockObjectMockObject->param('foo'));
+        $this->assertSame(null, $phpUnitFrameworkMockObjectMockObject->param('unknown'));
+        $this->assertSame('default', $phpUnitFrameworkMockObjectMockObject->param('use-default', 'default'));
+    }
+
+    /**
+     * params works with attribs column.
+     *
+     * @return  void
+     */
+    public function testParamsWorksWithAttribsColumn()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('columnAlias')
+            ->willReturn('attribs');
+
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
+
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'attribs' => '{"foo":"var"}']);
+
+        $this->assertEquals(new Registry(['foo' => 'var']), $phpUnitFrameworkMockObjectMockObject->params());
+    }
+
+    /**
+     * params works for unset params.
+     *
+     * @return  void
+     */
+    public function testParamsWorksForUnsetParams()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(['id' => 999, 'name' => 'Roberto Segura', 'params' => '']);
+
+        $this->assertEquals(new Registry(), $phpUnitFrameworkMockObjectMockObject->params());
+    }
+
+    /**
+     * params works with params column.
+     *
+     * @return  void
+     */
+    public function testParamsWorksWithParamsColumn()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(['id' => 999, 'params' => '{"foo":"bar"}']);
+
+        $this->assertEquals(new Registry(['foo' => 'bar']), $phpUnitFrameworkMockObjectMockObject->params());
+    }
+
+    /**
+     * saveParams throws an exception when column is not present in database row.
+     *
+     * @return  void
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testSaveParamsThrowsExceptionIfParamsColumnIsNotPresentInRow()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('attribs');
+
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
+
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'params' => '{"test":"var"}']);
+
+        $phpUnitFrameworkMockObjectMockObject->saveParams();
+    }
+
+    /**
+     * saveParams stores correct value.
+     *
+     * @return  void
+     *
+     * @expectedException \RuntimeException
+     */
+    public function testSaveParamsThrowsExceptionIfTableSaveFails()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(\JTable::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['save', 'getError'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->expects($this->at(0))
+            ->method('save')
+            ->willReturn(false);
+
+        $phpUnitFrameworkMockObjectMockObject->expects($this->at(1))
+            ->method('getError')
+            ->willReturn('En un lugar de La Mancha de cuyo nombre no quiero acordarme');
+
+        $entity = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['table'])
+            ->getMock();
+
+        $entity->method('table')
+            ->willReturn($phpUnitFrameworkMockObjectMockObject);
+
+        $reflectionClass = new \ReflectionClass($entity);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
+
+        $reflectionProperty->setValue($entity, ['id' => 999, 'params' => '{"test":"var"}']);
+
+        $entity->saveParams();
+    }
+
+    /**
+     * saveParams returns true when table saves data.
+     *
+     * @return  void
+     */
+    public function testSaveParamsReturnsTrueWhenTableSavesData()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(\JTable::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['save', 'load'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject
+            ->method('load')
+            ->willReturn(true);
+
+        $phpUnitFrameworkMockObjectMockObject
+            ->method('save')
+            ->willReturn(true);
+
+        $entity = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['table'])
+            ->getMock();
+
+        $entity->method('table')
+            ->willReturn($phpUnitFrameworkMockObjectMockObject);
+
+        $reflectionClass = new \ReflectionClass($entity);
+        $reflectionProperty = $reflectionClass->getProperty('id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($entity, 999);
+
+        $rowProperty = $reflectionClass->getProperty('row');
+        $rowProperty->setAccessible(true);
+
+        $rowProperty->setValue($entity, ['id' => 999, 'params' => '{"test":"var"}']);
+
+        $this->assertTrue($entity->saveParams());
+    }
+
+    /**
+     * setParam sets the correct param value.
+     *
+     * @return  void
+     */
+    public function testSetParamSetsCorrectParamValue()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(['id' => 999, 'params' => '{"test":"var"}']);
+
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
+
+        $paramsProperty = $reflectionClass->getProperty('params');
+        $paramsProperty->setAccessible(true);
+
+        $this->assertSame(null, $paramsProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+
+        $phpUnitFrameworkMockObjectMockObject->setParam('foo', 'foobar');
+
+        $this->assertEquals(new Registry(['test' => 'var', 'foo' => 'foobar']), $phpUnitFrameworkMockObjectMockObject->params());
+
+        $phpUnitFrameworkMockObjectMockObject->setParam('test', 'modified-var');
+
+        $registry = new Registry(['test' => 'modified-var', 'foo' => 'foobar']);
+
+        $this->assertEquals($registry, $phpUnitFrameworkMockObjectMockObject->params());
+        $this->assertEquals($registry->toString(), $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject)['params']);
+    }
+
+    /**
+     * setParam updates row parameters.
+     *
+     * @return  void
+     */
+    public function testSetParamSetsCorrectParamValueWithCustomParamsColumn()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('attribs');
+
+        $reflection = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionProperty = $reflection->getProperty('row');
+        $reflectionProperty->setAccessible(true);
+
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'attribs' => '{"test":"var"}']);
+
+        $reflection = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $paramsProperty = $reflection->getProperty('params');
+        $paramsProperty->setAccessible(true);
+
+        $this->assertSame(null, $paramsProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+
+        $phpUnitFrameworkMockObjectMockObject->setParam('foo', 'foobar');
+
+        $this->assertEquals(new Registry(['test' => 'var', 'foo' => 'foobar']), $paramsProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+
+        $phpUnitFrameworkMockObjectMockObject->setParam('test', 'modified-var');
+
+        $registry = new Registry(['test' => 'modified-var', 'foo' => 'foobar']);
+
+        $this->assertEquals($registry, $paramsProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+        $this->assertEquals($registry->toString(), $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject)['attribs']);
+    }
+
+    /**
+     * setParam sets the correct param value.
+     *
+     * @return  void
+     */
+    public function testSetParamsSetsCorrectValue()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity(['id' => 999, 'params' => '{"test":"var"}']);
+
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
+
+        $paramsProperty = $reflectionClass->getProperty('params');
+        $paramsProperty->setAccessible(true);
+
+        $this->assertSame(null, $paramsProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+
+        $registry = new Registry(['test' => 'modified-var', 'foo' => 'foobar']);
+        $phpUnitFrameworkMockObjectMockObject->setParams($registry);
+
+        $this->assertEquals($registry, $paramsProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+        $this->assertEquals($registry->toString(), $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject)['params']);
+    }
+
+    /**
+     * setParam updates row parameters.
+     *
+     * @return  void
+     */
+    public function testSetParamsSetsCorrectValueWithCustomParamsColumn()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('attribs');
+
+        $reflection = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionProperty = $reflection->getProperty('row');
+        $reflectionProperty->setAccessible(true);
+
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'attribs' => '{"test":"var"}']);
+
+        $reflection = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $paramsProperty = $reflection->getProperty('params');
+        $paramsProperty->setAccessible(true);
+
+        $this->assertSame(null, $paramsProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+
+        $registry = new Registry(['test' => 'modified-var', 'foo' => 'foobar']);
+
+        $phpUnitFrameworkMockObjectMockObject->setParams($registry);
+
+        $this->assertEquals($registry, $paramsProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+        $this->assertEquals($registry->toString(), $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject)['attribs']);
+    }
+
+    /**
+     * Get a mocked entity.
+     *
+     * @param   array  $row  Row returned by the entity as data
+     *
+     * @return  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getEntity($row = [])
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithParams::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
+
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('params');
+
+        $phpUnitFrameworkMockObjectMockObject->bind($row);
+
+        return $phpUnitFrameworkMockObjectMockObject;
+    }
 }

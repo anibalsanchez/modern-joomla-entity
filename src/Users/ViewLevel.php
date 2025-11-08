@@ -1,18 +1,24 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Users;
+namespace Extly\Joomla\Entity\Users;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\ComponentEntity;
-use Phproberto\Joomla\Entity\Users\Traits\HasUserGroups;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\ComponentEntity;
+use Extly\Joomla\Entity\Users\Traits\HasUserGroups;
 
 /**
  * ViewLevel entity.
@@ -21,53 +27,51 @@ use Phproberto\Joomla\Entity\Users\Traits\HasUserGroups;
  */
 class ViewLevel extends ComponentEntity
 {
-	use HasUserGroups;
+    use HasUserGroups;
 
-	/**
-	 * Get a table instance. Defauts to \JTableUser.
-	 *
-	 * @param   string  $name     Table name. Optional.
-	 * @param   string  $prefix   Class prefix. Optional.
-	 * @param   array   $options  Configuration array for the table. Optional.
-	 *
-	 * @return  \JTable
-	 *
-	 * @throws  \InvalidArgumentException
-	 */
-	public function table($name = '', $prefix = null, $options = array())
-	{
-		$name   = $name ?: 'ViewLevel';
-		$prefix = $prefix ?: 'JTable';
+    /**
+     * Get a table instance. Defauts to \JTableUser.
+     *
+     * @param   string  $name     Table name. Optional.
+     * @param   string  $prefix   Class prefix. Optional.
+     * @param   array   $options  Configuration array for the table. Optional.
+     *
+     * @return  \JTable
+     *
+     * @throws  \InvalidArgumentException
+     */
+    public function table($name = '', $prefix = null, $options = [])
+    {
+        $name = $name ?: 'ViewLevel';
+        $prefix = $prefix ?: 'JTable';
 
-		return parent::table($name, $prefix, $options);
-	}
+        return parent::table($name, $prefix, $options);
+    }
 
-	/**
-	 * Load associated user groups from DB.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadUserGroups()
-	{
-		$userGroups = new Collection;
+    /**
+     * Load associated user groups from DB.
+     *
+     * @return  Collection
+     */
+    protected function loadUserGroups()
+    {
+        $collection = new Collection();
 
-		if (!$this->has('rules'))
-		{
-			return $userGroups;
-		}
+        if (!$this->has('rules')) {
+            return $collection;
+        }
 
-		$rules = $this->get('rules');
-		$ids = array_unique(
-			array_filter(
-				empty($rules) ? [] : json_decode($rules)
-			)
-		);
+        $rules = $this->get('rules');
+        $ids = array_unique(
+            array_filter(
+                empty($rules) ? [] : json_decode($rules)
+            )
+        );
 
-		foreach ($ids as $id)
-		{
-			$userGroups->add(UserGroup::find($id));
-		}
+        foreach ($ids as $id) {
+            $collection->add(UserGroup::find($id));
+        }
 
-		return $userGroups;
-	}
+        return $collection;
+    }
 }

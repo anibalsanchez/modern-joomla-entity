@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithChildren;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithChildren;
 
 /**
  * HasChildren tests.
@@ -20,99 +26,101 @@ use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithChildren;
  */
 class HasChildrenTest extends \TestCaseDatabase
 {
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function childReturnsSpecificChild()
-	{
-		$child = $this->entity->child(9003);
+    public $entity;
 
-		$this->assertInstanceOf(EntityWithChildren::class, $child);
-		$this->assertSame(9003, $child->id());
-	}
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function childrenReturnsExpectedChildren()
-	{
-		$children = $this->entity->children();
+        $this->entity = new EntityWithChildren();
+        $this->entity->bind(['id' => 666, 'name' => 'Testing entity']);
+        $this->entity->loadableChildren = new Collection(
+            array_map(
+                function ($data) {
+                    $entityWithChildren = new EntityWithChildren();
+                    $entityWithChildren->bind($data);
 
-		$this->assertInstanceOf(Collection::class, $children);
-		$this->assertEquals([9001, 9003, 9005, 9002], $children->ids());
-	}
+                    return $entityWithChildren;
+                },
+                [
+                    ['id' => 9001, 'name' => 'First child'],
+                    ['id' => 9003, 'name' => 'Second child'],
+                    ['id' => 9005, 'name' => 'Third child'],
+                    ['id' => 9002, 'name' => 'Fourth child'],
+                ]
+            )
+        );
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function hasChildReturnsExpectedValue()
-	{
-		$this->assertFalse($this->entity->hasChild(9000));
-		$this->assertTrue($this->entity->hasChild(9001));
-		$this->assertFalse($this->entity->hasChild(9004));
-		$this->assertTrue($this->entity->hasChild(9002));
-	}
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        EntityWithChildren::clearAll();
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function hasChildrenReturnsExpectedValue()
-	{
-		$entity = new EntityWithChildren;
+        parent::tearDown();
+    }
 
-		$this->assertFalse($entity->hasChildren());
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function childReturnsSpecificChild()
+    {
+        $child = $this->entity->child(9003);
 
-		$this->assertTrue($this->entity->hasChildren());
-	}
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+        $this->assertInstanceOf(EntityWithChildren::class, $child);
+        $this->assertSame(9003, $child->id());
+    }
 
-		$this->entity = new EntityWithChildren;
-		$this->entity->bind(['id' => 666, 'name' => 'Testing entity']);
-		$this->entity->loadableChildren = new Collection(
-			array_map(
-				function ($data)
-				{
-					$child = new EntityWithChildren;
-					$child->bind($data);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function childrenReturnsExpectedChildren()
+    {
+        $children = $this->entity->children();
 
-					return $child;
-				},
-				[
-					['id' => 9001, 'name' => 'First child'],
-					['id' => 9003, 'name' => 'Second child'],
-					['id' => 9005, 'name' => 'Third child'],
-					['id' => 9002, 'name' => 'Fourth child'],
-				]
-			)
-		);
-	}
+        $this->assertInstanceOf(Collection::class, $children);
+        $this->assertEquals([9001, 9003, 9005, 9002], $children->ids());
+    }
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		EntityWithChildren::clearAll();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function hasChildReturnsExpectedValue()
+    {
+        $this->assertFalse($this->entity->hasChild(9000));
+        $this->assertTrue($this->entity->hasChild(9001));
+        $this->assertFalse($this->entity->hasChild(9004));
+        $this->assertTrue($this->entity->hasChild(9002));
+    }
 
-		parent::tearDown();
-	}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function hasChildrenReturnsExpectedValue()
+    {
+        $entityWithChildren = new EntityWithChildren();
+
+        $this->assertFalse($entityWithChildren->hasChildren());
+
+        $this->assertTrue($this->entity->hasChildren());
+    }
 }

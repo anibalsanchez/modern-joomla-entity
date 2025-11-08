@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Extension;
+namespace Extly\Joomla\Entity\Tests\Core\Extension;
 
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Acl\Acl;
-use Phproberto\Joomla\Entity\Core\Extension\Component;
+use Extly\Joomla\Entity\Acl\Acl;
+use Extly\Joomla\Entity\Core\Extension\Component;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * Component entity tests.
@@ -19,315 +25,316 @@ use Phproberto\Joomla\Entity\Core\Extension\Component;
  */
 class ComponentTest extends \TestCaseDatabase
 {
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-		$this->saveFactoryState();
+        $this->saveFactoryState();
 
-		\JFactory::$session     = $this->getMockSession();
-		\JFactory::$config      = $this->getMockConfig();
-		\JFactory::$application = $this->getMockCmsApp();
-	}
+        \Joomla\CMS\Factory::$session = $this->getMockSession();
+        \Joomla\CMS\Factory::$config = $this->getMockConfig();
+        \Joomla\CMS\Factory::$application = $this->getMockCmsApp();
+    }
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		Component::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        Component::clearAll();
 
-		$this->restoreFactoryState();
+        $this->restoreFactoryState();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_extensions', JPATH_TEST_DATABASE . '/jos_extensions.csv');
+    /**
+     * aclAssetName returns option.
+     *
+     * @return  void
+     */
+    public function testAclAssetNameReturnsOption()
+    {
+        $component = $this->getMockBuilder(Component::class)
+            ->setMethods(['option'])
+            ->getMock();
 
-		return $dataSet;
-	}
+        $component->expects($this->once())
+            ->method('option')
+            ->willReturn('com_phproberto');
 
-	/**
-	 * aclAssetName returns option.
-	 *
-	 * @return  void
-	 */
-	public function testAclAssetNameReturnsOption()
-	{
-		$component = $this->getMockBuilder(Component::class)
-			->setMethods(array('option'))
-			->getMock();
+        $this->assertSame('com_phproberto', $component->aclAssetName());
+    }
 
-		$component->expects($this->once())
-			->method('option')
-			->willReturn('com_phproberto');
+    /**
+     * Acl can be retrieved.
+     *
+     * @return  void
+     */
+    public function testAclCanBeRetrieved()
+    {
+        $component = new Component(666);
+        $user = new User(999);
 
-		$this->assertSame('com_phproberto', $component->aclAssetName());
-	}
+        $acl = $component->acl($user);
 
-	/**
-	 * Acl can be retrieved.
-	 *
-	 * @return  void
-	 */
-	public function testAclCanBeRetrieved()
-	{
-		$entity = new Component(666);
-		$user = new User(999);
+        $reflectionClass = new \ReflectionClass($acl);
+        $reflectionProperty = $reflectionClass->getProperty('entity');
+        $reflectionProperty->setAccessible(true);
 
-		$acl = $entity->acl($user);
+        $userProperty = $reflectionClass->getProperty('user');
+        $userProperty->setAccessible(true);
 
-		$reflection = new \ReflectionClass($acl);
-		$entityProperty = $reflection->getProperty('entity');
-		$entityProperty->setAccessible(true);
-		$userProperty = $reflection->getProperty('user');
-		$userProperty->setAccessible(true);
+        $this->assertInstanceOf(Acl::class, $acl);
+        $this->assertSame($user, $userProperty->getValue($acl));
+        $this->assertSame($component, $reflectionProperty->getValue($acl));
+    }
 
-		$this->assertInstanceOf(Acl::class, $acl);
-		$this->assertSame($user, $userProperty->getValue($acl));
-		$this->assertSame($entity, $entityProperty->getValue($acl));
-	}
+    /**
+     * active returns correct instance.
+     *
+     * @return  void
+     */
+    public function testActiveReturnsCorrectInstance()
+    {
+        \Joomla\CMS\Factory::getApplication()->input->set('option', 'com_content');
 
-	/**
-	 * active returns correct instance.
-	 *
-	 * @return  void
-	 */
-	public function testActiveReturnsCorrectInstance()
-	{
-		\JFactory::getApplication()->input->set('option', 'com_content');
+        $this->assertInstanceOf(Component::class, Component::active());
 
-		$this->assertInstanceOf(Component::class, Component::active());
+        \Joomla\CMS\Factory::getApplication()->input->set('option', 'com_phproberto');
 
-		\JFactory::getApplication()->input->set('option', 'com_phproberto');
+        $this->assertSame('com_phproberto', Component::active()->option());
 
-		$this->assertSame('com_phproberto', Component::active()->option());
+        \Joomla\CMS\Factory::getApplication()->input->set('option', null);
+    }
 
-		\JFactory::getApplication()->input->set('option', null);
-	}
+    /**
+     * fromOption loads cached id.
+     *
+     * @return  void
+     */
+    public function testFromOptionCachesId()
+    {
+        $component = new Component();
 
-	/**
-	 * fromOption loads cached id.
-	 *
-	 * @return  void
-	 */
-	public function testFromOptionCachesId()
-	{
-		$component = new Component;
+        $reflectionClass = new \ReflectionClass($component);
+        $reflectionProperty = $reflectionClass->getProperty('optionIdXref');
+        $reflectionProperty->setAccessible(true);
 
-		$reflection = new \ReflectionClass($component);
-		$optionIdXrefProperty = $reflection->getProperty('optionIdXref');
-		$optionIdXrefProperty->setAccessible(true);
+        $this->assertSame([], $reflectionProperty->getValue($component));
 
-		$this->assertSame(array(), $optionIdXrefProperty->getValue($component));
+        $component = Component::fromOption('com_content');
 
-		$component = Component::fromOption('com_content');
+        $this->assertSame(['com_content' => 22], $reflectionProperty->getValue($component));
+    }
 
-		$this->assertSame(array('com_content' => 22), $optionIdXrefProperty->getValue($component));
-	}
+    /**
+     * fromOption throws exception for wrong option.
+     *
+     * @return  void
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testFromOptionThrowsExceptionForWrongOption()
+    {
+        $component = Component::fromOption(' ');
+    }
 
-	/**
-	 * fromOption throws exception for wrong option.
-	 *
-	 * @return  void
-	 *
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testFromOptionThrowsExceptionForWrongOption()
-	{
-		$component = Component::fromOption(' ');
-	}
+    /**
+     * fromOption throws exception when component not found.
+     *
+     * @return  void
+     *
+     * @expectedException \RuntimeException
+     */
+    public function testFromOptionThrowsExceptionWhenComponentNotFound()
+    {
+        $component = Component::fromOption('com_phproberto');
+    }
 
-	/**
-	 * fromOption throws exception when component not found.
-	 *
-	 * @return  void
-	 *
-	 * @expectedException \RuntimeException
-	 */
-	public function testFromOptionThrowsExceptionWhenComponentNotFound()
-	{
-		$component = Component::fromOption('com_phproberto');
-	}
+    /**
+     * model returns admin model.
+     *
+     * @return  void
+     */
+    public function testModelReturnsAdministratorModel()
+    {
+        $component = Component::fromOption('com_admin');
 
-	/**
-	 * model returns admin model.
-	 *
-	 * @return  void
-	 */
-	public function testModelReturnsAdministratorModel()
-	{
-		$component = Component::fromOption('com_admin');
+        $this->assertEquals('AdminModelProfile', get_class($component->model('Profile')));
+    }
 
-		$this->assertEquals('AdminModelProfile', get_class($component->model('Profile')));
-	}
+    /**
+     * model returns site model.
+     *
+     * @return  void
+     */
+    public function testModelReturnsSiteModel()
+    {
+        $extension = Component::fromOption('com_content')->site();
 
-	/**
-	 * model returns site model.
-	 *
-	 * @return  void
-	 */
-	public function testModelReturnsSiteModel()
-	{
-		$component = Component::fromOption('com_content')->site();
+        $this->assertInstanceOf('ContentModelArticles', $extension->model('Articles'));
+    }
 
-		$this->assertInstanceOf('ContentModelArticles', $component->model('Articles'));
-	}
+    /**
+     * Test model returns a backend model when backend app is active.
+     *
+     * @return  void
+     */
+    public function testModelReturnsBackendModelWhenBackendAppIsActive()
+    {
+        $component = Component::fromOption('com_admin');
 
-	/**
-	 * Test model returns a backend model when backend app is active.
-	 *
-	 * @return  void
-	 */
-	public function testModelReturnsBackendModelWhenBackendAppIsActive()
-	{
-		$component = Component::fromOption('com_admin');
+        $this->assertEquals('AdminModelProfile', get_class($component->model('Profile')));
+    }
 
-		$this->assertEquals('AdminModelProfile', get_class($component->model('Profile')));
-	}
+    /**
+     * model throws exception when model not found.
+     *
+     * @return  void
+     *
+     * @expectedException \InvalidArgumentException
+     */
+    public function testModelThrowsExceptionWhenModelNotFound()
+    {
+        $component = Component::fromOption('com_admin');
 
-	/**
-	 * model throws exception when model not found.
-	 *
-	 * @return  void
-	 *
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testModelThrowsExceptionWhenModelNotFound()
-	{
-		$component = Component::fromOption('com_admin');
+        $component->model('UnexistingModel');
+    }
 
-		$component->model('UnexistingModel');
-	}
+    /**
+     * modelsFolder returns correct value.
+     *
+     * @return  void
+     */
+    public function testModelsFolderReturnsCorrectValue()
+    {
+        $component = Component::fromOption('com_admin');
 
-	/**
-	 * modelsFolder returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testModelsFolderReturnsCorrectValue()
-	{
-		$component = Component::fromOption('com_admin');
+        $this->assertSame(JPATH_SITE.'/administrator/components/com_admin/models', $component->modelsFolder());
 
-		$this->assertSame(JPATH_SITE . '/administrator/components/com_admin/models', $component->modelsFolder());
+        $component = Component::fromOption('com_config')->site();
 
-		$component = Component::fromOption('com_config')->site();
+        $this->assertSame(JPATH_SITE.'/components/com_config/model', $component->modelsFolder());
+    }
 
-		$this->assertSame(JPATH_SITE . '/components/com_config/model', $component->modelsFolder());
-	}
+    /**
+     * modelsFolder throws exception when folder not found.
+     *
+     * @return  void
+     *
+     * @expectedException \RuntimeException
+     */
+    public function testModelsFolderThrowsExceptionWhenFolderNotFound()
+    {
+        $component = Component::fromOption('com_cpanel');
 
-	/**
-	 * modelsFolder throws exception when folder not found.
-	 *
-	 * @return  void
-	 *
-	 * @expectedException \RuntimeException
-	 */
-	public function testModelsFolderThrowsExceptionWhenFolderNotFound()
-	{
-		$component = Component::fromOption('com_cpanel');
+        $component->modelsFolder();
+    }
 
-		$component->modelsFolder();
-	}
+    /**
+     * option returns correct string.
+     *
+     * @return  void
+     */
+    public function testOptionReturnsCorrectString()
+    {
+        $component = new Component(999);
 
-	/**
-	 * option returns correct string.
-	 *
-	 * @return  void
-	 */
-	public function testOptionReturnsCorrectString()
-	{
-		$component = new Component(999);
+        $reflectionClass = new \ReflectionClass($component);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$reflection = new \ReflectionClass($component);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $reflectionProperty->setValue($component, ['extension_id' => 999, 'element' => 'com_phproberto']);
 
-		$rowProperty->setValue($component, array('extension_id' => 999, 'element' => 'com_phproberto'));
+        $this->assertSame('com_phproberto', $component->option());
 
-		$this->assertSame('com_phproberto', $component->option());
+        $component = new Component(999);
+        $reflectionProperty->setValue($component, ['extension_id' => 999, 'element' => 'com_contact']);
 
-		$component = new Component(999);
-		$rowProperty->setValue($component, array('extension_id' => 999, 'element' => 'com_contact'));
+        $this->assertSame('com_contact', $component->option());
+    }
 
-		$this->assertSame('com_contact', $component->option());
-	}
+    /**
+     * prefix returns correct value.
+     *
+     * @return  void
+     */
+    public function testPrefixReturnsCorrectValue()
+    {
+        $component = Component::fromOption('com_cpanel');
 
-	/**
-	 * prefix returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testPrefixReturnsCorrectValue()
-	{
-		$component = Component::fromOption('com_cpanel');
+        $this->assertSame('Cpanel', $component->prefix());
 
-		$this->assertSame('Cpanel', $component->prefix());
+        $component = Component::fromOption('com_categories');
 
-		$component = Component::fromOption('com_categories');
+        $this->assertSame('Categories', $component->prefix());
+    }
 
-		$this->assertSame('Categories', $component->prefix());
-	}
+    /**
+     * table returns correct table.
+     *
+     * @return  void
+     */
+    public function testTableReturnsCorrectTable()
+    {
+        $component = Component::fromOption('com_cpanel');
 
-	/**
-	 * table returns correct table.
-	 *
-	 * @return  void
-	 */
-	public function testTableReturnsCorrectTable()
-	{
-		$component = Component::fromOption('com_cpanel');
+        $this->assertInstanceOf('JTableExtension', $component->table());
 
-		$this->assertInstanceOf('JTableExtension', $component->table());
+        $component = Component::fromOption('com_categories');
 
-		$component = Component::fromOption('com_categories');
+        require_once JPATH_ADMINISTRATOR.'/components/com_categories/tables/category.php';
 
-		require_once JPATH_ADMINISTRATOR . '/components/com_categories/tables/category.php';
+        $this->assertInstanceOf('CategoriesTableCategory', $component->table('Category'));
+        $this->assertInstanceOf('JTableContent', $component->table('Content', 'JTable'));
+    }
 
-		$this->assertInstanceOf('CategoriesTableCategory', $component->table('Category'));
-		$this->assertInstanceOf('JTableContent', $component->table('Content', 'JTable'));
-	}
+    /**
+     * tablesFolder returns correct value.
+     *
+     * @return  void
+     */
+    public function testTablesFolderReturnsCorrectValue()
+    {
+        $component = Component::fromOption('com_categories');
 
-	/**
-	 * tablesFolder returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testTablesFolderReturnsCorrectValue()
-	{
-		$component = Component::fromOption('com_categories');
+        $this->assertSame(JPATH_ADMINISTRATOR.'/components/com_categories/tables', $component->tablesFolder());
+    }
 
-		$this->assertSame(JPATH_ADMINISTRATOR . '/components/com_categories/tables', $component->tablesFolder());
-	}
+    /**
+     * tablesFolder throws exception when folder does not exist.
+     *
+     * @return  void
+     *
+     * @expectedException \RuntimeException
+     */
+    public function testTablesFolderThrowsExceptionWhenFolderDoesNotExist()
+    {
+        $component = Component::fromOption('com_cpanel');
 
-	/**
-	 * tablesFolder throws exception when folder does not exist.
-	 *
-	 * @return  void
-	 *
-	 * @expectedException \RuntimeException
-	 */
-	public function testTablesFolderThrowsExceptionWhenFolderDoesNotExist()
-	{
-		$component = Component::fromOption('com_cpanel');
+        $component->tablesFolder();
+    }
 
-		$component->tablesFolder();
-	}
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_extensions', JPATH_TEST_DATABASE.'/jos_extensions.csv');
+
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users\Traits;
+namespace Extly\Joomla\Entity\Tests\Users\Traits;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithUsers;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithUsers;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * HasUsers trait tests.
@@ -19,132 +25,132 @@ use Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithUsers;
  */
 class HasUsersTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * clearUsers clears users property.
-	 *
-	 * @return  void
-	 */
-	public function testClearUsersClearsUsersProperty()
-	{
-		$entity = new EntityWithUsers;
+    /**
+     * clearUsers clears users property.
+     *
+     * @return  void
+     */
+    public function testClearUsersClearsUsersProperty()
+    {
+        $entityWithUsers = new EntityWithUsers();
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithUsers);
 
-		$usersProperty = $reflection->getProperty('users');
-		$usersProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('users');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertSame(null, $usersProperty->getValue($entity));
+        $this->assertSame(null, $reflectionProperty->getValue($entityWithUsers));
 
-		$users = new Collection(array(User::find(333)));
+        $collection = new Collection([User::find(333)]);
 
-		$usersProperty->setValue($entity, $users);
+        $reflectionProperty->setValue($entityWithUsers, $collection);
 
-		$this->assertSame($users, $usersProperty->getValue($entity));
+        $this->assertSame($collection, $reflectionProperty->getValue($entityWithUsers));
 
-		$entity->clearUsers();
+        $entityWithUsers->clearUsers();
 
-		$this->assertSame(null, $usersProperty->getValue($entity));
-	}
+        $this->assertSame(null, $reflectionProperty->getValue($entityWithUsers));
+    }
 
-	/**
-	 * users returns cached data.
-	 *
-	 * @return  void
-	 */
-	public function testUsersReturnsCachedData()
-	{
-		$entity = new EntityWithUsers;
+    /**
+     * users returns cached data.
+     *
+     * @return  void
+     */
+    public function testUsersReturnsCachedData()
+    {
+        $entityWithUsers = new EntityWithUsers();
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithUsers);
 
-		$usersProperty = $reflection->getProperty('users');
-		$usersProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('users');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertSame(null, $usersProperty->getValue($entity));
+        $this->assertSame(null, $reflectionProperty->getValue($entityWithUsers));
 
-		$users = new Collection(array(User::find(333)));
+        $collection = new Collection([User::find(333)]);
 
-		$usersProperty->setValue($entity, $users);
+        $reflectionProperty->setValue($entityWithUsers, $collection);
 
-		$this->assertSame($users, $entity->users());
-	}
+        $this->assertSame($collection, $entityWithUsers->users());
+    }
 
-	/**
-	 * users returns loadUsers result if not cached.
-	 *
-	 * @return  void
-	 */
-	public function testUsersReturnsLoadUsersResultIfNotCached()
-	{
-		$users = new Collection(
-			array(
-				User::find(333),
-				User::find(666)
-			)
-		);
+    /**
+     * users returns loadUsers result if not cached.
+     *
+     * @return  void
+     */
+    public function testUsersReturnsLoadUsersResultIfNotCached()
+    {
+        $collection = new Collection(
+            [
+                User::find(333),
+                User::find(666),
+            ]
+        );
 
-		$entity = $this->getMockBuilder(EntityWithUsers::class)
-			->setMethods(array('loadUsers'))
-			->getMock();
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithUsers::class)
+            ->setMethods(['loadUsers'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('loadUsers')
-			->willReturn($users);
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('loadUsers')
+            ->willReturn($collection);
 
-		$this->assertSame($users, $entity->users());
-	}
+        $this->assertSame($collection, $phpUnitFrameworkMockObjectMockObject->users());
+    }
 
-	/**
-	 * hasUser returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasUserReturnsCorrectValue()
-	{
-		$users = new Collection(
-			array(
-				User::find(666),
-				User::find(999)
-			)
-		);
+    /**
+     * hasUser returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasUserReturnsCorrectValue()
+    {
+        $collection = new Collection(
+            [
+                User::find(666),
+                User::find(999),
+            ]
+        );
 
-		$entity = new EntityWithUsers;
-		$reflection = new \ReflectionClass($entity);
+        $entityWithUsers = new EntityWithUsers();
+        $reflectionClass = new \ReflectionClass($entityWithUsers);
 
-		$usersProperty = $reflection->getProperty('users');
-		$usersProperty->setAccessible(true);
-		$usersProperty->setValue($entity, $users);
+        $reflectionProperty = $reflectionClass->getProperty('users');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($entityWithUsers, $collection);
 
-		$this->assertTrue($entity->hasUser(666));
-		$this->assertFalse($entity->hasUser(333));
-		$this->assertTrue($entity->hasUser(999));
-	}
+        $this->assertTrue($entityWithUsers->hasUser(666));
+        $this->assertFalse($entityWithUsers->hasUser(333));
+        $this->assertTrue($entityWithUsers->hasUser(999));
+    }
 
-	/**
-	 * hasUsers returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasUsersReturnsCorrectValue()
-	{
-		$users = new Collection(
-			array(
-				User::find(333),
-				User::find(666)
-			)
-		);
+    /**
+     * hasUsers returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasUsersReturnsCorrectValue()
+    {
+        $collection = new Collection(
+            [
+                User::find(333),
+                User::find(666),
+            ]
+        );
 
-		$entity = new EntityWithUsers;
-		$reflection = new \ReflectionClass($entity);
+        $entityWithUsers = new EntityWithUsers();
+        $reflectionClass = new \ReflectionClass($entityWithUsers);
 
-		$usersProperty = $reflection->getProperty('users');
-		$usersProperty->setAccessible(true);
-		$usersProperty->setValue($entity, $users);
+        $reflectionProperty = $reflectionClass->getProperty('users');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($entityWithUsers, $collection);
 
-		$this->assertTrue($entity->hasUsers());
+        $this->assertTrue($entityWithUsers->hasUsers());
 
-		$usersProperty->setValue($entity, new Collection);
+        $reflectionProperty->setValue($entityWithUsers, new Collection());
 
-		$this->assertFalse($entity->hasUsers());
-	}
+        $this->assertFalse($entityWithUsers->hasUsers());
+    }
 }

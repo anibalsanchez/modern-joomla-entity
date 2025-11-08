@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Command;
+namespace Extly\Joomla\Entity\Command;
 
 defined('_JEXEC') || die;
 
@@ -19,32 +25,32 @@ use Joomla\Registry\Registry;
  */
 abstract class BaseCommand
 {
-	/**
-	 * Command extra configuration.
-	 *
-	 * @var  Registry
-	 */
-	protected $config;
+    /**
+     * Command extra configuration.
+     *
+     * @var  Registry
+     */
+    protected $config;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $options  Array with command options
-	 */
-	public function __construct(array $options = [])
-	{
-		$this->config = new Registry($options);
-	}
+    /**
+     * Constructor.
+     *
+     * @param   array  $options  Array with command options
+     */
+    public function __construct(array $options = [])
+    {
+        $this->config = new Registry($options);
+    }
 
-	/**
-	 * Factory method.
-	 *
-	 * @param   array   $arguments  Arguments for the instance.
-	 *
-	 * @return  static
-	 */
-	public static function instance(array $arguments = [])
-	{
-		return (new \ReflectionClass(get_called_class()))->newInstanceArgs($arguments);
-	}
+    /**
+     * Factory method.
+     *
+     * @param   array   $arguments  Arguments for the instance.
+     *
+     * @return  static
+     */
+    public static function instance(array $arguments = [])
+    {
+        return (new \ReflectionClass(static::class))->newInstanceArgs($arguments);
+    }
 }

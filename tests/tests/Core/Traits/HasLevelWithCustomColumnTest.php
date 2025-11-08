@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Tests\Core\Traits\HasLevelTest;
+use Extly\Joomla\Entity\Tests\Core\Traits\HasLevelTest;
 
 /**
  * HasLevel tests.
@@ -19,10 +25,10 @@ use Phproberto\Joomla\Entity\Tests\Core\Traits\HasLevelTest;
  */
 class HasLevelWithCustomColumnTest extends HasLevelTest
 {
-	/**
-	 * Name of the column used to store level.
-	 *
-	 * @const
-	 */
-	const LEVEL_COLUMN = 'custom_level';
+    /**
+     * Name of the column used to store level.
+     *
+     * @const
+     */
+    public const LEVEL_COLUMN = 'custom_level';
 }

@@ -1,21 +1,27 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Fields;
+namespace Extly\Joomla\Entity\Fields;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Fields\Column;
-use Phproberto\Joomla\Entity\ComponentEntity;
-use Phproberto\Joomla\Entity\Fields\Traits\HasFields;
-use Phproberto\Joomla\Entity\Core\Traits as CoreTraits;
-use Phproberto\Joomla\Entity\Core\Contracts\Publishable;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\ComponentEntity;
+use Extly\Joomla\Entity\Core\Contracts\Publishable;
+use Extly\Joomla\Entity\Core\Traits as CoreTraits;
+use Extly\Joomla\Entity\Fields\Column;
+use Extly\Joomla\Entity\Fields\Traits\HasFields;
 
 /**
  * Field Group entity.
@@ -24,63 +30,62 @@ use Phproberto\Joomla\Entity\Core\Contracts\Publishable;
  */
 class FieldGroup extends ComponentEntity implements Publishable
 {
-	use CoreTraits\HasParams, CoreTraits\HasState, HasFields;
+    use CoreTraits\HasParams;
+    use CoreTraits\HasState;
+    use HasFields;
 
-	/**
-	 * Load associated fields from DB.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadFields()
-	{
-		$fields = new Collection;
+    /**
+     * Get a table instance. Defauts to \JTableUser.
+     *
+     * @param   string  $name     Table name. Optional.
+     * @param   string  $prefix   Class prefix. Optional.
+     * @param   array   $options  Configuration array for the table. Optional.
+     *
+     * @return  \JTable
+     *
+     * @throws  \InvalidArgumentException
+     */
+    public function table($name = '', $prefix = null, $options = [])
+    {
+        $name = $name ?: 'Group';
+        $prefix = $prefix ?: 'FieldsTable';
 
-		if (!$this->hasId())
-		{
-			return $fields;
-		}
+        if ($prefix === 'FieldsTable') {
+            return $this->component()->table($name);
+        }
 
-		$db = $this->getDbo();
-		$query = $db->getQuery(true)
-			->select('f.*')
-			->from($db->qn('#__fields', 'f'))
-			->where($db->qn('f.group_id') . ' = ' . (int) $this->id());
+        return parent::table($name, $prefix, $options);
+    }
 
-		$db->setQuery($query);
+    /**
+     * Load associated fields from DB.
+     *
+     * @return  Collection
+     */
+    protected function loadFields()
+    {
+        $collection = new Collection();
 
-		$items = $db->loadObjectList() ?: [];
+        if (!$this->hasId()) {
+            return $collection;
+        }
 
-		foreach ($items as $item)
-		{
-			$field = Field::find($item->id)->bind($item);
+        $jDatabaseDriver = $this->getDbo();
+        $query = $jDatabaseDriver->getQuery(true)
+            ->select('f.*')
+            ->from($jDatabaseDriver->qn('#__fields', 'f'))
+            ->where($jDatabaseDriver->qn('f.group_id').' = '.(int) $this->id());
 
-			$fields->add($field);
-		}
+        $jDatabaseDriver->setQuery($query);
 
-		return $fields;
-	}
+        $items = $jDatabaseDriver->loadObjectList() ?: [];
 
-	/**
-	 * Get a table instance. Defauts to \JTableUser.
-	 *
-	 * @param   string  $name     Table name. Optional.
-	 * @param   string  $prefix   Class prefix. Optional.
-	 * @param   array   $options  Configuration array for the table. Optional.
-	 *
-	 * @return  \JTable
-	 *
-	 * @throws  \InvalidArgumentException
-	 */
-	public function table($name = '', $prefix = null, $options = array())
-	{
-		$name = $name ?: 'Group';
-		$prefix = $prefix ?: 'FieldsTable';
+        foreach ($items as $item) {
+            $field = Field::find($item->id)->bind($item);
 
-		if ($prefix === 'FieldsTable')
-		{
-			return $this->component()->table($name);
-		}
+            $collection->add($field);
+        }
 
-		return parent::table($name, $prefix, $options);
-	}
+        return $collection;
+    }
 }

@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
 defined('_JEXEC') || die;
 
@@ -17,106 +23,99 @@ defined('_JEXEC') || die;
  */
 trait HasUrls
 {
-	/**
-	 * URLs
-	 *
-	 * @var  array
-	 */
-	protected $urls;
+    /**
+     * URLs
+     *
+     * @var  array
+     */
+    protected $urls;
 
-	/**
-	 * Get the name of the column that stores urls.
-	 *
-	 * @return  string
-	 */
-	protected function getColumnUrls()
-	{
-		return 'urls';
-	}
+    /**
+     * Get this article URLs.
+     *
+     * @param   bool  $reload  Force reloading
+     *
+     * @return  array
+     */
+    public function getUrls($reload = false)
+    {
+        if ($reload || null === $this->urls) {
+            $this->urls = $this->loadUrls();
+        }
 
-	/**
-	 * Get this article URLs.
-	 *
-	 * @param   boolean  $reload  Force reloading
-	 *
-	 * @return  array
-	 */
-	public function getUrls($reload = false)
-	{
-		if ($reload || null === $this->urls)
-		{
-			$this->urls = $this->loadUrls();
-		}
+        return $this->urls;
+    }
 
-		return $this->urls;
-	}
+    /**
+     * Get the content of a column with data stored in JSON.
+     *
+     * @param   string  $property  Name of the column storing data
+     *
+     * @return  array
+     */
+    abstract public function json($property);
 
-	/**
-	 * Get the content of a column with data stored in JSON.
-	 *
-	 * @param   string  $property  Name of the column storing data
-	 *
-	 * @return  array
-	 */
-	abstract public function json($property);
+    /**
+     * Get the name of the column that stores urls.
+     *
+     * @return  string
+     */
+    protected function getColumnUrls()
+    {
+        return 'urls';
+    }
 
-	/**
-	 * Load urls from database.
-	 *
-	 * @return  array
-	 */
-	protected function loadUrls()
-	{
-		$urls = array();
-		$data = $this->json($this->getColumnUrls());
+    /**
+     * Load urls from database.
+     *
+     * @return  array
+     */
+    protected function loadUrls()
+    {
+        $urls = [];
+        $data = $this->json($this->getColumnUrls());
 
-		if (empty($data))
-		{
-			return $urls;
-		}
+        if (empty($data)) {
+            return $urls;
+        }
 
-		for ($i = 'a'; $i < 'd'; $i++)
-		{
-			if ($url = $this->parseUrl($i, $data))
-			{
-				$urls[$i] = $url;
-			}
-		}
+        for ($i = 'a'; $i < 'd'; $i++) {
+            if ($url = $this->parseUrl($i, $data)) {
+                $urls[$i] = $url;
+            }
+        }
 
-		return $urls;
-	}
+        return $urls;
+    }
 
-	/**
-	 * Parse URL.
-	 *
-	 * @param   string  $position  URL position
-	 * @param   array   $data      URLs data source from db
-	 *
-	 * @return  array
-	 */
-	private function parseUrl($position, array $data)
-	{
-		$url = array();
+    /**
+     * Parse URL.
+     *
+     * @param   string  $position  URL position
+     * @param   array   $data      URLs data source from db
+     *
+     * @return  array
+     */
+    private function parseUrl($position, array $data)
+    {
+        $url = [];
 
-		if (empty($data['url' . $position]))
-		{
-			return $url;
-		}
+        if (empty($data['url'.$position])) {
+            return $url;
+        }
 
-		$properties = array(
-			'url'    => 'url' . $position,
-			'text'   => 'url' . $position . 'text',
-			'target' => 'target' . $position
-		);
+        $properties = [
+            'url'    => 'url'.$position,
+            'text'   => 'url'.$position.'text',
+            'target' => 'target'.$position,
+        ];
 
-		foreach ($properties as $key => $property)
-		{
-			if (isset($data[$property]) && $data[$property] != '')
-			{
-				$url[$key] = $data[$property];
-			}
-		}
+        foreach ($properties as $key => $property) {
+            if (isset($data[$property]) && $data[$property] != '') {
+                $url[$key] = $data[$property];
+            }
+        }
 
-		return $url;
-	}
+        return $url;
+    }
 }

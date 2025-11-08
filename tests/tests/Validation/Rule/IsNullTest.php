@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation\Rule;
+namespace Extly\Joomla\Entity\Tests\Validation\Rule;
 
-use Phproberto\Joomla\Entity\Validation\Rule\IsNull;
+use Extly\Joomla\Entity\Validation\Rule\IsNull;
 
 /**
  * IsNull tests.
@@ -17,24 +23,24 @@ use Phproberto\Joomla\Entity\Validation\Rule\IsNull;
  */
 class IsNullTest extends \TestCase
 {
-	/**
-	 * passes returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testPassesReturnsCorrectValue()
-	{
-		$rule = new IsNull;
+    /**
+     * passes returns correct value.
+     *
+     * @return  void
+     */
+    public function testPassesReturnsCorrectValue()
+    {
+        $isNull = new IsNull();
 
-		$this->assertFalse($rule->passes(''));
-		$this->assertFalse($rule->passes('#aa'));
-		$this->assertFalse($rule->passes('null'));
-		$this->assertFalse($rule->passes(0));
-		$this->assertFalse($rule->passes(0.1));
-		$this->assertFalse($rule->passes(1.1));
-		$this->assertFalse($rule->passes('1.1'));
-		$this->assertFalse($rule->passes('12,000'));
+        $this->assertFalse($isNull->passes(''));
+        $this->assertFalse($isNull->passes('#aa'));
+        $this->assertFalse($isNull->passes('null'));
+        $this->assertFalse($isNull->passes(0));
+        $this->assertFalse($isNull->passes(0.1));
+        $this->assertFalse($isNull->passes(1.1));
+        $this->assertFalse($isNull->passes('1.1'));
+        $this->assertFalse($isNull->passes('12,000'));
 
-		$this->assertTrue($rule->passes(null));
-	}
+        $this->assertTrue($isNull->passes(null));
+    }
 }

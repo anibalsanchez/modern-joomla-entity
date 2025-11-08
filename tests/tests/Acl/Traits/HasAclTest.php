@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Acl\Traits;
+namespace Extly\Joomla\Entity\Tests\Acl\Traits;
 
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Acl\Acl;
-use Phproberto\Joomla\Entity\Tests\Acl\Stubs\EntityWithAcl;
+use Extly\Joomla\Entity\Acl\Acl;
+use Extly\Joomla\Entity\Tests\Acl\Stubs\EntityWithAcl;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * HasAcl trait tests.
@@ -19,103 +25,104 @@ use Phproberto\Joomla\Entity\Tests\Acl\Stubs\EntityWithAcl;
  */
 class HasAclTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * acl returns Acl instance.
-	 *
-	 * @return  void
-	 */
-	public function testAclReturnsAclInstance()
-	{
-		$entity = new EntityWithAcl(666);
-		$user = new User(999);
+    /**
+     * acl returns Acl instance.
+     *
+     * @return  void
+     */
+    public function testAclReturnsAclInstance()
+    {
+        $entityWithAcl = new EntityWithAcl(666);
+        $user = new User(999);
 
-		$acl = $entity->acl($user);
+        $acl = $entityWithAcl->acl($user);
 
-		$reflection = new \ReflectionClass($acl);
-		$entityProperty = $reflection->getProperty('entity');
-		$entityProperty->setAccessible(true);
-		$userProperty = $reflection->getProperty('user');
-		$userProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($acl);
+        $reflectionProperty = $reflectionClass->getProperty('entity');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertInstanceOf(Acl::class, $acl);
-		$this->assertSame($user, $userProperty->getValue($acl));
-		$this->assertSame($entity, $entityProperty->getValue($acl));
-	}
+        $userProperty = $reflectionClass->getProperty('user');
+        $userProperty->setAccessible(true);
 
-	/**
-	 * aclPrefix returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testAclPrefixReturnsCorrectValue()
-	{
-		$entity = new EntityWithAcl;
+        $this->assertInstanceOf(Acl::class, $acl);
+        $this->assertSame($user, $userProperty->getValue($acl));
+        $this->assertSame($entityWithAcl, $reflectionProperty->getValue($acl));
+    }
 
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('aclPrefix');
-		$method->setAccessible(true);
+    /**
+     * aclPrefix returns correct value.
+     *
+     * @return  void
+     */
+    public function testAclPrefixReturnsCorrectValue()
+    {
+        $entityWithAcl = new EntityWithAcl();
 
-		$this->assertSame('core', $method->invoke($entity));
-	}
+        $reflectionClass = new \ReflectionClass($entityWithAcl);
+        $reflectionMethod = $reflectionClass->getMethod('aclPrefix');
+        $reflectionMethod->setAccessible(true);
 
-	/**
-	 * aclAssetName returns component option when no id.
-	 *
-	 * @return  void
-	 */
-	public function testAclAssetNameReturnsComponentOptionWhenNoId()
-	{
-		$component = $this->getMockBuilder(Component::class)
-			->setMethods(array('option'))
-			->getMock();
+        $this->assertSame('core', $reflectionMethod->invoke($entityWithAcl));
+    }
 
-		$component->expects($this->once())
-			->method('option')
-			->willReturn('com_phproberto');
+    /**
+     * aclAssetName returns component option when no id.
+     *
+     * @return  void
+     */
+    public function testAclAssetNameReturnsComponentOptionWhenNoId()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(Component::class)
+            ->setMethods(['option'])
+            ->getMock();
 
-		$entity = $this->getMockBuilder(EntityWithAcl::class)
-			->setMethods(array('component'))
-			->getMock();
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('option')
+            ->willReturn('com_phproberto');
 
-		$entity->expects($this->once())
-			->method('component')
-			->willReturn($component);
+        $entity = $this->getMockBuilder(EntityWithAcl::class)
+            ->setMethods(['component'])
+            ->getMock();
 
-		$this->assertSame('com_phproberto', $entity->aclAssetName());
-	}
+        $entity->expects($this->once())
+            ->method('component')
+            ->willReturn($phpUnitFrameworkMockObjectMockObject);
 
-	/**
-	 * aclAssetName returns component option when no id.
-	 *
-	 * @return  void
-	 */
-	public function testAclAssetNameReturnsOptionAndNameWhenHasId()
-	{
-		$component = $this->getMockBuilder(Component::class)
-			->setMethods(array('option'))
-			->getMock();
+        $this->assertSame('com_phproberto', $entity->aclAssetName());
+    }
 
-		$component->expects($this->once())
-			->method('option')
-			->willReturn('com_phproberto');
+    /**
+     * aclAssetName returns component option when no id.
+     *
+     * @return  void
+     */
+    public function testAclAssetNameReturnsOptionAndNameWhenHasId()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(Component::class)
+            ->setMethods(['option'])
+            ->getMock();
 
-		$entity = $this->getMockBuilder(EntityWithAcl::class)
-			->setMethods(array('component', 'name'))
-			->getMock();
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('option')
+            ->willReturn('com_phproberto');
 
-		$entity->expects($this->once())
-			->method('component')
-			->willReturn($component);
+        $entity = $this->getMockBuilder(EntityWithAcl::class)
+            ->setMethods(['component', 'name'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('name')
-			->willReturn('sample');
+        $entity->expects($this->once())
+            ->method('component')
+            ->willReturn($phpUnitFrameworkMockObjectMockObject);
 
-		$reflection = new \ReflectionClass($entity);
-		$idProperty = $reflection->getProperty('id');
-		$idProperty->setAccessible(true);
-		$idProperty->setValue($entity, 999);
+        $entity->expects($this->once())
+            ->method('name')
+            ->willReturn('sample');
 
-		$this->assertSame('com_phproberto.sample.999', $entity->aclAssetName());
-	}
+        $reflectionClass = new \ReflectionClass($entity);
+        $reflectionProperty = $reflectionClass->getProperty('id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($entity, 999);
+
+        $this->assertSame('com_phproberto.sample.999', $entity->aclAssetName());
+    }
 }

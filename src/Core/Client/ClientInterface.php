@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Client;
+namespace Extly\Joomla\Entity\Core\Client;
 
 defined('_JEXEC') || die;
 
@@ -17,38 +23,38 @@ defined('_JEXEC') || die;
  */
 interface ClientInterface
 {
-	/**
-	 * Get the base folder of this client.
-	 *
-	 * @return  string
-	 */
-	public function getFolder();
+    /**
+     * Get the base folder of this client.
+     *
+     * @return  string
+     */
+    public function getFolder();
 
-	/**
-	 * Get the identifier.
-	 *
-	 * @return  integer
-	 */
-	public function getId();
+    /**
+     * Get the identifier.
+     *
+     * @return  int
+     */
+    public function getId();
 
-	/**
-	 * Get the name
-	 *
-	 * @return  string
-	 */
-	public function getName();
+    /**
+     * Get the name
+     *
+     * @return  string
+     */
+    public function getName();
 
-	/**
-	 * Is this admin client?
-	 *
-	 * @return  boolean
-	 */
-	public function isAdmin();
+    /**
+     * Is this admin client?
+     *
+     * @return  bool
+     */
+    public function isAdmin();
 
-	/**
-	 * Is this site client?
-	 *
-	 * @return  boolean
-	 */
-	public function isSite();
+    /**
+     * Is this site client?
+     *
+     * @return  bool
+     */
+    public function isSite();
 }

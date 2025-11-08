@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Users\Traits;
+namespace Extly\Joomla\Entity\Users\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Users\Column;
+use Extly\Joomla\Entity\Users\Column;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * Trait for entities that have an associated editor.
@@ -20,89 +26,87 @@ use Phproberto\Joomla\Entity\Users\Column;
  */
 trait HasEditor
 {
-	/**
-	 * Entity editor.
-	 *
-	 * @var  User
-	 */
-	protected $editor;
+    /**
+     * Entity editor.
+     *
+     * @var  User
+     */
+    protected $editor;
 
-	/**
-	 * Get the alias for a specific DB column.
-	 *
-	 * @param   string  $column  Name of the DB column. Example: created_by
-	 *
-	 * @return  string
-	 */
-	abstract public function columnAlias($column);
+    /**
+     * Get the alias for a specific DB column.
+     *
+     * @param   string  $column  Name of the DB column. Example: created_by
+     *
+     * @return  string
+     */
+    abstract public function columnAlias($column);
 
-	/**
-	 * Get a property of this entity.
-	 *
-	 * @param   string  $property  Name of the property to get
-	 * @param   mixed   $default   Value to use as default if property is null
-	 *
-	 * @return  mixed
-	 *
-	 * @throws  \InvalidArgumentException  Property does not exist
-	 */
-	abstract public function get($property, $default = null);
+    /**
+     * Get a property of this entity.
+     *
+     * @param   string  $property  Name of the property to get
+     * @param   mixed   $default   Value to use as default if property is null
+     *
+     * @return  mixed
+     *
+     * @throws  \InvalidArgumentException  Property does not exist
+     */
+    abstract public function get($property, $default = null);
 
-	/**
-	 * Get this entity author.
-	 *
-	 * @param   boolean  $reload  Force data reloading
-	 *
-	 * @return  User
-	 */
-	public function editor($reload = false)
-	{
-		if ($reload || null === $this->editor)
-		{
-			$this->editor = $this->loadEditor();
-		}
+    /**
+     * Get this entity author.
+     *
+     * @param   bool  $reload  Force data reloading
+     *
+     * @return  User
+     */
+    public function editor($reload = false)
+    {
+        if ($reload || null === $this->editor) {
+            $this->editor = $this->loadEditor();
+        }
 
-		return $this->editor;
-	}
+        return $this->editor;
+    }
 
-	/**
-	 * Retrieve the associated editor ID.
-	 *
-	 * @return  integer
-	 *
-	 * @since   1.3.0
-	 */
-	public function editorId()
-	{
-		if (!$this->has($this->columnAlias(Column::EDITOR)))
-		{
-			return 0;
-		}
+    /**
+     * Retrieve the associated editor ID.
+     *
+     * @return  int
+     *
+     * @since   1.3.0
+     */
+    public function editorId()
+    {
+        if (!$this->has($this->columnAlias(Column::EDITOR))) {
+            return 0;
+        }
 
-		return (int) $this->get($this->columnAlias(Column::EDITOR));
-	}
+        return (int) $this->get($this->columnAlias(Column::EDITOR));
+    }
 
-	/**
-	 * Check if this entity has an associated editor.
-	 *
-	 * @return  boolean
-	 */
-	public function hasEditor()
-	{
-		return 0 !== $this->editorId();
-	}
+    /**
+     * Check if this entity has an associated editor.
+     *
+     * @return  bool
+     */
+    public function hasEditor()
+    {
+        return 0 !== $this->editorId();
+    }
 
-	/**
-	 * Load entity's editor.
-	 *
-	 * @return  User
-	 *
-	 * @throws  \InvalidArgumentException  Editor property not found
-	 */
-	protected function loadEditor()
-	{
-		$editorId = (int) $this->get($this->columnAlias(Column::EDITOR));
+    /**
+     * Load entity's editor.
+     *
+     * @return  User
+     *
+     * @throws  \InvalidArgumentException  Editor property not found
+     */
+    protected function loadEditor()
+    {
+        $editorId = (int) $this->get($this->columnAlias(Column::EDITOR));
 
-		return User::find($editorId);
-	}
+        return User::find($editorId);
+    }
 }

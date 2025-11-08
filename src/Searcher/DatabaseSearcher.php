@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Searcher;
+namespace Extly\Joomla\Entity\Searcher;
 
 defined('_JEXEC') || die;
 
+use Extly\Joomla\Entity\Searcher\BaseSearcher;
 use Joomla\CMS\Factory;
-use Phproberto\Joomla\Entity\Searcher\BaseSearcher;
 
 /**
  * Database finder.
@@ -20,58 +26,58 @@ use Phproberto\Joomla\Entity\Searcher\BaseSearcher;
  */
 abstract class DatabaseSearcher extends BaseSearcher
 {
-	/**
-	 * Database driver.
-	 *
-	 * @var  \JDatabaseDriver
-	 */
-	protected $db;
+    /**
+     * Database driver.
+     *
+     * @var  \JDatabaseDriver
+     */
+    protected $db;
 
-	/**
-	 * Constructor
-	 *
-	 * @param   array  $options  Find options
-	 */
-	public function __construct(array $options = [])
-	{
-		parent::__construct($options);
+    /**
+     * Constructor
+     *
+     * @param   array  $options  Find options
+     */
+    public function __construct(array $options = [])
+    {
+        parent::__construct($options);
 
-		$this->db = $this->options->get('db', Factory::getDbo());
-	}
+        $this->db = $this->options->get('db', Factory::getDbo());
+    }
 
-	/**
-	 * Default options for this finder.
-	 *
-	 * @return  array
-	 */
-	public function defaultOptions()
-	{
-		return [
-			'list.start' => 0,
-			'list.limit' => 20
-		];
-	}
+    /**
+     * Default options for this finder.
+     *
+     * @return  array
+     */
+    public function defaultOptions()
+    {
+        return [
+            'list.start' => 0,
+            'list.limit' => 20,
+        ];
+    }
 
-	/**
-	 * Retrieve the search query.
-	 *
-	 * @return  \JDatabaseQuery
-	 */
-	abstract public function searchQuery();
+    /**
+     * Retrieve the search query.
+     *
+     * @return  \JDatabaseQuery
+     */
+    abstract public function searchQuery();
 
-	/**
-	 * Execute the search.
-	 *
-	 * @return  array
-	 */
-	public function search()
-	{
-		$this->db->setQuery(
-			$this->searchQuery(),
-			(int) $this->options->get('list.start'),
-			(int) $this->options->get('list.limit', 20)
-		);
+    /**
+     * Execute the search.
+     *
+     * @return  array
+     */
+    public function search()
+    {
+        $this->db->setQuery(
+            $this->searchQuery(),
+            (int) $this->options->get('list.start'),
+            (int) $this->options->get('list.limit', 20)
+        );
 
-		return $this->db->loadAssocList() ?: [];
-	}
+        return $this->db->loadAssocList() ?: [];
+    }
 }

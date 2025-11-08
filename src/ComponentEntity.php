@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity;
+namespace Extly\Joomla\Entity;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Core\Traits as CoreTraits;
-use Phproberto\Joomla\Entity\Contracts\ComponentEntityInterface;
+use Extly\Joomla\Entity\Contracts\ComponentEntityInterface;
+use Extly\Joomla\Entity\Core\Traits as CoreTraits;
 
 /**
  * Entity class.
@@ -20,5 +26,5 @@ use Phproberto\Joomla\Entity\Contracts\ComponentEntityInterface;
  */
 abstract class ComponentEntity extends Entity implements ComponentEntityInterface
 {
-	use CoreTraits\HasComponent;
+    use CoreTraits\HasComponent;
 }

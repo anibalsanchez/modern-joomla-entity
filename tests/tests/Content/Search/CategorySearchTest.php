@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Content\Search;
+namespace Extly\Joomla\Entity\Tests\Content\Search;
 
 defined('_JEXEC') || die;
 
+use Extly\Joomla\Entity\Content\Search\CategorySearch;
 use Joomla\CMS\Factory;
-use Phproberto\Joomla\Entity\Content\Search\CategorySearch;
 
 /**
  * CategorySearch tests.
@@ -20,77 +26,75 @@ use Phproberto\Joomla\Entity\Content\Search\CategorySearch;
  */
 class CategorySearchTest extends \TestCaseDatabase
 {
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function extensionIsAlwaysComContent()
-	{
-		$categories = CategorySearch::instance(
-			[
-				'list.limit' => 0
-			]
-		)->search();
+    /**
+     * This method is called before the first test of this test class is run.
+     *
+     * @return  void
+     */
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
 
-		$this->assertNotSame(0, count($categories));
+        $files = [
+            __DIR__.'/Stubs/Database/contentitem_tag_map.sql',
+        ];
 
-		foreach ($categories as $category)
-		{
-			$this->assertSame('com_content', $category['extension']);
-		}
-	}
+        foreach ($files as $file) {
+            static::$driver->getConnection()->exec(file_get_contents($file));
+        }
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_categories', __DIR__ . '/Stubs/Database/categories.csv');
-		$dataSet->addTable('jos_contentitem_tag_map', __DIR__ . '/Stubs/Database/contentitem_tag_map.csv');
+        Factory::$database = static::$driver;
+    }
 
-		return $dataSet;
-	}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function extensionIsAlwaysComContent()
+    {
+        $categories = CategorySearch::instance(
+            [
+                'list.limit' => 0,
+            ]
+        )->search();
 
-	/**
-	 * This method is called before the first test of this test class is run.
-	 *
-	 * @return  void
-	 */
-	public static function setUpBeforeClass()
-	{
-		parent::setUpBeforeClass();
+        $this->assertNotSame(0, count($categories));
 
-		$files = [
-			__DIR__ . '/Stubs/Database/contentitem_tag_map.sql'
-		];
+        foreach ($categories as $category) {
+            $this->assertSame('com_content', $category['extension']);
+        }
+    }
 
-		foreach ($files as $file)
-		{
-			static::$driver->getConnection()->exec(file_get_contents($file));
-		}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function tagFilterReturnsExpectedResults()
+    {
+        $categories = CategorySearch::instance(
+            [
+                'filter.tag_id' => 2,
+                'list.limit'   => 0,
+            ]
+        )->search();
 
-		Factory::$database = static::$driver;
-	}
+        $this->assertSame(1, count($categories));
+        $this->assertSame(14, (int) $categories[0]['id']);
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function tagFilterReturnsExpectedResults()
-	{
-		$categories = CategorySearch::instance(
-			[
-				'filter.tag_id' => 2,
-				'list.limit'   => 0
-			]
-		)->search();
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_categories', __DIR__.'/Stubs/Database/categories.csv');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_contentitem_tag_map', __DIR__.'/Stubs/Database/contentitem_tag_map.csv');
 
-		$this->assertSame(1, count($categories));
-		$this->assertSame(14, (int) $categories[0]['id']);
-	}
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

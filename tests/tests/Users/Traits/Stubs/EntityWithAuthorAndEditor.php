@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Users\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Entity;
-use Phproberto\Joomla\Entity\Users\Traits\HasAuthor;
-use Phproberto\Joomla\Entity\Users\Traits\HasEditor;
+use Extly\Joomla\Entity\Entity;
+use Extly\Joomla\Entity\Users\Traits\HasAuthor;
+use Extly\Joomla\Entity\Users\Traits\HasEditor;
 
 /**
  * Sample class to test HasAuthor & HasEditor traits.
@@ -21,5 +27,6 @@ use Phproberto\Joomla\Entity\Users\Traits\HasEditor;
  */
 class EntityWithAuthorAndEditor extends Entity
 {
-	use HasAuthor, HasEditor;
+    use HasAuthor;
+    use HasEditor;
 }

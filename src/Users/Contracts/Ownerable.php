@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Users\Contracts;
+namespace Extly\Joomla\Entity\Users\Contracts;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Users\User;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * Describes methods required by entities with an owner.
@@ -19,26 +25,26 @@ use Phproberto\Joomla\Entity\Users\User;
  */
 interface Ownerable
 {
-	/**
-	 * Get the owner of this entity.
-	 *
-	 * @return  User
-	 */
-	public function owner();
+    /**
+     * Get the owner of this entity.
+     *
+     * @return  User
+     */
+    public function owner();
 
-	/**
-	 * Check if this entit has an owner.
-	 *
-	 * @return  boolean
-	 */
-	public function hasOwner();
+    /**
+     * Check if this entit has an owner.
+     *
+     * @return  bool
+     */
+    public function hasOwner();
 
-	/**
-	 * Check if an user is this entity owner.
-	 *
-	 * @param   User  $user  User to check for ownership. Defaults to active user.
-	 *
-	 * @return  boolean
-	 */
-	public function isOwner(User $user = null);
+    /**
+     * Check if an user is this entity owner.
+     *
+     * @param   User  $user  User to check for ownership. Defaults to active user.
+     *
+     * @return  bool
+     */
+    public function isOwner(?User $user = null);
 }

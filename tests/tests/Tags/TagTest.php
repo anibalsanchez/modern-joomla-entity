@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Tags;
+namespace Extly\Joomla\Entity\Tests\Tags;
 
+use Extly\Joomla\Entity\Acl\Acl;
+use Extly\Joomla\Entity\Tags\Tag;
+use Extly\Joomla\Entity\Users\User;
 use Joomla\Registry\Registry;
-use Phproberto\Joomla\Entity\Tags\Tag;
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Acl\Acl;
 
 /**
  * Tag entity tests.
@@ -20,131 +26,132 @@ use Phproberto\Joomla\Entity\Acl\Acl;
  */
 class TagTest extends \TestCaseDatabase
 {
-	/**
-	 * Acl can be retrieved.
-	 *
-	 * @return  void
-	 */
-	public function testAclCanBeRetrieved()
-	{
-		$entity = new Tag(666);
-		$user = new User(999);
+    /**
+     * Acl can be retrieved.
+     *
+     * @return  void
+     */
+    public function testAclCanBeRetrieved()
+    {
+        $tag = new Tag(666);
+        $user = new User(999);
 
-		$acl = $entity->acl($user);
+        $acl = $tag->acl($user);
 
-		$reflection = new \ReflectionClass($acl);
-		$entityProperty = $reflection->getProperty('entity');
-		$entityProperty->setAccessible(true);
-		$userProperty = $reflection->getProperty('user');
-		$userProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($acl);
+        $reflectionProperty = $reflectionClass->getProperty('entity');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertInstanceOf(Acl::class, $acl);
-		$this->assertSame($user, $userProperty->getValue($acl));
-		$this->assertSame($entity, $entityProperty->getValue($acl));
-	}
+        $userProperty = $reflectionClass->getProperty('user');
+        $userProperty->setAccessible(true);
 
-	/**
-	 * getImages returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testGetImagesReturnsCorrectValue()
-	{
-		$_SERVER['HTTP_HOST'] = 'joomla-entity.test.com';
-		$_SERVER['SCRIPT_NAME'] = '/index.php';
+        $this->assertInstanceOf(Acl::class, $acl);
+        $this->assertSame($user, $userProperty->getValue($acl));
+        $this->assertSame($tag, $reflectionProperty->getValue($acl));
+    }
 
-		$article = new Tag(999);
+    /**
+     * getImages returns correct value.
+     *
+     * @return  void
+     */
+    public function testGetImagesReturnsCorrectValue()
+    {
+        $_SERVER['HTTP_HOST'] = 'joomla-entity.test.com';
+        $_SERVER['SCRIPT_NAME'] = '/index.php';
 
-		$reflection = new \ReflectionClass($article);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $tag = new Tag(999);
 
-		$rowProperty->setValue($article, array('id' => 999, 'images' => ''));
+        $reflectionClass = new \ReflectionClass($tag);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertSame(array(), $article->getImages(true));
+        $reflectionProperty->setValue($tag, ['id' => 999, 'images' => '']);
 
-		$rowProperty->setValue($article, array('id' => 999, 'images' => '{"image_intro":"images\/joomla_black.png","float_intro":"left","image_intro_alt":"Alt text","image_intro_caption":"Caption text","image_fulltext":"images\/fulltext.png","float_fulltext":"right","image_fulltext_alt":"Alt fulltext","image_fulltext_caption":"Caption fulltext"}'));
+        $this->assertSame([], $tag->getImages(true));
 
-		$this->assertSame(array(), $article->getImages());
+        $reflectionProperty->setValue($tag, ['id' => 999, 'images' => '{"image_intro":"images\/joomla_black.png","float_intro":"left","image_intro_alt":"Alt text","image_intro_caption":"Caption text","image_fulltext":"images\/fulltext.png","float_fulltext":"right","image_fulltext_alt":"Alt fulltext","image_fulltext_caption":"Caption fulltext"}']);
 
-		$expected = array(
-			'intro' => array(
-				'url'     => 'images/joomla_black.png',
-				'float'   => 'left',
-				'alt'     => 'Alt text',
-				'caption' => 'Caption text'
-			),
-			'full' => array(
-				'url'     => 'images/fulltext.png',
-				'float'   => 'right',
-				'alt'     => 'Alt fulltext',
-				'caption' => 'Caption fulltext'
-			)
-		);
-		$images = $article->getImages(true);
+        $this->assertSame([], $tag->getImages());
 
-		$this->assertEquals($expected, $article->getImages(true));
-	}
+        $expected = [
+            'intro' => [
+                'url'     => 'images/joomla_black.png',
+                'float'   => 'left',
+                'alt'     => 'Alt text',
+                'caption' => 'Caption text',
+            ],
+            'full' => [
+                'url'     => 'images/fulltext.png',
+                'float'   => 'right',
+                'alt'     => 'Alt fulltext',
+                'caption' => 'Caption fulltext',
+            ],
+        ];
+        $images = $tag->getImages(true);
 
-	/**
-	 * getMetadata returns data.
-	 *
-	 * @return  void
-	 */
-	public function testGetMetadataReturnsData()
-	{
-		$article = new Tag(999);
+        $this->assertEquals($expected, $tag->getImages(true));
+    }
 
-		$reflection = new \ReflectionClass($article);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+    /**
+     * getMetadata returns data.
+     *
+     * @return  void
+     */
+    public function testGetMetadataReturnsData()
+    {
+        $tag = new Tag(999);
 
-		$rowProperty->setValue($article, array('id' => 999, 'metadata' => '{"foo":"bar"}'));
+        $reflectionClass = new \ReflectionClass($tag);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$expected = array(
-			'foo' => 'bar'
-		);
+        $reflectionProperty->setValue($tag, ['id' => 999, 'metadata' => '{"foo":"bar"}']);
 
-		$this->assertEquals($expected, $article->metadata());
-	}
+        $expected = [
+            'foo' => 'bar',
+        ];
 
-	/**
-	 * params returns parameters.
-	 *
-	 * @return  void
-	 */
-	public function testParamsReturnsParameters()
-	{
-		$article = new Tag(999);
+        $this->assertEquals($expected, $tag->metadata());
+    }
 
-		$reflection = new \ReflectionClass($article);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+    /**
+     * params returns parameters.
+     *
+     * @return  void
+     */
+    public function testParamsReturnsParameters()
+    {
+        $tag = new Tag(999);
 
-		$rowProperty->setValue($article, array('id' => 999, 'params' => '{"foo":"var"}'));
+        $reflectionClass = new \ReflectionClass($tag);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertEquals(new Registry(array('foo' => 'var')), $article->params());
-	}
+        $reflectionProperty->setValue($tag, ['id' => 999, 'params' => '{"foo":"var"}']);
 
-	/**
-	 * getState returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testGetStateReturnsCorrectValue()
-	{
-		$tag = new Tag(999);
+        $this->assertEquals(new Registry(['foo' => 'var']), $tag->params());
+    }
 
-		$reflection = new \ReflectionClass($tag);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+    /**
+     * getState returns correct value.
+     *
+     * @return  void
+     */
+    public function testGetStateReturnsCorrectValue()
+    {
+        $tag = new Tag(999);
 
-		$rowProperty->setValue($tag, array('id' => 999, 'published' => '0'));
+        $reflectionClass = new \ReflectionClass($tag);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertEquals(0, $tag->state());
+        $reflectionProperty->setValue($tag, ['id' => 999, 'published' => '0']);
 
-		$rowProperty->setValue($tag, array('id' => 999, 'published' => '1'));
+        $this->assertEquals(0, $tag->state());
 
-		$this->assertEquals(1, $tag->state());
-	}
+        $reflectionProperty->setValue($tag, ['id' => 999, 'published' => '1']);
+
+        $this->assertEquals(1, $tag->state());
+    }
 }

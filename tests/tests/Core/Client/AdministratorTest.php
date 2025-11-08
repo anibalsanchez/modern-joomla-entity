@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Client;
+namespace Extly\Joomla\Entity\Tests\Core\Client;
 
-use Phproberto\Joomla\Entity\Core\Client\Administrator;
+use Extly\Joomla\Entity\Core\Client\Administrator;
 
 /**
  * Tests for Administrator client.
@@ -17,58 +23,58 @@ use Phproberto\Joomla\Entity\Core\Client\Administrator;
  */
 class AdministratorTest extends \TestCase
 {
-	/**
-	 * Test getFolder returns the correct folder.
-	 *
-	 * @return  void
-	 */
-	public function testGetFolderReturnsCorrectFolder()
-	{
-		$client = new Administrator;
-		$this->assertEquals(JPATH_ADMINISTRATOR, $client->getFolder());
-	}
+    /**
+     * Test getFolder returns the correct folder.
+     *
+     * @return  void
+     */
+    public function testGetFolderReturnsCorrectFolder()
+    {
+        $administrator = new Administrator();
+        $this->assertEquals(JPATH_ADMINISTRATOR, $administrator->getFolder());
+    }
 
-	/**
-	 * Test getId returns the correct id.
-	 *
-	 * @return  void
-	 */
-	public function testGetIdReturnsCorrectId()
-	{
-		$client = new Administrator;
-		$this->assertEquals(Administrator::ID, $client->getId());
-	}
+    /**
+     * Test getId returns the correct id.
+     *
+     * @return  void
+     */
+    public function testGetIdReturnsCorrectId()
+    {
+        $administrator = new Administrator();
+        $this->assertEquals(Administrator::ID, $administrator->getId());
+    }
 
-	/**
-	 * Test getName returns correct name.
-	 *
-	 * @return  void
-	 */
-	public function testGetNameRetursCorrectName()
-	{
-		$client = new Administrator;
-		$this->assertEquals(Administrator::NAME, $client->getName());
-	}
+    /**
+     * Test getName returns correct name.
+     *
+     * @return  void
+     */
+    public function testGetNameRetursCorrectName()
+    {
+        $administrator = new Administrator();
+        $this->assertEquals(Administrator::NAME, $administrator->getName());
+    }
 
-	/**
-	 * Test isAdmin returns true.
-	 *
-	 * @return  void
-	 */
-	public function testIsAdminReturnsTrue()
-	{
-		$client = new Administrator;
-		$this->assertTrue($client->IsAdmin());
-	}
+    /**
+     * Test isAdmin returns true.
+     *
+     * @return  void
+     */
+    public function testIsAdminReturnsTrue()
+    {
+        $administrator = new Administrator();
+        $this->assertTrue($administrator->IsAdmin());
+    }
 
-	/**
-	 * Test isAdmin returns false.
-	 *
-	 * @return  void
-	 */
-	public function testIsSiteReturnsFalse()
-	{
-		$client = new Administrator;
-		$this->assertFalse($client->IsSite());
-	}
+    /**
+     * Test isAdmin returns false.
+     *
+     * @return  void
+     */
+    public function testIsSiteReturnsFalse()
+    {
+        $administrator = new Administrator();
+        $this->assertFalse($administrator->IsSite());
+    }
 }

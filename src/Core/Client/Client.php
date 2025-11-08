@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Client;
+namespace Extly\Joomla\Entity\Core\Client;
 
 defined('_JEXEC') || die;
 
@@ -17,33 +23,33 @@ defined('_JEXEC') || die;
  */
 abstract class Client
 {
-	/**
-	 * Retrieve the active client.
-	 *
-	 * @return  ClientInterface
-	 */
-	public static function active()
-	{
-		return \JFactory::getApplication()->isAdmin() ? self::admin() : self::site();
-	}
+    /**
+     * Retrieve the active client.
+     *
+     * @return  ClientInterface
+     */
+    public static function active()
+    {
+        return \Joomla\CMS\Factory::getApplication()->isAdmin() ? self::admin() : self::site();
+    }
 
-	/**
-	 * Retrieve admin client.
-	 *
-	 * @return  Admin
-	 */
-	public static function admin()
-	{
-		return new Administrator;
-	}
+    /**
+     * Retrieve admin client.
+     *
+     * @return  Admin
+     */
+    public static function admin()
+    {
+        return new Administrator();
+    }
 
-	/**
-	 * Retrieve site client.
-	 *
-	 * @return  Site
-	 */
-	public static function site()
-	{
-		return new Site;
-	}
+    /**
+     * Retrieve site client.
+     *
+     * @return  Site
+     */
+    public static function site()
+    {
+        return new Site();
+    }
 }

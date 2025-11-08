@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Categories\Traits;
+namespace Extly\Joomla\Entity\Tests\Categories\Traits;
 
-use Phproberto\Joomla\Entity\Categories\Category;
-use Phproberto\Joomla\Entity\Tests\Categories\Traits\Stubs\ClassWithCategory;
+use Extly\Joomla\Entity\Categories\Category;
+use Extly\Joomla\Entity\Tests\Categories\Traits\Stubs\ClassWithCategory;
 
 /**
  * HasCategory trait tests.
@@ -18,139 +24,139 @@ use Phproberto\Joomla\Entity\Tests\Categories\Traits\Stubs\ClassWithCategory;
  */
 class HasCategoryTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function categoryIdReturnsZeroForUnexistingColumn()
-	{
-		$entity = new ClassWithCategory;
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function categoryIdReturnsZeroForUnexistingColumn()
+    {
+        $classWithCategory = new ClassWithCategory();
 
-		$this->assertSame(0, $entity->categoryId());
-	}
+        $this->assertSame(0, $classWithCategory->categoryId());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function categoryIdReturnsExpectedValue()
-	{
-		$entity = new ClassWithCategory;
-		$entity->bind(
-			[
-				'id' => 45,
-				'category_id' => 12
-			]
-		);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function categoryIdReturnsExpectedValue()
+    {
+        $classWithCategory = new ClassWithCategory();
+        $classWithCategory->bind(
+            [
+                'id' => 45,
+                'category_id' => 12,
+            ]
+        );
 
-		$this->assertSame(12, $entity->categoryId());
-	}
+        $this->assertSame(12, $classWithCategory->categoryId());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function categoryIdReturnsExpectedValueWithCustomCategoryColumn()
-	{
-		$entity = $this->getMockBuilder(ClassWithCategory::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function categoryIdReturnsExpectedValueWithCustomCategoryColumn()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(ClassWithCategory::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$entity->method('columnAlias')
-			->willReturn('catid');
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('catid');
 
-		$entity->bind(
-			[
-				'id' => 45,
-				'catid' => 23
-			]
-		);
+        $phpUnitFrameworkMockObjectMockObject->bind(
+            [
+                'id' => 45,
+                'catid' => 23,
+            ]
+        );
 
-		$this->assertSame(23, $entity->categoryId());
-	}
+        $this->assertSame(23, $phpUnitFrameworkMockObjectMockObject->categoryId());
+    }
 
-	/**
-	 * getCategory works for catid column.
-	 *
-	 * @return  void
-	 */
-	public function testGetCategoryWorksForCatidColumn()
-	{
-		$class = $this->getMockBuilder(ClassWithCategory::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * getCategory works for catid column.
+     *
+     * @return  void
+     */
+    public function testGetCategoryWorksForCatidColumn()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(ClassWithCategory::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$class->method('columnAlias')
-			->willReturn('catid');
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('catid');
 
-		$reflection = new \ReflectionClass($class);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$rowProperty->setValue($class, array('id' => 999, 'catid' => 666));
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'catid' => 666]);
 
-		$this->assertSame(666, $class->category()->id());
-	}
+        $this->assertSame(666, $phpUnitFrameworkMockObjectMockObject->category()->id());
+    }
 
-	/**
-	 * getCategory works for category_id column.
-	 *
-	 * @return  void
-	 */
-	public function testGetCategoryWorksForCategoryIdColumn()
-	{
-		$class = new ClassWithCategory;
+    /**
+     * getCategory works for category_id column.
+     *
+     * @return  void
+     */
+    public function testGetCategoryWorksForCategoryIdColumn()
+    {
+        $classWithCategory = new ClassWithCategory();
 
-		$reflection = new \ReflectionClass($class);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($classWithCategory);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$rowProperty->setValue($class, array('id' => 999, 'category_id' => 666));
+        $reflectionProperty->setValue($classWithCategory, ['id' => 999, 'category_id' => 666]);
 
-		$this->assertEquals(new Category(666), $class->category());
-	}
+        $this->assertEquals(new Category(666), $classWithCategory->category());
+    }
 
-	/**
-	 * getCategory reload works.
-	 *
-	 * @return  void
-	 */
-	public function testGetCategoryReloadWorks()
-	{
-		$class = new ClassWithCategory;
+    /**
+     * getCategory reload works.
+     *
+     * @return  void
+     */
+    public function testGetCategoryReloadWorks()
+    {
+        $classWithCategory = new ClassWithCategory();
 
-		$reflection = new \ReflectionClass($class);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($classWithCategory);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$rowProperty->setValue($class, array('id' => 999, 'category_id' => 666));
+        $reflectionProperty->setValue($classWithCategory, ['id' => 999, 'category_id' => 666]);
 
-		$this->assertEquals(new Category(666), $class->category());
+        $this->assertEquals(new Category(666), $classWithCategory->category());
 
-		$rowProperty->setValue($class, array('id' => 999, 'category_id' => 667));
+        $reflectionProperty->setValue($classWithCategory, ['id' => 999, 'category_id' => 667]);
 
-		$this->assertEquals(new Category(666), $class->category());
-		$this->assertEquals(new Category(667), $class->category(true));
-	}
+        $this->assertEquals(new Category(666), $classWithCategory->category());
+        $this->assertEquals(new Category(667), $classWithCategory->category(true));
+    }
 
-	/**
-	 * getCategory returns empty category for unset column.
-	 *
-	 * @return  void
-	 */
-	public function testGetCategoryReturnsEmptyCategoryForUnsetColumn()
-	{
-		$class = new ClassWithCategory;
+    /**
+     * getCategory returns empty category for unset column.
+     *
+     * @return  void
+     */
+    public function testGetCategoryReturnsEmptyCategoryForUnsetColumn()
+    {
+        $classWithCategory = new ClassWithCategory();
 
-		$reflection = new \ReflectionClass($class);
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($classWithCategory);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$rowProperty->setValue($class, array('id' => 999, 'name' => 'Sample class'));
+        $reflectionProperty->setValue($classWithCategory, ['id' => 999, 'name' => 'Sample class']);
 
-		$this->assertEquals(new Category, $class->category());
-	}
+        $this->assertEquals(new Category(), $classWithCategory->category());
+    }
 }

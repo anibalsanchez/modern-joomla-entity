@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Fields;
+namespace Extly\Joomla\Entity\Tests\Fields;
 
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Fields\FieldGroup;
 use Joomla\CMS\Factory;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Fields\FieldGroup;
 
 /**
  * Field group entity tests.
@@ -19,125 +25,126 @@ use Phproberto\Joomla\Entity\Fields\FieldGroup;
  */
 class FieldGroupTest extends \TestCaseDatabase
 {
-	/**
-	 * Preloaded field group for tests.
-	 *
-	 * @var  FieldGroup
-	 */
-	protected $fieldGroup;
+    /**
+     * Preloaded field group for tests.
+     *
+     * @var  FieldGroup
+     */
+    protected $fieldGroup;
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function fieldsReturnsFields()
-	{
-		$fields = $this->fieldGroup->fields();
+    /**
+     * This method is called before the first test of this test class is run.
+     *
+     * @return  void
+     */
+    public static function setUpBeforeClass()
+    {
+        parent::setUpBeforeClass();
 
-		$this->assertInstanceOf(Collection::class, $fields);
-		$this->assertNotSame(0, count($fields));
-	}
+        $files = [
+            JPATH_TESTS_PHPROBERTO.'/db/schema/fields.sql',
+            JPATH_TESTS_PHPROBERTO.'/db/schema/fields_groups.sql',
+        ];
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function fieldsReturnsEmptyCollectionForNonLoadedGroup()
-	{
-		$fieldGroup = new FieldGroup;
-		$fields = $fieldGroup->fields();
+        foreach ($files as $file) {
+            static::$driver->getConnection()->exec(file_get_contents($file));
+        }
 
-		$this->assertInstanceOf(Collection::class, $fields);
-		$this->assertSame(0, count($fields));
-	}
+        Factory::$database = static::$driver;
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function loadWorks()
-	{
-		$data = $this->fieldGroup->all();
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-		$this->assertTrue(is_array($data));
-		$this->assertNotSame(0, count($data));
-	}
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_extensions', JPATH_TESTS_PHPROBERTO . '/db/data/extensions.csv');
-		$dataSet->addTable('jos_fields', JPATH_TESTS_PHPROBERTO . '/db/data/fields.csv');
-		$dataSet->addTable('jos_fields_groups', JPATH_TESTS_PHPROBERTO . '/db/data/fields_groups.csv');
+        $this->saveFactoryState();
 
-		return $dataSet;
-	}
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+        $this->fieldGroup = FieldGroup::find(1);
+    }
 
-		$this->saveFactoryState();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        FieldGroup::clearAll();
 
-		$this->fieldGroup = FieldGroup::find(1);
-	}
+        $this->restoreFactoryState();
 
-	/**
-	 * This method is called before the first test of this test class is run.
-	 *
-	 * @return  void
-	 */
-	public static function setUpBeforeClass()
-	{
-		parent::setUpBeforeClass();
+        parent::tearDown();
+    }
 
-		$files = [
-			JPATH_TESTS_PHPROBERTO . '/db/schema/fields.sql',
-			JPATH_TESTS_PHPROBERTO . '/db/schema/fields_groups.sql'
-		];
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function fieldsReturnsFields()
+    {
+        $fields = $this->fieldGroup->fields();
 
-		foreach ($files as $file)
-		{
-			static::$driver->getConnection()->exec(file_get_contents($file));
-		}
+        $this->assertInstanceOf(Collection::class, $fields);
+        $this->assertNotSame(0, count($fields));
+    }
 
-		Factory::$database = static::$driver;
-	}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function fieldsReturnsEmptyCollectionForNonLoadedGroup()
+    {
+        $fieldGroup = new FieldGroup();
+        $fields = $fieldGroup->fields();
 
-	/**
-	 * @test
-	 *
-	 * @return  void
-	 */
-	public function tableReturnsSpecificTableInstance()
-	{
-		$this->assertInstanceOf('JTableUser', $this->fieldGroup->table('User', 'JTable'));
-	}
+        $this->assertInstanceOf(Collection::class, $fields);
+        $this->assertSame(0, count($fields));
+    }
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		FieldGroup::clearAll();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function loadWorks()
+    {
+        $data = $this->fieldGroup->all();
 
-		$this->restoreFactoryState();
+        $this->assertTrue(is_array($data));
+        $this->assertNotSame(0, count($data));
+    }
 
-		parent::tearDown();
-	}
+    /**
+     * @test
+     *
+     * @return  void
+     */
+    public function tableReturnsSpecificTableInstance()
+    {
+        $this->assertInstanceOf('JTableUser', $this->fieldGroup->table('User', 'JTable'));
+    }
+
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_extensions', JPATH_TESTS_PHPROBERTO.'/db/data/extensions.csv');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_fields', JPATH_TESTS_PHPROBERTO.'/db/data/fields.csv');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_fields_groups', JPATH_TESTS_PHPROBERTO.'/db/data/fields_groups.csv');
+
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

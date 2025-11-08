@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
 defined('_JEXEC') || die;
 
@@ -17,65 +23,64 @@ defined('_JEXEC') || die;
  */
 trait HasInstances
 {
-	/**
-	 * Cached instances
-	 *
-	 * @var  array
-	 */
-	protected static $instances = array();
+    /**
+     * Cached instances
+     *
+     * @var  array
+     */
+    protected static $instances = [];
 
-	/**
-	 * Remove an instance from cache.
-	 *
-	 * @param   integer  $id  Class identifier
-	 *
-	 * @return  void
-	 */
-	public static function clear($id)
-	{
-		unset(static::$instances[get_called_class()][$id]);
-	}
+    /**
+     * Remove an instance from cache.
+     *
+     * @param   int  $id  Class identifier
+     *
+     * @return  void
+     */
+    public static function clear($id)
+    {
+        unset(static::$instances[static::class][$id]);
+    }
 
-	/**
-	 * Clear all instances from cache
-	 *
-	 * @return  void
-	 */
-	public static function clearAll()
-	{
-		unset(static::$instances[get_called_class()]);
-	}
+    /**
+     * Clear all instances from cache
+     *
+     * @return  void
+     */
+    public static function clearAll()
+    {
+        unset(static::$instances[static::class]);
+    }
 
-	/**
-	 * Ensure that we retrieve a non-statically-cached instance.
-	 *
-	 * @param   integer  $id   Identifier of the instance
-	 *
-	 * @return  $this
-	 */
-	public static function fresh($id)
-	{
-		static::clear($id);
+    /**
+     * Ensure that we retrieve a non-statically-cached instance.
+     *
+     * @param   int  $id   Identifier of the instance
+     *
+     * @return  $this
+     */
+    public static function fresh($id)
+    {
+        static::clear($id);
 
-		return static::find($id);
-	}
+        return static::find($id);
+    }
 
-	/**
-	 * Create and return a cached instance
-	 *
-	 * @param   integer  $id  Identifier of the instance
-	 *
-	 * @return  $this
-	 */
-	public static function find($id)
-	{
-		$class = get_called_class();
+    /**
+     * Create and return a cached instance
+     *
+     * @param   int  $id  Identifier of the instance
+     *
+     * @return  $this
+     */
+    public static function find($id)
+    {
+        $class = static::class;
 
-		if (empty(static::$instances[$class][$id]))
-		{
-			static::$instances[$class][$id] = new static($id);
-		}
+        if (empty(static::$instances[$class][$id])) {
+            static::$instances[$class][$id] = new static($id);
+        }
 
-		return static::$instances[$class][$id];
-	}
+        return static::$instances[$class][$id];
+    }
 }

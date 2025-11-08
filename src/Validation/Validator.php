@@ -1,19 +1,25 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Validation;
+namespace Extly\Joomla\Entity\Validation;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Decorator;
-use Phproberto\Joomla\Entity\Validation\Exception\ValidationException;
-use Phproberto\Joomla\Entity\Validation\Contracts\Rule as RuleContract;
-use Phproberto\Joomla\Entity\Validation\Contracts\Validator as ValidatorContract;
+use Extly\Joomla\Entity\Decorator;
+use Extly\Joomla\Entity\Validation\Contracts\Rule as RuleContract;
+use Extly\Joomla\Entity\Validation\Contracts\Validator as ValidatorContract;
+use Extly\Joomla\Entity\Validation\Exception\ValidationException;
 
 /**
  * Entity validator.
@@ -22,332 +28,313 @@ use Phproberto\Joomla\Entity\Validation\Contracts\Validator as ValidatorContract
  */
 class Validator extends Decorator implements ValidatorContract
 {
-	/**
-	 * Validation rules applicable to all columns.
-	 *
-	 * @var  RuleContract[]
-	 */
-	protected $globalRules = array();
+    /**
+     * Validation rules applicable to all columns.
+     *
+     * @var  RuleContract[]
+     */
+    protected $globalRules = [];
 
-	/**
-	 * Column specific validation rules.
-	 *
-	 * @var  array
-	 */
-	protected $rules = array();
+    /**
+     * Column specific validation rules.
+     *
+     * @var  array
+     */
+    protected $rules = [];
 
-	/**
-	 * Fast proxy to
-	 *
-	 * @param   RuleContract  $rule  Translation rule
-	 *
-	 * @return  self
-	 */
-	public function addGlobalRule(RuleContract $rule)
-	{
-		$this->globalRules[$rule->id()] = $rule;
+    /**
+     * Fast proxy to
+     *
+     * @param RuleContract $ruleContract Translation rule
+     *
+     * @return  self
+     */
+    public function addGlobalRule(RuleContract $ruleContract)
+    {
+        $this->globalRules[$ruleContract->id()] = $ruleContract;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Add an array of global rules.
-	 *
-	 * @param   array  $rules  Rules to add
-	 *
-	 * @return  self
-	 */
-	public function addGlobalRules(array $rules)
-	{
-		foreach ($rules as $rule)
-		{
-			$this->addGlobalRule($rule);
-		}
+    /**
+     * Add an array of global rules.
+     *
+     * @param   array  $rules  Rules to add
+     *
+     * @return  self
+     */
+    public function addGlobalRules(array $rules)
+    {
+        foreach ($rules as $rule) {
+            $this->addGlobalRule($rule);
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Add a validation rule for a column.
-	 *
-	 * @param   RuleContract  $rule     Rule
-	 * @param   mixed         $columns  String | Array. Columns to apply rule
-	 *
-	 * @return  self
-	 */
-	public function addRule(RuleContract $rule, $columns)
-	{
-		$columns = (array) $columns;
+    /**
+     * Add a validation rule for a column.
+     *
+     * @param RuleContract $ruleContract Rule
+     * @param   mixed         $columns  String | Array. Columns to apply rule
+     *
+     * @return  self
+     */
+    public function addRule(RuleContract $ruleContract, $columns)
+    {
+        $columns = (array) $columns;
 
-		foreach ($columns as $column)
-		{
-			if (!isset($this->rules[$column]))
-			{
-				$this->rules[$column] = array();
-			}
+        foreach ($columns as $column) {
+            if (!isset($this->rules[$column])) {
+                $this->rules[$column] = [];
+            }
 
-			$this->rules[$column][$rule->id()] = $rule;
-		}
+            $this->rules[$column][$ruleContract->id()] = $ruleContract;
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Add an array of rules.
-	 *
-	 * @param   array  $rules  Rules to add
-	 *
-	 * @return  self
-	 */
-	public function addRules(array $rules)
-	{
-		foreach ($rules as $column => $columnRules)
-		{
-			$columnRules = is_array($columnRules) ? $columnRules : array($columnRules);
+    /**
+     * Add an array of rules.
+     *
+     * @param   array  $rules  Rules to add
+     *
+     * @return  self
+     */
+    public function addRules(array $rules)
+    {
+        foreach ($rules as $column => $columnRules) {
+            $columnRules = is_array($columnRules) ? $columnRules : [$columnRules];
 
-			foreach ($columnRules as $rule)
-			{
-				$this->addRule($rule, array($column));
-			}
-		}
+            foreach ($columnRules as $columnRule) {
+                $this->addRule($columnRule, [$column]);
+            }
+        }
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Retrieve global translation rules.
-	 *
-	 * @return  RuleContract[]
-	 */
-	public function globalRules()
-	{
-		return $this->globalRules;
-	}
-	/**
-	 * Check if there is a global translation rule with a specific name.
-	 *
-	 * @param   string  $name  Name of the rule
-	 *
-	 * @return  boolean
-	 */
-	public function hasGlobalRule($name)
-	{
-		return isset($this->globalRules[$name]);
-	}
+    /**
+     * Retrieve global translation rules.
+     *
+     * @return  RuleContract[]
+     */
+    public function globalRules()
+    {
+        return $this->globalRules;
+    }
 
-	/**
-	 * Check if there are global rules.
-	 *
-	 * @return  boolean
-	 */
-	public function hasGlobalRules()
-	{
-		return !empty($this->globalRules);
-	}
+    /**
+     * Check if there is a global translation rule with a specific name.
+     *
+     * @param   string  $name  Name of the rule
+     *
+     * @return  bool
+     */
+    public function hasGlobalRule($name)
+    {
+        return isset($this->globalRules[$name]);
+    }
 
-	/**
-	 * Check if column has a validation rule.
-	 *
-	 * @param   string  $name    Name of the rule
-	 * @param   string  $column  Column to check for rule
-	 *
-	 * @return  boolean
-	 */
-	public function hasRule($name, $column)
-	{
-		return !empty($this->rules[$column][$name]);
-	}
+    /**
+     * Check if there are global rules.
+     *
+     * @return  bool
+     */
+    public function hasGlobalRules()
+    {
+        return $this->globalRules !== [];
+    }
 
-	/**
-	 * Check if there are validation rules set.
-	 *
-	 * @return  boolean
-	 */
-	public function hasRules()
-	{
-		return !empty($this->rules);
-	}
+    /**
+     * Check if column has a validation rule.
+     *
+     * @param   string  $name    Name of the rule
+     * @param   string  $column  Column to check for rule
+     *
+     * @return  bool
+     */
+    public function hasRule($name, $column)
+    {
+        return !empty($this->rules[$column][$name]);
+    }
 
-	/**
-	 * Check if the entity is valid.
-	 *
-	 * @return  boolean
-	 */
-	public function isValid()
-	{
-		try
-		{
-			$this->validate();
-		}
-		catch (ValidationException $e)
-		{
-			return false;
-		}
+    /**
+     * Check if there are validation rules set.
+     *
+     * @return  bool
+     */
+    public function hasRules()
+    {
+        return $this->rules !== [];
+    }
 
-		return true;
-	}
+    /**
+     * Check if the entity is valid.
+     *
+     * @return  bool
+     */
+    public function isValid()
+    {
+        try {
+            $this->validate();
+        } catch (ValidationException $validationException) {
+            return false;
+        }
 
-	/**
-	 * Check if a value is valid for a specific column.
-	 *
-	 * @param   string  $column  Column to validate against
-	 * @param   mixed   $value   Value to check
-	 *
-	 * @return  boolean
-	 */
-	public function isValidColumnValue($column, $value)
-	{
-		try
-		{
-			$this->validateColumnValue($column, $value);
-		}
-		catch (\Exception $e)
-		{
-			return false;
-		}
+        return true;
+    }
 
-		return true;
-	}
+    /**
+     * Check if a value is valid for a specific column.
+     *
+     * @param   string  $column  Column to validate against
+     * @param   mixed   $value   Value to check
+     *
+     * @return  bool
+     */
+    public function isValidColumnValue($column, $value)
+    {
+        try {
+            $this->validateColumnValue($column, $value);
+        } catch (\Exception $exception) {
+            return false;
+        }
 
-	/**
-	 * Remove a global translation rule by its name.
-	 *
-	 * @param   string  $name  Name of the rule to unset
-	 *
-	 * @return  self
-	 */
-	public function removeGlobalRule($name)
-	{
-		unset($this->globalRules[$name]);
+        return true;
+    }
 
-		return $this;
-	}
+    /**
+     * Remove a global translation rule by its name.
+     *
+     * @param   string  $name  Name of the rule to unset
+     *
+     * @return  self
+     */
+    public function removeGlobalRule($name)
+    {
+        unset($this->globalRules[$name]);
 
-	/**
-	 * Remove all the global rules.
-	 *
-	 * @return  self
-	 */
-	public function removeGlobalRules()
-	{
-		$this->globalRules = array();
+        return $this;
+    }
 
-		return $this;
-	}
+    /**
+     * Remove all the global rules.
+     *
+     * @return  self
+     */
+    public function removeGlobalRules()
+    {
+        $this->globalRules = [];
 
-	/**
-	 * Unset a rule by its name.
-	 *
-	 * @param   string  $column  Specific column to unset rules
-	 * @param   string  $name    Name of the rule to unset
-	 *
-	 * @return  self
-	 */
-	public function removeRule($column, $name)
-	{
-		unset($this->rules[$column][$name]);
+        return $this;
+    }
 
-		return $this;
-	}
+    /**
+     * Unset a rule by its name.
+     *
+     * @param   string  $column  Specific column to unset rules
+     * @param   string  $name    Name of the rule to unset
+     *
+     * @return  self
+     */
+    public function removeRule($column, $name)
+    {
+        unset($this->rules[$column][$name]);
 
-	/**
-	 * Remove all the column translation rules.
-	 *
-	 * @return  self
-	 */
-	public function removeRules()
-	{
-		$this->rules = array();
+        return $this;
+    }
 
-		return $this;
-	}
+    /**
+     * Remove all the column translation rules.
+     *
+     * @return  self
+     */
+    public function removeRules()
+    {
+        $this->rules = [];
 
-	/**
-	 * Retrieve translation rules.
-	 *
-	 * @param   string  $column  [optional] Only retrieve rules for specified column
-	 *
-	 * @return  array
-	 */
-	public function rules($column = null)
-	{
-		if (!$column)
-		{
-			return $this->rules;
-		}
+        return $this;
+    }
 
-		return isset($this->rules[$column]) ? $this->rules[$column] : array();
-	}
+    /**
+     * Retrieve translation rules.
+     *
+     * @param   string  $column  [optional] Only retrieve rules for specified column
+     *
+     * @return  array
+     */
+    public function rules($column = null)
+    {
+        if (!$column) {
+            return $this->rules;
+        }
 
-	/**
-	 * Validate entity.
-	 *
-	 * @return  boolean
-	 *
-	 * @throws  \Exception
-	 */
-	public function validate()
-	{
-		$errors = array();
+        return $this->rules[$column] ?? [];
+    }
 
-		$data = $this->entity->all();
+    /**
+     * Validate entity.
+     *
+     * @return  bool
+     *
+     * @throws  \Exception
+     */
+    public function validate()
+    {
+        $errors = [];
 
-		$validableColumns = array_unique(
-			array_merge(array_keys($data), array_keys($this->rules))
-		);
+        $data = $this->entity->all();
 
-		sort($validableColumns);
+        $validableColumns = array_unique(
+            array_merge(array_keys($data), array_keys($this->rules))
+        );
 
-		foreach ($validableColumns as $column)
-		{
-			$value = isset($data[$column]) ? $data[$column] : null;
+        sort($validableColumns);
 
-			try
-			{
-				$this->validateColumnValue($column, $value);
-			}
-			catch (ValidationException $e)
-			{
-				$errors[] = $e->getMessage();
-			}
-		}
+        foreach ($validableColumns as $validableColumn) {
+            $value = $data[$validableColumn] ?? null;
 
-		if (!empty($errors))
-		{
-			throw ValidationException::invalidEntity($this->entity, $errors);
-		}
+            try {
+                $this->validateColumnValue($validableColumn, $value);
+            } catch (ValidationException $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
 
-		return empty($errors);
-	}
+        if ($errors !== []) {
+            throw ValidationException::invalidEntity($this->entity, $errors);
+        }
 
-	/**
-	 * Validate a column value.
-	 *
-	 * @param   string  $column  Column to check value against
-	 * @param   mixed   $value   Value for the column. Null to use current column value.
-	 *
-	 * @return  boolean
-	 *
-	 * @throws  ValidationException
-	 */
-	public function validateColumnValue($column, $value)
-	{
-		$failedRules = array();
-		$rules = array_merge($this->globalRules(), $this->rules($column));
+        return $errors === [];
+    }
 
-		foreach ($rules as $rule)
-		{
-			if (!$rule->passes($value))
-			{
-				$failedRules[] = $rule;
-			}
-		}
+    /**
+     * Validate a column value.
+     *
+     * @param   string  $column  Column to check value against
+     * @param   mixed   $value   Value for the column. Null to use current column value.
+     *
+     * @return  bool
+     *
+     * @throws  ValidationException
+     */
+    public function validateColumnValue($column, $value)
+    {
+        $failedRules = [];
+        $rules = array_merge($this->globalRules(), $this->rules($column));
 
-		if (!empty($failedRules))
-		{
-			throw ValidationException::invalidColumn($column, $failedRules);
-		}
+        foreach ($rules as $rule) {
+            if (!$rule->passes($value)) {
+                $failedRules[] = $rule;
+            }
+        }
 
-		return true;
-	}
+        if ($failedRules !== []) {
+            throw ValidationException::invalidColumn($column, $failedRules);
+        }
+
+        return true;
+    }
 }

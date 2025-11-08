@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Categories\Traits;
+namespace Extly\Joomla\Entity\Tests\Categories\Traits;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Categories\Category;
-use Phproberto\Joomla\Entity\Tests\Categories\Traits\Stubs\ClassWithCategories;
+use Extly\Joomla\Entity\Categories\Category;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Tests\Categories\Traits\Stubs\ClassWithCategories;
 
 /**
  * HasCategories trait tests.
@@ -19,112 +25,112 @@ use Phproberto\Joomla\Entity\Tests\Categories\Traits\Stubs\ClassWithCategories;
  */
 class HasCategoriesTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		ClassWithCategories::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        ClassWithCategories::clearAll();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * clearCategories clears categories property.
-	 *
-	 * @return  void
-	 */
-	public function testClearCategoriesClearsCategoriesProperty()
-	{
-		$entity = new ClassWithCategories;
+    /**
+     * clearCategories clears categories property.
+     *
+     * @return  void
+     */
+    public function testClearCategoriesClearsCategoriesProperty()
+    {
+        $classWithCategories = new ClassWithCategories();
 
-		$reflection = new \ReflectionClass($entity);
-		$categoriesProperty = $reflection->getProperty('categories');
-		$categoriesProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($classWithCategories);
+        $reflectionProperty = $reflectionClass->getProperty('categories');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertEquals(null, $categoriesProperty->getValue($entity));
+        $this->assertEquals(null, $reflectionProperty->getValue($classWithCategories));
 
-		$categories = new Collection(
-			array(
-				new Category(23),
-				new Category(24),
-				new Category(25)
-			)
-		);
+        $collection = new Collection(
+            [
+                new Category(23),
+                new Category(24),
+                new Category(25),
+            ]
+        );
 
-		$categoriesProperty->setValue($entity, $categories);
-		$this->assertEquals($categories, $categoriesProperty->getValue($entity));
+        $reflectionProperty->setValue($classWithCategories, $collection);
+        $this->assertEquals($collection, $reflectionProperty->getValue($classWithCategories));
 
-		$entity->clearCategories();
-		$this->assertEquals(null, $categoriesProperty->getValue($entity));
-	}
+        $classWithCategories->clearCategories();
+        $this->assertEquals(null, $reflectionProperty->getValue($classWithCategories));
+    }
 
-	/**
-	 * clearCategories is chainable.
-	 *
-	 * @return  void
-	 */
-	public function testClearCategoriesIsChainable()
-	{
-		$entity = new ClassWithCategories;
+    /**
+     * clearCategories is chainable.
+     *
+     * @return  void
+     */
+    public function testClearCategoriesIsChainable()
+    {
+        $classWithCategories = new ClassWithCategories();
 
-		$this->assertTrue($entity->clearCategories() instanceof ClassWithCategories);
-	}
+        $this->assertTrue($classWithCategories->clearCategories() instanceof ClassWithCategories);
+    }
 
-	/**
-	 * getCategories returns correct data.
-	 *
-	 * @return  void
-	 */
-	public function testGetCategoriesReturnsCorrectData()
-	{
-		$entity = new ClassWithCategories;
+    /**
+     * getCategories returns correct data.
+     *
+     * @return  void
+     */
+    public function testGetCategoriesReturnsCorrectData()
+    {
+        $classWithCategories = new ClassWithCategories();
 
-		$this->assertEquals(new Collection, $entity->categories());
+        $this->assertEquals(new Collection(), $classWithCategories->categories());
 
-		$entity->categoriesIds = array(999);
+        $classWithCategories->categoriesIds = [999];
 
-		// Previous data with no reload
-		$this->assertEquals(new Collection, $entity->categories());
-		$this->assertEquals(new Collection(array(new Category(999))), $entity->categories(true));
-	}
+        // Previous data with no reload
+        $this->assertEquals(new Collection(), $classWithCategories->categories());
+        $this->assertEquals(new Collection([new Category(999)]), $classWithCategories->categories(true));
+    }
 
-	/**
-	 * hasCategory returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasCategoryReturnsCorrectValue()
-	{
-		$entity = new ClassWithCategories;
+    /**
+     * hasCategory returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasCategoryReturnsCorrectValue()
+    {
+        $classWithCategories = new ClassWithCategories();
 
-		$entity->categoriesIds = array(999, 1001, 1003);
+        $classWithCategories->categoriesIds = [999, 1001, 1003];
 
-		$this->assertFalse($entity->hasCategory(998));
-		$this->assertTrue($entity->hasCategory(999));
-		$this->assertFalse($entity->hasCategory(1000));
-		$this->assertTrue($entity->hasCategory(1001));
-		$this->assertFalse($entity->hasCategory(1002));
-		$this->assertTrue($entity->hasCategory(1003));
-	}
+        $this->assertFalse($classWithCategories->hasCategory(998));
+        $this->assertTrue($classWithCategories->hasCategory(999));
+        $this->assertFalse($classWithCategories->hasCategory(1000));
+        $this->assertTrue($classWithCategories->hasCategory(1001));
+        $this->assertFalse($classWithCategories->hasCategory(1002));
+        $this->assertTrue($classWithCategories->hasCategory(1003));
+    }
 
-	/**
-	 * hasCategories returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasCategoriesReturnsCorrectValue()
-	{
-		$entity = new ClassWithCategories;
+    /**
+     * hasCategories returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasCategoriesReturnsCorrectValue()
+    {
+        $entity = new ClassWithCategories();
 
-		$this->assertFalse($entity->hasCategories());
+        $this->assertFalse($entity->hasCategories());
 
-		$entity = new ClassWithCategories;
-		$entity->categoriesIds = array(999, 1001, 1003);
+        $entity = new ClassWithCategories();
+        $entity->categoriesIds = [999, 1001, 1003];
 
-		$this->assertTrue($entity->hasCategories());
-	}
+        $this->assertTrue($entity->hasCategories());
+    }
 }

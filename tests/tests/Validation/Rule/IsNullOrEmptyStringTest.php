@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation\Rule;
+namespace Extly\Joomla\Entity\Tests\Validation\Rule;
 
-use Phproberto\Joomla\Entity\Validation\Rule\IsNullOrEmptyString;
+use Extly\Joomla\Entity\Validation\Rule\IsNullOrEmptyString;
 
 /**
  * IsNullOrEmptyString tests.
@@ -17,24 +23,24 @@ use Phproberto\Joomla\Entity\Validation\Rule\IsNullOrEmptyString;
  */
 class IsNullOrEmptyStringTest extends \TestCase
 {
-	/**
-	 * passes returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testPassesReturnsCorrectValue()
-	{
-		$rule = new IsNullOrEmptyString;
+    /**
+     * passes returns correct value.
+     *
+     * @return  void
+     */
+    public function testPassesReturnsCorrectValue()
+    {
+        $isNullOrEmptyString = new IsNullOrEmptyString();
 
-		$this->assertTrue($rule->passes(''));
-		$this->assertFalse($rule->passes('#aa'));
-		$this->assertFalse($rule->passes('null'));
-		$this->assertFalse($rule->passes(0));
-		$this->assertFalse($rule->passes(0.1));
-		$this->assertFalse($rule->passes(1.1));
-		$this->assertFalse($rule->passes('1.1'));
-		$this->assertFalse($rule->passes('12,000'));
+        $this->assertTrue($isNullOrEmptyString->passes(''));
+        $this->assertFalse($isNullOrEmptyString->passes('#aa'));
+        $this->assertFalse($isNullOrEmptyString->passes('null'));
+        $this->assertFalse($isNullOrEmptyString->passes(0));
+        $this->assertFalse($isNullOrEmptyString->passes(0.1));
+        $this->assertFalse($isNullOrEmptyString->passes(1.1));
+        $this->assertFalse($isNullOrEmptyString->passes('1.1'));
+        $this->assertFalse($isNullOrEmptyString->passes('12,000'));
 
-		$this->assertTrue($rule->passes(null));
-	}
+        $this->assertTrue($isNullOrEmptyString->passes(null));
+    }
 }

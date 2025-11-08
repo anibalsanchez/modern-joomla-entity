@@ -1,19 +1,25 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Command\Database;
+namespace Extly\Joomla\Entity\Tests\Command\Database;
 
 defined('_JEXEC') || die;
 
+use Extly\Joomla\Entity\Command\Contracts\CommandInterface;
+use Extly\Joomla\Entity\Command\Database\ExecuteSQLFile;
+use Extly\Joomla\Entity\Command\FileSystem\DeleteFolderRecursively;
 use Joomla\CMS\Factory;
-use Phproberto\Joomla\Entity\Command\Database\ExecuteSQLFile;
-use Phproberto\Joomla\Entity\Command\Contracts\CommandInterface;
-use Phproberto\Joomla\Entity\Command\FileSystem\DeleteFolderRecursively;
 
 /**
  * ExecuteSQLFile tests.
@@ -22,117 +28,117 @@ use Phproberto\Joomla\Entity\Command\FileSystem\DeleteFolderRecursively;
  */
 class ExecuteSQLFileTest extends \TestCaseDatabase
 {
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function implementsCommandInterface()
-	{
-		$command = new DeleteFolderRecursively('test');
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-		$this->assertTrue($command instanceof CommandInterface);
-	}
+        $this->saveFactoryState();
 
-	/**
-	 * Create the test SQL file.
-	 *
-	 * @return  string
-	 */
-	private function createTestSQLFile()
-	{
-		$tmpFolder = $this->tmpFolder();
+        Factory::$config = $this->getMockConfig();
+        Factory::$application = $this->getMockCmsApp();
+        Factory::$session = $this->getMockSession();
+    }
 
-		if (is_dir($tmpFolder))
-		{
-			$this->deleteTmpFolder();
-		}
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        $this->restoreFactoryState();
 
-		mkdir($tmpFolder);
-		$file = $tmpFolder . '/execute-sql-test.sql';
-		touch($file);
-		$sql = "-- This is a comment"
-			. "\n"
-			. "CREATE TABLE `execute-sql-test` (`id` INTEGER PRIMARY KEY NOT NULL, `name` TEXT NOT NULL)"
-			. "\n"
-			. "/* And another comment */";
+        parent::tearDown();
+    }
 
-		$handle = fopen($file,'w+');
-		fwrite($handle, $sql);
-		fclose($handle);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function implementsCommandInterface()
+    {
+        $deleteFolderRecursively = new DeleteFolderRecursively('test');
 
-		return $file;
-	}
-	/**
-	 * Delete the test folder.
-	 *
-	 * @return  void
-	 */
-	private function deleteTmpFolder()
-	{
-		DeleteFolderRecursively::instance([$this->tmpFolder()])->execute();
-	}
+        $this->assertTrue($deleteFolderRecursively instanceof CommandInterface);
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function fileIsExecuted()
-	{
-		$file = $this->createTestSQLFile();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function fileIsExecuted()
+    {
+        $file = $this->createTestSQLFile();
 
-		$this->assertTrue(file_exists($file));
+        $this->assertTrue(file_exists($file));
 
-		$db = Factory::getDbo();
+        $db = Factory::getDbo();
 
-		$this->assertFalse(in_array('execute-sql-test', $db->getTableList(), true));
+        $this->assertFalse(in_array('execute-sql-test', $db->getTableList(), true));
 
-		$command = new ExecuteSQLFile($file);
-		$command->execute();
+        $executeSQLFile = new ExecuteSQLFile($file);
+        $executeSQLFile->execute();
 
-		$this->assertTrue(in_array('execute-sql-test', $db->getTableList(), true));
+        $this->assertTrue(in_array('execute-sql-test', $db->getTableList(), true));
 
-		$this->deleteTmpFolder();
-	}
+        $this->deleteTmpFolder();
+    }
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+    /**
+     * Create the test SQL file.
+     *
+     * @return  string
+     */
+    private function createTestSQLFile()
+    {
+        $tmpFolder = $this->tmpFolder();
 
-		$this->saveFactoryState();
+        if (is_dir($tmpFolder)) {
+            $this->deleteTmpFolder();
+        }
 
-		Factory::$config      = $this->getMockConfig();
-		Factory::$application = $this->getMockCmsApp();
-		Factory::$session     = $this->getMockSession();
-	}
+        mkdir($tmpFolder);
+        $file = $tmpFolder.'/execute-sql-test.sql';
+        touch($file);
+        $sql = '-- This is a comment'
+            ."\n"
+            .'CREATE TABLE `execute-sql-test` (`id` INTEGER PRIMARY KEY NOT NULL, `name` TEXT NOT NULL)'
+            ."\n"
+            .'/* And another comment */';
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		$this->restoreFactoryState();
+        $handle = fopen($file, 'w+');
+        fwrite($handle, $sql);
+        fclose($handle);
 
-		parent::tearDown();
-	}
+        return $file;
+    }
 
-	/**
-	 * Route to the temporary folder used to test this command.
-	 *
-	 * @return  string
-	 */
-	private function tmpFolder()
-	{
-		return __DIR__ . '/tmp';
-	}
+    /**
+     * Delete the test folder.
+     *
+     * @return  void
+     */
+    private function deleteTmpFolder()
+    {
+        DeleteFolderRecursively::instance([$this->tmpFolder()])->execute();
+    }
+
+    /**
+     * Route to the temporary folder used to test this command.
+     *
+     * @return  string
+     */
+    private function tmpFolder()
+    {
+        return __DIR__.'/tmp';
+    }
 }

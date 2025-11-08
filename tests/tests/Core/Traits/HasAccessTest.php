@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithAccess;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithAccess;
 
 /**
  * HasAccess trait tests.
@@ -17,133 +23,133 @@ use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithAccess;
  */
 class HasAccessTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * canAccess returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testCanAccessReturnsCorrectValue()
-	{
-		$entity = $this->getMockBuilder(EntityWithAccess::class)
-			->setMethods(array('checkAccess'))
-			->getMock();
+    /**
+     * canAccess returns correct value.
+     *
+     * @return  void
+     */
+    public function testCanAccessReturnsCorrectValue()
+    {
+        $entity = $this->getMockBuilder(EntityWithAccess::class)
+            ->setMethods(['checkAccess'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('checkAccess')
-			->willReturn(false);
+        $entity->expects($this->once())
+            ->method('checkAccess')
+            ->willReturn(false);
 
-		$this->assertFalse($entity->canAccess());
+        $this->assertFalse($entity->canAccess());
 
-		$entity = $this->getMockBuilder(EntityWithAccess::class)
-			->setMethods(array('checkAccess'))
-			->getMock();
+        $entity = $this->getMockBuilder(EntityWithAccess::class)
+            ->setMethods(['checkAccess'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('checkAccess')
-			->willReturn(true);
+        $entity->expects($this->once())
+            ->method('checkAccess')
+            ->willReturn(true);
 
-		$this->assertTrue($entity->canAccess(true));
-	}
+        $this->assertTrue($entity->canAccess(true));
+    }
 
-	/**
-	 * canAccess returns cached data.
-	 *
-	 * @return  void
-	 */
-	public function testCanAccessReturnsCachedData()
-	{
-		$entity = $this->getMockBuilder(EntityWithAccess::class)
-			->setMethods(array('checkAccess'))
-			->getMock();
+    /**
+     * canAccess returns cached data.
+     *
+     * @return  void
+     */
+    public function testCanAccessReturnsCachedData()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAccess::class)
+            ->setMethods(['checkAccess'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('checkAccess')
-			->willReturn(false);
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('checkAccess')
+            ->willReturn(false);
 
-		$reflection = new \ReflectionClass($entity);
-		$accessProperty = $reflection->getProperty('access');
-		$accessProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
+        $reflectionProperty = $reflectionClass->getProperty('access');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertFalse($entity->canAccess());
-		$this->assertSame(false, $accessProperty->getValue($entity));
+        $this->assertFalse($phpUnitFrameworkMockObjectMockObject->canAccess());
+        $this->assertSame(false, $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject));
 
-		$accessProperty->setValue($entity, true);
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, true);
 
-		$this->assertTrue($entity->canAccess());
-	}
+        $this->assertTrue($phpUnitFrameworkMockObjectMockObject->canAccess());
+    }
 
-	/**
-	 * access returns correct data.
-	 *
-	 * @return  void
-	 */
-	public function testAccessReturnsCorrectValue()
-	{
-		$entity = $this->getMockBuilder(EntityWithAccess::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * access returns correct data.
+     *
+     * @return  void
+     */
+    public function testAccessReturnsCorrectValue()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAccess::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$entity->method('columnAlias')
-			->willReturn('access');
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('access');
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-		$idProperty = $reflection->getProperty('id');
-		$idProperty->setAccessible(true);
-		$idProperty->setValue($entity, 999);
+        $reflectionProperty = $reflectionClass->getProperty('id');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, 999);
 
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
-		$rowProperty->setValue($entity, array('id' => 999, 'access' => 0));
+        $rowProperty = $reflectionClass->getProperty('row');
+        $rowProperty->setAccessible(true);
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'access' => 0]);
 
-		$this->assertSame(0, $entity->access());
+        $this->assertSame(0, $phpUnitFrameworkMockObjectMockObject->access());
 
-		$rowProperty->setValue($entity, array('id' => 999, 'access' => 1));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'access' => 1]);
 
-		$this->assertSame(1, $entity->access());
+        $this->assertSame(1, $phpUnitFrameworkMockObjectMockObject->access());
 
-		$rowProperty->setValue($entity, array('id' => 999, 'access' => 'nein'));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'access' => 'nein']);
 
-		$this->assertSame(0, $entity->access());
+        $this->assertSame(0, $phpUnitFrameworkMockObjectMockObject->access());
 
-		$rowProperty->setValue($entity, array('id' => 999, 'access' => '1'));
+        $rowProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'access' => '1']);
 
-		$this->assertSame(1, $entity->access());
-	}
+        $this->assertSame(1, $phpUnitFrameworkMockObjectMockObject->access());
+    }
 
-	/**
-	 * access uses correct column.
-	 *
-	 * @return  void
-	 */
-	public function testAccessUsesCorrectColumn()
-	{
-		$entity = $this->getMockBuilder(EntityWithAccess::class)
-			->setMethods(array('columnAlias'))
-			->getMock();
+    /**
+     * access uses correct column.
+     *
+     * @return  void
+     */
+    public function testAccessUsesCorrectColumn()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithAccess::class)
+            ->setMethods(['columnAlias'])
+            ->getMock();
 
-		$entity->method('columnAlias')
-			->willReturn('access_level');
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn('access_level');
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-		$rowProperty = $reflection->getProperty('row');
-		$rowProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('row');
+        $reflectionProperty->setAccessible(true);
 
-		$rowProperty->setValue($entity, array('id' => 999, 'access_level' => 0));
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'access_level' => 0]);
 
-		$this->assertSame(0, $entity->access());
+        $this->assertSame(0, $phpUnitFrameworkMockObjectMockObject->access());
 
-		$rowProperty->setValue($entity, array('id' => 999, 'access_level' => 1));
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'access_level' => 1]);
 
-		$this->assertSame(1, $entity->access());
+        $this->assertSame(1, $phpUnitFrameworkMockObjectMockObject->access());
 
-		$rowProperty->setValue($entity, array('id' => 999, 'access_level' => 'nein'));
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'access_level' => 'nein']);
 
-		$this->assertSame(0, $entity->access());
+        $this->assertSame(0, $phpUnitFrameworkMockObjectMockObject->access());
 
-		$rowProperty->setValue($entity, array('id' => 999, 'access_level' => '1'));
+        $reflectionProperty->setValue($phpUnitFrameworkMockObjectMockObject, ['id' => 999, 'access_level' => '1']);
 
-		$this->assertSame(1, $entity->access());
-	}
+        $this->assertSame(1, $phpUnitFrameworkMockObjectMockObject->access());
+    }
 }

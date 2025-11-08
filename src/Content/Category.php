@@ -1,27 +1,33 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Content;
+namespace Extly\Joomla\Entity\Content;
 
 defined('_JEXEC') || die;
 
+use Extly\Joomla\Entity\Acl\Contracts\Aclable;
+use Extly\Joomla\Entity\Acl\Traits\HasAcl;
+use Extly\Joomla\Entity\Categories\Category as BaseCategory;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Content\Article;
+use Extly\Joomla\Entity\Content\Search\ArticleSearch;
+use Extly\Joomla\Entity\Content\Traits\HasArticles;
+use Extly\Joomla\Entity\Core\Traits as CoreTraits;
+use Extly\Joomla\Entity\Core\Traits\HasLink;
+use Extly\Joomla\Entity\Tags\Tag;
+use Extly\Joomla\Entity\Tags\Traits\HasTags;
 use Joomla\Registry\Registry;
-use Phproberto\Joomla\Entity\Tags\Tag;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Content\Article;
-use Phproberto\Joomla\Entity\Acl\Traits\HasAcl;
-use Phproberto\Joomla\Entity\Core\Traits\HasLink;
-use Phproberto\Joomla\Entity\Tags\Traits\HasTags;
-use Phproberto\Joomla\Entity\Acl\Contracts\Aclable;
-use Phproberto\Joomla\Entity\Core\Traits as CoreTraits;
-use Phproberto\Joomla\Entity\Content\Traits\HasArticles;
-use Phproberto\Joomla\Entity\Content\Search\ArticleSearch;
-use Phproberto\Joomla\Entity\Categories\Category as BaseCategory;
 
 /**
  * Content category entity.
@@ -30,106 +36,102 @@ use Phproberto\Joomla\Entity\Categories\Category as BaseCategory;
  */
 class Category extends BaseCategory implements Aclable
 {
-	use HasArticles, HasAcl, HasLink, HasTags;
+    use HasArticles;
+    use HasAcl;
+    use HasLink;
+    use HasTags;
 
-	/**
-	 * Retrieve the alias of content type associated with this entity.
-	 *
-	 * @return  string
-	 *
-	 * @since   1.6.0
-	 */
-	public static function contentTypeAlias()
-	{
-		return 'com_content.category';
-	}
+    /**
+     * Retrieve the alias of content type associated with this entity.
+     *
+     * @return  string
+     *
+     * @since   1.6.0
+     */
+    public static function contentTypeAlias()
+    {
+        return 'com_content.category';
+    }
 
-	/**
-	 * Load associated articles from DB.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadArticles()
-	{
-		if (!$this->hasId())
-		{
-			return new Collection;
-		}
+    /**
+     * Search within this entity tags.
+     *
+     * @param   array   $options  Search options
+     *
+     * @return  Collection
+     *
+     * @since   1.7.0
+     */
+    public function searchArticles(array $options = [])
+    {
+        if (!$this->hasId()) {
+            return new Collection();
+        }
 
-		$articles = array_map(
-			function ($item)
-			{
-				return Article::find($item->id)->bind($item);
-			},
-			$this->getArticlesModel()->getItems() ?: array()
-		);
+        $options['filter.category_id'] = $this->id();
 
-		return new Collection($articles);
-	}
+        return Collection::fromData(
+            ArticleSearch::instance($options)->search(),
+            Article::class
+        );
+    }
 
-	/**
-	 * Load the link to this entity.
-	 *
-	 * @return  string
-	 *
-	 * @codeCoverageIgnore
-	 */
-	protected function loadLink()
-	{
-		$slug = $this->slug();
+    /**
+     * Load associated articles from DB.
+     *
+     * @return  Collection
+     */
+    protected function loadArticles()
+    {
+        if (!$this->hasId()) {
+            return new Collection();
+        }
 
-		if (!$slug)
-		{
-			return null;
-		}
+        $articles = array_map(
+            fn ($item) => Article::find($item->id)->bind($item),
+            $this->getArticlesModel()->getItems() ?: []
+        );
 
-		\JLoader::register('ContentHelperRoute', JPATH_SITE . '/components/com_content/helpers/route.php');
+        return new Collection($articles);
+    }
 
-		return \JRoute::_(\ContentHelperRoute::getCategoryRoute($slug));
-	}
+    /**
+     * Load the link to this entity.
+     *
+     * @return  string
+     *
+     * @codeCoverageIgnore
+     */
+    protected function loadLink()
+    {
+        $slug = $this->slug();
 
-	/**
-	 * Get an instance of the articles model.
-	 *
-	 * @return  \JModelList
-	 */
-	protected function getArticlesModel()
-	{
-		\JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_content/models', 'ContentModel');
+        if (!$slug) {
+            return null;
+        }
 
-		$model = \JModelLegacy::getInstance('Articles', 'ContentModel', array('ignore_request' => true));
+        \JLoader::register('ContentHelperRoute', JPATH_SITE.'/components/com_content/helpers/route.php');
 
-		$model->setState('params', new Registry);
+        return \Joomla\CMS\Router\Route::_(\Joomla\Component\Content\Site\Helper\RouteHelper::getCategoryRoute($slug));
+    }
 
-		if ($this->hasId())
-		{
-			$model->setState('filter.category_id', $this->id());
-		}
+    /**
+     * Get an instance of the articles model.
+     *
+     * @return  \JModelList
+     */
+    protected function getArticlesModel()
+    {
+        \Joomla\CMS\MVC\Model\BaseDatabaseModel::addIncludePath(JPATH_SITE.'/components/com_content/models', 'ContentModel');
 
-		return $model;
-	}
+        $model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('Articles', 'ContentModel', ['ignore_request' => true]);
 
-	/**
-	 * Search within this entity tags.
-	 *
-	 * @param   array   $options  Search options
-	 *
-	 * @return  Collection
-	 *
-	 * @since   1.7.0
-	 */
-	public function searchArticles(array $options = [])
-	{
-		if (!$this->hasId())
-		{
-			return new Collection;
-		}
+        $model->setState('params', new Registry());
 
-		$options['filter.category_id'] = $this->id();
+        if ($this->hasId()) {
+            $model->setState('filter.category_id', $this->id());
+        }
 
-		return Collection::fromData(
-			ArticleSearch::instance($options)->search(),
-			Article::class
-		);
-	}
+        return $model;
+    }
 }

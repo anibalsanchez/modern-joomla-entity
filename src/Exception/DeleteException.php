@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Exception;
+namespace Extly\Joomla\Entity\Exception;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Contracts\EntityInterface;
-use Phproberto\Joomla\Entity\Contracts\ExceptionInterface;
+use Extly\Joomla\Entity\Contracts\EntityInterface;
+use Extly\Joomla\Entity\Contracts\ExceptionInterface;
 
 /**
  * Errors deleting an entity.
@@ -20,18 +26,18 @@ use Phproberto\Joomla\Entity\Contracts\ExceptionInterface;
  */
 class DeleteException extends \RuntimeException implements ExceptionInterface
 {
-	/**
-	 * Entity cannot be saved.
-	 *
-	 * @param   EntityInterface  $entity  Entity with empty data
-	 * @param   \JTable          $table   Table containing the entity data
-	 *
-	 * @return  static
-	 */
-	public static function fromTable(EntityInterface $entity, \JTable $table)
-	{
-		$msg = sprintf("Delete failed trying to delete `%s`:</br> %s", $entity->name() . '::' . $entity->id(), $table->getError());
+    /**
+     * Entity cannot be saved.
+     *
+     * @param   EntityInterface  $entity  Entity with empty data
+     * @param \JTable $jTable Table containing the entity data
+     *
+     * @return  static
+     */
+    public static function fromTable(EntityInterface $entity, \JTable $jTable)
+    {
+        $msg = sprintf('Delete failed trying to delete `%s`:</br> %s', $entity->name().'::'.$entity->id(), $jTable->getError());
 
-		return new static($msg, 500);
-	}
+        return new static($msg, 500);
+    }
 }

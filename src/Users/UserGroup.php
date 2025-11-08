@@ -1,19 +1,25 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Users;
+namespace Extly\Joomla\Entity\Users;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\ComponentEntity;
-use Phproberto\Joomla\Entity\Users\Traits\HasUsers;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\ComponentEntity;
+use Extly\Joomla\Entity\Users\Traits\HasUsers;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * User Group entity.
@@ -22,66 +28,61 @@ use Phproberto\Joomla\Entity\Users\Traits\HasUsers;
  */
 class UserGroup extends ComponentEntity
 {
-	use HasUsers;
+    use HasUsers;
 
-	/**
-	 * Load associated users from DB.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadUsers()
-	{
-		if (!$this->hasId())
-		{
-			return new Collection;
-		}
+    /**
+     * Get a table instance. Defauts to \JTableUser.
+     *
+     * @param   string  $name     Table name. Optional.
+     * @param   string  $prefix   Class prefix. Optional.
+     * @param   array   $options  Configuration array for the table. Optional.
+     *
+     * @return  \JTable
+     *
+     * @throws  \InvalidArgumentException
+     */
+    public function table($name = '', $prefix = null, $options = [])
+    {
+        $name = $name ?: 'Usergroup';
+        $prefix = $prefix ?: 'JTable';
 
-		$users = array_map(
-			function ($item)
-			{
-				return User::find($item->id)->bind($item);
-			},
-			$this->usersModel()->getItems() ?: array()
-		);
+        return parent::table($name, $prefix, $options);
+    }
 
-		return new Collection($users);
-	}
+    /**
+     * Load associated users from DB.
+     *
+     * @return  Collection
+     */
+    protected function loadUsers()
+    {
+        if (!$this->hasId()) {
+            return new Collection();
+        }
 
-	/**
-	 * Get a table instance. Defauts to \JTableUser.
-	 *
-	 * @param   string  $name     Table name. Optional.
-	 * @param   string  $prefix   Class prefix. Optional.
-	 * @param   array   $options  Configuration array for the table. Optional.
-	 *
-	 * @return  \JTable
-	 *
-	 * @throws  \InvalidArgumentException
-	 */
-	public function table($name = '', $prefix = null, $options = array())
-	{
-		$name   = $name ?: 'Usergroup';
-		$prefix = $prefix ?: 'JTable';
+        $users = array_map(
+            fn ($item) => User::find($item->id)->bind($item),
+            $this->usersModel()->getItems() ?: []
+        );
 
-		return parent::table($name, $prefix, $options);
-	}
+        return new Collection($users);
+    }
 
-	/**
-	 * Get an instance of the users model.
-	 *
-	 * @return  \UsersModelUsersModel
-	 */
-	protected function usersModel()
-	{
-		\JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_users/models', 'UsersModel');
+    /**
+     * Get an instance of the users model.
+     *
+     * @return  \UsersModelUsersModel
+     */
+    protected function usersModel()
+    {
+        \Joomla\CMS\MVC\Model\BaseDatabaseModel::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_users/models', 'UsersModel');
 
-		$model = \JModelLegacy::getInstance('Users', 'UsersModel', array('ignore_request' => true));
+        $model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('Users', 'UsersModel', ['ignore_request' => true]);
 
-		if ($this->hasId())
-		{
-			$model->setState('filter.group_id', $this->id());
-		}
+        if ($this->hasId()) {
+            $model->setState('filter.group_id', $this->id());
+        }
 
-		return $model;
-	}
+        return $model;
+    }
 }

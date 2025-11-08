@@ -1,20 +1,26 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Core\Client\Administrator;
-use Phproberto\Joomla\Entity\Core\Client\Client;
-use Phproberto\Joomla\Entity\Core\Client\ClientInterface;
-use Phproberto\Joomla\Entity\Core\Client\Site;
-use Phproberto\Joomla\Entity\Core\Column;
+use Extly\Joomla\Entity\Core\Client\Administrator;
+use Extly\Joomla\Entity\Core\Client\Client;
+use Extly\Joomla\Entity\Core\Client\ClientInterface;
+use Extly\Joomla\Entity\Core\Client\Site;
+use Extly\Joomla\Entity\Core\Column;
 
 /**
  * Trait for entities that have an associated client.
@@ -23,63 +29,62 @@ use Phproberto\Joomla\Entity\Core\Column;
  */
 trait HasClient
 {
-	/**
-	 * Associated client.
-	 *
-	 * @var  ClientInterface
-	 */
-	protected $client;
+    /**
+     * Associated client.
+     *
+     * @var  ClientInterface
+     */
+    protected $client;
 
-	/**
-	 * Switch to admin client.
-	 *
-	 * @return  self
-	 */
-	public function admin()
-	{
-		$this->client = new Administrator;
+    /**
+     * Switch to admin client.
+     *
+     * @return  self
+     */
+    public function admin()
+    {
+        $this->client = new Administrator();
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Get the associated client.
-	 *
-	 * @param   boolean  $reload  Force reloading
-	 *
-	 * @return  ClientInterface
-	 */
-	public function client($reload = false)
-	{
-		if ($reload || null === $this->client)
-		{
-			$this->client = $this->loadClient();
-		}
+    /**
+     * Get the associated client.
+     *
+     * @param   bool  $reload  Force reloading
+     *
+     * @return  ClientInterface
+     */
+    public function client($reload = false)
+    {
+        if ($reload || null === $this->client) {
+            $this->client = $this->loadClient();
+        }
 
-		return $this->client;
-	}
+        return $this->client;
+    }
 
-	/**
-	 * Load the client from the database.
-	 *
-	 * @return  Category
-	 */
-	protected function loadClient()
-	{
-		$clientId = (int) $this->get($this->columnAlias(Column::CLIENT));
+    /**
+     * Switch to site client.
+     *
+     * @return  self
+     */
+    public function site()
+    {
+        $this->client = new Site();
 
-		return $clientId ? Client::admin() : Client::site();
-	}
+        return $this;
+    }
 
-	/**
-	 * Switch to site client.
-	 *
-	 * @return  self
-	 */
-	public function site()
-	{
-		$this->client = new Site;
+    /**
+     * Load the client from the database.
+     *
+     * @return  Category
+     */
+    protected function loadClient()
+    {
+        $clientId = (int) $this->get($this->columnAlias(Column::CLIENT));
 
-		return $this;
-	}
+        return $clientId !== 0 ? Client::admin() : Client::site();
+    }
 }

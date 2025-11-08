@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users;
+namespace Extly\Joomla\Entity\Tests\Users;
 
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Users\ViewLevel;
 use Joomla\CMS\Factory;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Users\ViewLevel;
 
 /**
  * ViewLevel entity tests.
@@ -19,123 +25,123 @@ use Phproberto\Joomla\Entity\Users\ViewLevel;
  */
 class ViewLevelTest extends \TestCaseDatabase
 {
-	/**
-	 * Preloaded entity for tests.
-	 *
-	 * @var  ViewLevel
-	 */
-	private $entity;
+    /**
+     * Preloaded entity for tests.
+     *
+     * @var  ViewLevel
+     */
+    private $viewLevel;
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
-		$dataSet->addTable('jos_viewlevels', JPATH_TEST_DATABASE . '/jos_viewlevels.csv');
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-		return $dataSet;
-	}
+        $this->saveFactoryState();
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function loadWorks()
-	{
-		$data = $this->entity->all();
+        Factory::$session = $this->getMockSession();
+        Factory::$config = $this->getMockConfig();
+        Factory::$application = $this->getMockCmsApp();
 
-		$this->assertTrue(is_array($data));
-		$this->assertTrue($this->entity->isLoaded());
-		$this->assertNotSame(0, count($data));
-	}
+        $this->viewLevel = ViewLevel::find(3);
+    }
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        ViewLevel::clearAll();
 
-		$this->saveFactoryState();
+        $this->restoreFactoryState();
 
-		Factory::$session     = $this->getMockSession();
-		Factory::$config      = $this->getMockConfig();
-		Factory::$application = $this->getMockCmsApp();
+        parent::tearDown();
+    }
 
-		$this->entity = ViewLevel::find(3);
-	}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function loadWorks()
+    {
+        $data = $this->viewLevel->all();
 
-	/**
-	 * @test
-	 *
-	 * @return  void
-	 */
-	public function tableReturnsExpectedInstances()
-	{
-		$this->assertInstanceOf(\Joomla\CMS\Table\ViewLevel::class, $this->entity->table());
-		$this->assertInstanceOf(\Joomla\CMS\Table\User::class, $this->entity->table('User', 'JTable'));
-	}
+        $this->assertTrue(is_array($data));
+        $this->assertTrue($this->viewLevel->isLoaded());
+        $this->assertNotSame(0, count($data));
+    }
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		ViewLevel::clearAll();
+    /**
+     * @test
+     *
+     * @return  void
+     */
+    public function tableReturnsExpectedInstances()
+    {
+        $this->assertInstanceOf(\Joomla\CMS\Table\ViewLevel::class, $this->viewLevel->table());
+        $this->assertInstanceOf(\Joomla\CMS\Table\User::class, $this->viewLevel->table('User', 'JTable'));
+    }
 
-		$this->restoreFactoryState();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function userGroupsReturnsEmptyCollectionsForEmptyRules()
+    {
+        $entity = new ViewLevel();
+        $userGroups = $entity->userGroups();
 
-		parent::tearDown();
-	}
+        $this->assertInstanceOf(Collection::class, $userGroups);
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function userGroupsReturnsEmptyCollectionsForEmptyRules()
-	{
-		$entity = new ViewLevel;
-		$userGroups = $entity->userGroups();
+        $entity = new ViewLevel();
+        $entity->bind(['id' => 333, 'title' => 'Unexisting1', 'rules' => '']);
 
-		$this->assertInstanceOf(Collection::class, $userGroups);
+        $this->assertSame([], $entity->userGroups()->ids());
 
-		$entity = new ViewLevel;
-		$entity->bind(['id' => 333, 'title' => 'Unexisting1', 'rules' => '']);
+        $entity = new ViewLevel();
+        $entity->bind(['id' => 333, 'title' => 'Unexisting2', 'rules' => '[2,4]']);
 
-		$this->assertSame([], $entity->userGroups()->ids());
+        $this->assertSame([2, 4], $entity->userGroups()->ids());
 
-		$entity = new ViewLevel;
-		$entity->bind(['id' => 333, 'title' => 'Unexisting2', 'rules' => '[2,4]']);
+        $entity = new ViewLevel();
+        $entity->bind(['id' => 222, 'title' => 'Unexisting2', 'rules' => null]);
 
-		$this->assertSame([2,4], $entity->userGroups()->ids());
+        $this->assertSame([], $entity->userGroups()->ids());
+    }
 
-		$entity = new ViewLevel;
-		$entity->bind(['id' => 222, 'title' => 'Unexisting2', 'rules' => null]);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function userGroupsReturnsExpectedUserGroups()
+    {
+        $userGroups = $this->viewLevel->userGroups();
 
-		$this->assertSame([], $entity->userGroups()->ids());
-	}
+        $this->assertInstanceOf(Collection::class, $userGroups);
+        $this->assertSame(3, $userGroups->count());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function userGroupsReturnsExpectedUserGroups()
-	{
-		$userGroups = $this->entity->userGroups();
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_viewlevels', JPATH_TEST_DATABASE.'/jos_viewlevels.csv');
 
-		$this->assertInstanceOf(Collection::class, $userGroups);
-		$this->assertSame(3, $userGroups->count());
-	}
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

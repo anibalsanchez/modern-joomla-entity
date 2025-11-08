@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core\Traits;
+namespace Extly\Joomla\Entity\Core\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Core\Column;
+use Extly\Joomla\Entity\Core\Column;
 
 /**
  * Trait for entities with featured column.
@@ -19,41 +25,41 @@ use Phproberto\Joomla\Entity\Core\Column;
  */
 trait HasFeatured
 {
-	/**
-	 * Is this entity featured.
-	 *
-	 * @var  boolean
-	 */
-	protected $featured;
+    /**
+     * Is this entity featured.
+     *
+     * @var  bool
+     */
+    protected $featured;
 
-	/**
-	 * Get the alias for a specific DB column.
-	 *
-	 * @param   string  $column  Name of the DB column. Example: created_by
-	 *
-	 * @return  string
-	 */
-	abstract public function columnAlias($column);
+    /**
+     * Get the alias for a specific DB column.
+     *
+     * @param   string  $column  Name of the DB column. Example: created_by
+     *
+     * @return  string
+     */
+    abstract public function columnAlias($column);
 
-	/**
-	 * Get a property of this entity.
-	 *
-	 * @param   string  $property  Name of the property to get
-	 * @param   mixed   $default   Value to use as default if property is not set or is null
-	 *
-	 * @return  mixed
-	 */
-	abstract public function get($property, $default = null);
+    /**
+     * Get a property of this entity.
+     *
+     * @param   string  $property  Name of the property to get
+     * @param   mixed   $default   Value to use as default if property is not set or is null
+     *
+     * @return  mixed
+     */
+    abstract public function get($property, $default = null);
 
-	/**
-	 * Is this article featured?
-	 *
-	 * @return  boolean
-	 */
-	public function isFeatured()
-	{
-		$featured = (int) $this->get($this->columnAlias(Column::FEATURED));
+    /**
+     * Is this article featured?
+     *
+     * @return  bool
+     */
+    public function isFeatured()
+    {
+        $featured = (int) $this->get($this->columnAlias(Column::FEATURED));
 
-		return $featured ? true : false;
-	}
+        return (bool) $featured;
+    }
 }

@@ -1,15 +1,21 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation\Traits;
+namespace Extly\Joomla\Entity\Tests\Validation\Traits;
 
-use Phproberto\Joomla\Entity\Validation\Validator;
-use Phproberto\Joomla\Entity\Tests\Validation\Traits\Stubs\EntityWithValidation;
+use Extly\Joomla\Entity\Tests\Validation\Traits\Stubs\EntityWithValidation;
+use Extly\Joomla\Entity\Validation\Validator;
 
 /**
  * HasValidation trait tests.
@@ -18,98 +24,98 @@ use Phproberto\Joomla\Entity\Tests\Validation\Traits\Stubs\EntityWithValidation;
  */
 class HasValidationTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * isValid returns validator isValid.
-	 *
-	 * @return  void
-	 */
-	public function testIsValidReturnsValidatorIsValid()
-	{
-		$validator = $this->getMockBuilder('MockedValidator')
-			->setMethods(array('isValid'))
-			->getMock();
+    /**
+     * isValid returns validator isValid.
+     *
+     * @return  void
+     */
+    public function testIsValidReturnsValidatorIsValid()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder('MockedValidator')
+            ->setMethods(['isValid'])
+            ->getMock();
 
-		$validator->method('isValid')
-			->will($this->onConsecutiveCalls(false, true));
+        $phpUnitFrameworkMockObjectMockObject->method('isValid')
+            ->will($this->onConsecutiveCalls(false, true));
 
-		$entity = $this->getMockBuilder(EntityWithValidation::class)
-			->setMethods(array('validator'))
-			->getMock();
+        $entity = $this->getMockBuilder(EntityWithValidation::class)
+            ->setMethods(['validator'])
+            ->getMock();
 
-		$entity->method('validator')
-			->willReturn($validator);
+        $entity->method('validator')
+            ->willReturn($phpUnitFrameworkMockObjectMockObject);
 
-		$this->assertFalse($entity->isValid());
-		$this->assertTrue($entity->isValid());
-	}
+        $this->assertFalse($entity->isValid());
+        $this->assertTrue($entity->isValid());
+    }
 
-	/**
-	 * setValidator sets validator.
-	 *
-	 * @return  void
-	 */
-	public function testSetValidatorSetsValidator()
-	{
-		$entity = new EntityWithValidation(999);
+    /**
+     * setValidator sets validator.
+     *
+     * @return  void
+     */
+    public function testSetValidatorSetsValidator()
+    {
+        $entityWithValidation = new EntityWithValidation(999);
 
-		$reflection = new \ReflectionClass($entity);
-		$validatorProperty = $reflection->getProperty('validator');
-		$validatorProperty->setAccessible(true);
+        $reflection = new \ReflectionClass($entityWithValidation);
+        $validatorProperty = $reflection->getProperty('validator');
+        $validatorProperty->setAccessible(true);
 
-		$this->assertSame(null, $validatorProperty->getValue($entity));
+        $this->assertSame(null, $validatorProperty->getValue($entityWithValidation));
 
-		$validator = new Validator($entity);
-		$entity->setValidator($validator);
+        $validator = new Validator($entityWithValidation);
+        $entityWithValidation->setValidator($validator);
 
-		$reflection = new \ReflectionClass($entity);
-		$validatorProperty = $reflection->getProperty('validator');
-		$validatorProperty->setAccessible(true);
+        $reflection = new \ReflectionClass($entityWithValidation);
+        $validatorProperty = $reflection->getProperty('validator');
+        $validatorProperty->setAccessible(true);
 
-		$this->assertSame($validator, $validatorProperty->getValue($entity));
-	}
+        $this->assertSame($validator, $validatorProperty->getValue($entityWithValidation));
+    }
 
-	/**
-	 * validator returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testValidatorReturnsCorrectValue()
-	{
-		$entity = new EntityWithValidation(999);
+    /**
+     * validator returns correct value.
+     *
+     * @return  void
+     */
+    public function testValidatorReturnsCorrectValue()
+    {
+        $entityWithValidation = new EntityWithValidation(999);
 
-		$customValidator = new Validator($entity);
-		$this->assertEquals(new Validator($entity), $entity->validator());
+        $customValidator = new Validator($entityWithValidation);
+        $this->assertEquals(new Validator($entityWithValidation), $entityWithValidation->validator());
 
-		$reflection = new \ReflectionClass($entity);
-		$validatorProperty = $reflection->getProperty('validator');
-		$validatorProperty->setAccessible(true);
-		$validatorProperty->setValue($entity, $customValidator);
+        $reflectionClass = new \ReflectionClass($entityWithValidation);
+        $reflectionProperty = $reflectionClass->getProperty('validator');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($entityWithValidation, $customValidator);
 
-		$this->assertSame($customValidator, $entity->validator());
-	}
+        $this->assertSame($customValidator, $entityWithValidation->validator());
+    }
 
-	/**
-	 * validate returns validator validate.
-	 *
-	 * @return  void
-	 */
-	public function testValidateReturnsValidatorValidate()
-	{
-		$validator = $this->getMockBuilder('MockedValidator')
-			->setMethods(array('validate'))
-			->getMock();
+    /**
+     * validate returns validator validate.
+     *
+     * @return  void
+     */
+    public function testValidateReturnsValidatorValidate()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder('MockedValidator')
+            ->setMethods(['validate'])
+            ->getMock();
 
-		$validator->method('validate')
-			->will($this->onConsecutiveCalls(false, true));
+        $phpUnitFrameworkMockObjectMockObject->method('validate')
+            ->will($this->onConsecutiveCalls(false, true));
 
-		$entity = $this->getMockBuilder(EntityWithValidation::class)
-			->setMethods(array('validator'))
-			->getMock();
+        $entity = $this->getMockBuilder(EntityWithValidation::class)
+            ->setMethods(['validator'])
+            ->getMock();
 
-		$entity->method('validator')
-			->willReturn($validator);
+        $entity->method('validator')
+            ->willReturn($phpUnitFrameworkMockObjectMockObject);
 
-		$this->assertFalse($entity->validate());
-		$this->assertTrue($entity->validate());
-	}
+        $this->assertFalse($entity->validate());
+        $this->assertTrue($entity->validate());
+    }
 }

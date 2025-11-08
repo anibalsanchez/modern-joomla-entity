@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Core;
+namespace Extly\Joomla\Entity\Core;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Entity;
+use Extly\Joomla\Entity\Entity;
 
 /**
  * Asset entity.
@@ -19,22 +25,22 @@ use Phproberto\Joomla\Entity\Entity;
  */
 class Asset extends Entity
 {
-	/**
-	 * Get a table.
-	 *
-	 * @param   string  $name     The table name. Optional.
-	 * @param   string  $prefix   The class prefix. Optional.
-	 * @param   array   $options  Configuration array for model. Optional.
-	 *
-	 * @return  \JTable
-	 *
-	 * @codeCoverageIgnore
-	 */
-	public function table($name = '', $prefix = null, $options = array())
-	{
-		$name = $name ?: 'Asset';
-		$prefix = $prefix ?: 'JTable';
+    /**
+     * Get a table.
+     *
+     * @param   string  $name     The table name. Optional.
+     * @param   string  $prefix   The class prefix. Optional.
+     * @param   array   $options  Configuration array for model. Optional.
+     *
+     * @return  \JTable
+     *
+     * @codeCoverageIgnore
+     */
+    public function table($name = '', $prefix = null, $options = [])
+    {
+        $name = $name ?: 'Asset';
+        $prefix = $prefix ?: 'JTable';
 
-		return parent::table($name, $prefix, $options);
-	}
+        return parent::table($name, $prefix, $options);
+    }
 }

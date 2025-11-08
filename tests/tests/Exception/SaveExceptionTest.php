@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Validation\Exception;
+namespace Extly\Joomla\Entity\Tests\Validation\Exception;
 
-use Phproberto\Joomla\Entity\Validation\Rule;
-use Phproberto\Joomla\Entity\Tests\Stubs\Entity;
-use Phproberto\Joomla\Entity\Exception\SaveException;
-use Phproberto\Joomla\Entity\Validation\Exception\ValidationException;
+use Extly\Joomla\Entity\Exception\SaveException;
+use Extly\Joomla\Entity\Tests\Stubs\Entity;
+use Extly\Joomla\Entity\Validation\Exception\ValidationException;
+use Extly\Joomla\Entity\Validation\Rule;
 
 /**
  * SaveException tests.
@@ -20,50 +26,50 @@ use Phproberto\Joomla\Entity\Validation\Exception\ValidationException;
  */
 class SaveExceptionTest extends \TestCase
 {
-	/**
-	 * table returns SaveException.
-	 *
-	 * @return  void
-	 */
-	public function testTableReturnsSaveException()
-	{
-		$entity = new Entity(999);
+    /**
+     * table returns SaveException.
+     *
+     * @return  void
+     */
+    public function testTableReturnsSaveException()
+    {
+        $entity = new Entity(999);
 
-		$table = $this->getMockBuilder(\JTable::class)
-			->disableOriginalConstructor()
-			->setMethods(array('getError'))
-			->getMock();
+        $table = $this->getMockBuilder(\JTable::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getError'])
+            ->getMock();
 
-		$table->method('getError')
-			->willReturn('Save failed');
+        $table->method('getError')
+            ->willReturn('Save failed');
 
-		$exception = SaveException::table($entity, $table);
+        $saveException = SaveException::table($entity, $table);
 
-		$this->assertInstanceOf(SaveException::class, $exception);
-		$this->assertTrue(strlen($exception->getMessage()) > 0);
-	}
+        $this->assertInstanceOf(SaveException::class, $saveException);
+        $this->assertTrue(strlen($saveException->getMessage()) > 0);
+    }
 
-	/**
-	 * validation returns SaveException.
-	 *
-	 * @return  void
-	 */
-	public function testValidationReturnsSaveException()
-	{
-		$entity = new Entity(999);
-		$validationException = new ValidationException('Something went wrong');
+    /**
+     * validation returns SaveException.
+     *
+     * @return  void
+     */
+    public function testValidationReturnsSaveException()
+    {
+        $entity = new Entity(999);
+        $validationException = new ValidationException('Something went wrong');
 
-		$exception = SaveException::validation($entity, $validationException);
+        $exception = SaveException::validation($entity, $validationException);
 
-		$this->assertInstanceOf(SaveException::class, $exception);
-		$this->assertTrue(strlen($exception->getMessage()) > 0);
+        $this->assertInstanceOf(SaveException::class, $exception);
+        $this->assertTrue(strlen($exception->getMessage()) > 0);
 
-		$entity = new Entity;
-		$validationException = new ValidationException('Something went wrong');
+        $entity = new Entity();
+        $validationException = new ValidationException('Something went wrong');
 
-		$exception = SaveException::validation($entity, $validationException);
+        $exception = SaveException::validation($entity, $validationException);
 
-		$this->assertInstanceOf(SaveException::class, $exception);
-		$this->assertTrue(strlen($exception->getMessage()) > 0);
-	}
+        $this->assertInstanceOf(SaveException::class, $exception);
+        $this->assertTrue(strlen($exception->getMessage()) > 0);
+    }
 }

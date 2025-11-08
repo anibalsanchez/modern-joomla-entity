@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users\Traits;
+namespace Extly\Joomla\Entity\Tests\Users\Traits;
 
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Users\UserGroup;
-use Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithUserGroups;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithUserGroups;
+use Extly\Joomla\Entity\Users\UserGroup;
 
 /**
  * HasUserGroups trait tests.
@@ -19,132 +25,132 @@ use Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs\EntityWithUserGroups;
  */
 class HasUserGroupsTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * clearUserGroups clears userGroups property.
-	 *
-	 * @return  void
-	 */
-	public function testClearUserGroupsClearsUserGroupsProperty()
-	{
-		$entity = new EntityWithUserGroups;
+    /**
+     * clearUserGroups clears userGroups property.
+     *
+     * @return  void
+     */
+    public function testClearUserGroupsClearsUserGroupsProperty()
+    {
+        $entityWithUserGroups = new EntityWithUserGroups();
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithUserGroups);
 
-		$userGroupsProperty = $reflection->getProperty('userGroups');
-		$userGroupsProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('userGroups');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertSame(null, $userGroupsProperty->getValue($entity));
+        $this->assertSame(null, $reflectionProperty->getValue($entityWithUserGroups));
 
-		$userGroups = new Collection(array(UserGroup::find(333)));
+        $collection = new Collection([UserGroup::find(333)]);
 
-		$userGroupsProperty->setValue($entity, $userGroups);
+        $reflectionProperty->setValue($entityWithUserGroups, $collection);
 
-		$this->assertSame($userGroups, $userGroupsProperty->getValue($entity));
+        $this->assertSame($collection, $reflectionProperty->getValue($entityWithUserGroups));
 
-		$entity->clearUserGroups();
+        $entityWithUserGroups->clearUserGroups();
 
-		$this->assertSame(null, $userGroupsProperty->getValue($entity));
-	}
+        $this->assertSame(null, $reflectionProperty->getValue($entityWithUserGroups));
+    }
 
-	/**
-	 * userGroups returns cached data.
-	 *
-	 * @return  void
-	 */
-	public function testUserGroupsReturnsCachedData()
-	{
-		$entity = new EntityWithUserGroups;
+    /**
+     * userGroups returns cached data.
+     *
+     * @return  void
+     */
+    public function testUserGroupsReturnsCachedData()
+    {
+        $entityWithUserGroups = new EntityWithUserGroups();
 
-		$reflection = new \ReflectionClass($entity);
+        $reflectionClass = new \ReflectionClass($entityWithUserGroups);
 
-		$userGroupsProperty = $reflection->getProperty('userGroups');
-		$userGroupsProperty->setAccessible(true);
+        $reflectionProperty = $reflectionClass->getProperty('userGroups');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertSame(null, $userGroupsProperty->getValue($entity));
+        $this->assertSame(null, $reflectionProperty->getValue($entityWithUserGroups));
 
-		$userGroups = new Collection(array(UserGroup::find(333)));
+        $collection = new Collection([UserGroup::find(333)]);
 
-		$userGroupsProperty->setValue($entity, $userGroups);
+        $reflectionProperty->setValue($entityWithUserGroups, $collection);
 
-		$this->assertSame($userGroups, $entity->userGroups());
-	}
+        $this->assertSame($collection, $entityWithUserGroups->userGroups());
+    }
 
-	/**
-	 * userGroups returns loadUserGroups result if not cached.
-	 *
-	 * @return  void
-	 */
-	public function testUserGroupsReturnsLoadUserGroupsResultIfNotCached()
-	{
-		$userGroups = new Collection(
-			array(
-				UserGroup::find(333),
-				UserGroup::find(666)
-			)
-		);
+    /**
+     * userGroups returns loadUserGroups result if not cached.
+     *
+     * @return  void
+     */
+    public function testUserGroupsReturnsLoadUserGroupsResultIfNotCached()
+    {
+        $collection = new Collection(
+            [
+                UserGroup::find(333),
+                UserGroup::find(666),
+            ]
+        );
 
-		$entity = $this->getMockBuilder(EntityWithUserGroups::class)
-			->setMethods(array('loadUserGroups'))
-			->getMock();
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithUserGroups::class)
+            ->setMethods(['loadUserGroups'])
+            ->getMock();
 
-		$entity->expects($this->once())
-			->method('loadUserGroups')
-			->willReturn($userGroups);
+        $phpUnitFrameworkMockObjectMockObject->expects($this->once())
+            ->method('loadUserGroups')
+            ->willReturn($collection);
 
-		$this->assertSame($userGroups, $entity->userGroups());
-	}
+        $this->assertSame($collection, $phpUnitFrameworkMockObjectMockObject->userGroups());
+    }
 
-	/**
-	 * hasUserGroup returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasUserGroupReturnsCorrectValue()
-	{
-		$userGroups = new Collection(
-			array(
-				UserGroup::find(666),
-				UserGroup::find(999)
-			)
-		);
+    /**
+     * hasUserGroup returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasUserGroupReturnsCorrectValue()
+    {
+        $collection = new Collection(
+            [
+                UserGroup::find(666),
+                UserGroup::find(999),
+            ]
+        );
 
-		$entity = new EntityWithUserGroups;
-		$reflection = new \ReflectionClass($entity);
+        $entityWithUserGroups = new EntityWithUserGroups();
+        $reflectionClass = new \ReflectionClass($entityWithUserGroups);
 
-		$userGroupsProperty = $reflection->getProperty('userGroups');
-		$userGroupsProperty->setAccessible(true);
-		$userGroupsProperty->setValue($entity, $userGroups);
+        $reflectionProperty = $reflectionClass->getProperty('userGroups');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($entityWithUserGroups, $collection);
 
-		$this->assertTrue($entity->hasUserGroup(666));
-		$this->assertFalse($entity->hasUserGroup(333));
-		$this->assertTrue($entity->hasUserGroup(999));
-	}
+        $this->assertTrue($entityWithUserGroups->hasUserGroup(666));
+        $this->assertFalse($entityWithUserGroups->hasUserGroup(333));
+        $this->assertTrue($entityWithUserGroups->hasUserGroup(999));
+    }
 
-	/**
-	 * hasUserGroups returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testHasUserGroupsReturnsCorrectValue()
-	{
-		$userGroups = new Collection(
-			array(
-				UserGroup::find(333),
-				UserGroup::find(666)
-			)
-		);
+    /**
+     * hasUserGroups returns correct value.
+     *
+     * @return  void
+     */
+    public function testHasUserGroupsReturnsCorrectValue()
+    {
+        $collection = new Collection(
+            [
+                UserGroup::find(333),
+                UserGroup::find(666),
+            ]
+        );
 
-		$entity = new EntityWithUserGroups;
-		$reflection = new \ReflectionClass($entity);
+        $entityWithUserGroups = new EntityWithUserGroups();
+        $reflectionClass = new \ReflectionClass($entityWithUserGroups);
 
-		$userGroupsProperty = $reflection->getProperty('userGroups');
-		$userGroupsProperty->setAccessible(true);
-		$userGroupsProperty->setValue($entity, $userGroups);
+        $reflectionProperty = $reflectionClass->getProperty('userGroups');
+        $reflectionProperty->setAccessible(true);
+        $reflectionProperty->setValue($entityWithUserGroups, $collection);
 
-		$this->assertTrue($entity->hasUserGroups());
+        $this->assertTrue($entityWithUserGroups->hasUserGroups());
 
-		$userGroupsProperty->setValue($entity, new Collection);
+        $reflectionProperty->setValue($entityWithUserGroups, new Collection());
 
-		$this->assertFalse($entity->hasUserGroups());
-	}
+        $this->assertFalse($entityWithUserGroups->hasUserGroups());
+    }
 }

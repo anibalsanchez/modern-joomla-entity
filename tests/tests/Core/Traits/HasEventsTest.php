@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
-use Phproberto\Joomla\Entity\Tests\Stubs\Entity;
+use Extly\Joomla\Entity\Tests\Stubs\Entity;
 
 /**
  * HasEvents trait tests.
@@ -17,110 +23,110 @@ use Phproberto\Joomla\Entity\Tests\Stubs\Entity;
  */
 class HasEventsTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * getDispatcher returns correct class.
-	 *
-	 * @return  void
-	 */
-	public function testGetDispatcherReturnsCorrectClass()
-	{
-		$entity = new Entity;
+    /**
+     * getDispatcher returns correct class.
+     *
+     * @return  void
+     */
+    public function testGetDispatcherReturnsCorrectClass()
+    {
+        $entity = new Entity();
 
-		$reflection = new \ReflectionClass($entity);
-		$method = $reflection->getMethod('dispatcher');
-		$method->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($entity);
+        $reflectionMethod = $reflectionClass->getMethod('dispatcher');
+        $reflectionMethod->setAccessible(true);
 
-		$this->assertInstanceOf(\JEventDispatcher::class, $method->invoke($entity));
-	}
-	/**
-	 * importPlugin imports plugin.
-	 *
-	 * @return  void
-	 */
-	public function testImportPluginImportsPlugin()
-	{
-		$entity = $this->getMockedEntity();
+        $this->assertInstanceOf(\JEventDispatcher::class, $reflectionMethod->invoke($entity));
+    }
 
-		$reflection = new \ReflectionClass($entity);
+    /**
+     * importPlugin imports plugin.
+     *
+     * @return  void
+     */
+    public function testImportPluginImportsPlugin()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockedEntity();
 
-		$eventsPluginsImportedProperty = $reflection->getProperty('eventsPluginsImported');
-		$eventsPluginsImportedProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-		$this->assertSame(array(), $eventsPluginsImportedProperty->getValue($entity));
+        $reflectionProperty = $reflectionClass->getProperty('eventsPluginsImported');
+        $reflectionProperty->setAccessible(true);
 
-		$entity->importPlugin('my_folder');
+        $this->assertSame([], $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject));
 
-		$this->assertSame(array('my_folder'), $eventsPluginsImportedProperty->getValue($entity));
-	}
+        $phpUnitFrameworkMockObjectMockObject->importPlugin('my_folder');
 
-	/**
-	 * trigger runs trigger method on dispatcher.
-	 *
-	 * @return  void
-	 */
-	public function testTriggerExecutesTriggerMethodOnDispatcher()
-	{
-		$response = array('result 1', 'result 2');
+        $this->assertSame(['my_folder'], $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+    }
 
-		$entity = $this->getMockedEntity(1, $response);
+    /**
+     * trigger runs trigger method on dispatcher.
+     *
+     * @return  void
+     */
+    public function testTriggerExecutesTriggerMethodOnDispatcher()
+    {
+        $response = ['result 1', 'result 2'];
 
-		$this->assertSame($response, $entity->trigger('event_name', array('param1', 'param2')));
-	}
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockedEntity(1, $response);
 
-	/**
-	 * trigger imports default plugins.
-	 *
-	 * @return  void
-	 */
-	public function testTriggerImportsDefaultPlugins()
-	{
-		$entity = $this->getMockedEntity();
+        $this->assertSame($response, $phpUnitFrameworkMockObjectMockObject->trigger('event_name', ['param1', 'param2']));
+    }
 
-		$reflection = new \ReflectionClass($entity);
+    /**
+     * trigger imports default plugins.
+     *
+     * @return  void
+     */
+    public function testTriggerImportsDefaultPlugins()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockedEntity();
 
-		$eventsPluginsImportedProperty = $reflection->getProperty('eventsPluginsImported');
-		$eventsPluginsImportedProperty->setAccessible(true);
+        $reflectionClass = new \ReflectionClass($phpUnitFrameworkMockObjectMockObject);
 
-		$entity->trigger('sample_event');
+        $reflectionProperty = $reflectionClass->getProperty('eventsPluginsImported');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertSame(array('joomla_entity'), $eventsPluginsImportedProperty->getValue($entity));
-	}
+        $phpUnitFrameworkMockObjectMockObject->trigger('sample_event');
 
-	/**
-	 * Get a mocked entity with bypassed importJoomlaPlugin method to avoid testing issues.
-	 *
-	 * @param   integer  $id        Identifier to assign
-	 * @param   array    $response  Expected response from the dispatcher
-	 *
-	 * @return  \PHPUnit_Framework_MockObject_MockObject
-	 */
-	private function getMockedEntity($id = null, $response  = array())
-	{
-		$dispatcher = $this->getMockBuilder(\JEventDispatcher::class)
-			->setMethods(array('trigger'))
-			->getMock();
+        $this->assertSame(['joomla_entity'], $reflectionProperty->getValue($phpUnitFrameworkMockObjectMockObject));
+    }
 
-		$dispatcher->method('trigger')
-			->willReturn($response);
+    /**
+     * Get a mocked entity with bypassed importJoomlaPlugin method to avoid testing issues.
+     *
+     * @param   int  $id        Identifier to assign
+     * @param   array    $response  Expected response from the dispatcher
+     *
+     * @return  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getMockedEntity($id = null, $response = [])
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(\JEventDispatcher::class)
+            ->setMethods(['trigger'])
+            ->getMock();
 
-		$entity = $this->getMockBuilder(Entity::class)
-			->setMethods(array('importJoomlaPlugin', 'dispatcher'))
-			->getMock();
+        $phpUnitFrameworkMockObjectMockObject->method('trigger')
+            ->willReturn($response);
 
-		$entity->method('importJoomlaPlugin')
-			->willReturn(true);
+        $entity = $this->getMockBuilder(Entity::class)
+            ->setMethods(['importJoomlaPlugin', 'dispatcher'])
+            ->getMock();
 
-		$entity->method('dispatcher')
-			->willReturn($dispatcher);
+        $entity->method('importJoomlaPlugin')
+            ->willReturn(true);
 
-		if ($id)
-		{
-			$reflection = new \ReflectionClass($entity);
-			$idProperty = $reflection->getProperty('id');
-			$idProperty->setAccessible(true);
-			$idProperty->setValue($entity, $id);
-		}
+        $entity->method('dispatcher')
+            ->willReturn($phpUnitFrameworkMockObjectMockObject);
 
-		return $entity;
-	}
+        if ($id) {
+            $reflectionClass = new \ReflectionClass($entity);
+            $idProperty = $reflectionClass->getProperty('id');
+            $idProperty->setAccessible(true);
+            $idProperty->setValue($entity, $id);
+        }
+
+        return $entity;
+    }
 }

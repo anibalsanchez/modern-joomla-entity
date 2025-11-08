@@ -1,22 +1,28 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core;
+namespace Extly\Joomla\Entity\Tests\Core;
 
 defined('_JEXEC') || die;
 
+use Extly\Joomla\Entity\Core\Asset;
+use Extly\Joomla\Entity\Core\Client\Administrator;
+use Extly\Joomla\Entity\Core\Client\Site;
+use Extly\Joomla\Entity\Core\Column;
+use Extly\Joomla\Entity\Core\Module;
 use Joomla\CMS\Factory;
 use Joomla\Registry\Registry;
-use Phproberto\Joomla\Entity\Core\Asset;
-use Phproberto\Joomla\Entity\Core\Column;
-use Phproberto\Joomla\Entity\Core\Module;
-use Phproberto\Joomla\Entity\Core\Client\Site;
-use Phproberto\Joomla\Entity\Core\Client\Administrator;
 
 /**
  * Module tests.
@@ -25,276 +31,276 @@ use Phproberto\Joomla\Entity\Core\Client\Administrator;
  */
 class ModuleTest extends \TestCaseDatabase
 {
-	private $module;
+    private $module;
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function accessReturnsExpectedValue()
-	{
-		$this->assertSame(1, $this->module->access());
-		$this->assertSame(3, Module::find(3)->access());
-	}
+    /**
+     * Sets up the fixture, for example, opens a network connection.
+     * This method is called before a test is executed.
+     *
+     * @return  void
+     */
+    protected function setUp()
+    {
+        parent::setUp();
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function assetReturnsCorrectAsset()
-	{
-		$this->module->assign($this->module->columnAlias(Column::ASSET), 2);
+        $this->saveFactoryState();
 
-		$asset = $this->module->asset();
+        Factory::$session = $this->getMockSession();
+        Factory::$config = $this->getMockConfig();
+        Factory::$application = $this->getMockCmsApp();
 
-		$this->assertInstanceOf(Asset::class, $asset);
-		$this->assertSame('com_admin', $asset->get('title'));
-	}
+        $this->module = Module::find(1);
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function clientReturnsExpectedClient()
-	{
-		$client = $this->module->client();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        Module::clearAll();
 
-		$this->assertInstanceOf(Site::class, $client);
+        parent::tearDown();
+    }
 
-		$this->assertInstanceOf(Administrator::class, Module::find(2)->client());
-	}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function accessReturnsExpectedValue()
+    {
+        $this->assertSame(1, $this->module->access());
+        $this->assertSame(3, Module::find(3)->access());
+    }
 
-	/**
-	 * Gets the data set to be loaded into the database during setup
-	 *
-	 * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
-	 */
-	protected function getDataSet()
-	{
-		$dataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function assetReturnsCorrectAsset()
+    {
+        $this->module->assign($this->module->columnAlias(Column::ASSET), 2);
 
-		$dataSet->addTable('jos_assets', JPATH_TEST_DATABASE . '/jos_assets.csv');
-		$dataSet->addTable('jos_modules', JPATH_TEST_DATABASE . '/jos_modules.csv');
-		$dataSet->addTable('jos_modules_menu', JPATH_TEST_DATABASE . '/jos_modules_menu.csv');
+        $asset = $this->module->asset();
 
-		return $dataSet;
-	}
+        $this->assertInstanceOf(Asset::class, $asset);
+        $this->assertSame('com_admin', $asset->get('title'));
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function isPublishedInMenuReturnsTrueForNoMenuIdIfModuleIsShownOnAllPages()
-	{
-		$module = new Module;
-		$reflection = new \ReflectionClass($module);
-		$menusIdsProperty = $reflection->getProperty('menusIds');
-		$menusIdsProperty->setAccessible(true);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function clientReturnsExpectedClient()
+    {
+        $client = $this->module->client();
 
-		$menusIdsProperty->setValue($module, [0]);
+        $this->assertInstanceOf(Site::class, $client);
 
-		$this->assertTrue($module->isPublishedInMenu(0));
-		$this->assertTrue($module->isPublishedInMenu(null));
-	}
+        $this->assertInstanceOf(Administrator::class, Module::find(2)->client());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function isPublishedInMenuReturnsFalseForNoMenuIdIfModuleIsNotShownOnAllPages()
-	{
-		$module = new Module;
-		$reflection = new \ReflectionClass($module);
-		$menusIdsProperty = $reflection->getProperty('menusIds');
-		$menusIdsProperty->setAccessible(true);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function isPublishedInMenuReturnsTrueForNoMenuIdIfModuleIsShownOnAllPages()
+    {
+        $module = new Module();
+        $reflectionClass = new \ReflectionClass($module);
+        $reflectionProperty = $reflectionClass->getProperty('menusIds');
+        $reflectionProperty->setAccessible(true);
 
-		$menusIdsProperty->setValue($module, [222]);
+        $reflectionProperty->setValue($module, [0]);
 
-		$this->assertFalse($module->isPublishedInMenu(0));
-	}
+        $this->assertTrue($module->isPublishedInMenu(0));
+        $this->assertTrue($module->isPublishedInMenu(null));
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function isPublishedInMenuReturnsFalseForNoMenuIdInMenusIds()
-	{
-		$module = new Module;
-		$reflection = new \ReflectionClass($module);
-		$menusIdsProperty = $reflection->getProperty('menusIds');
-		$menusIdsProperty->setAccessible(true);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function isPublishedInMenuReturnsFalseForNoMenuIdIfModuleIsNotShownOnAllPages()
+    {
+        $module = new Module();
+        $reflectionClass = new \ReflectionClass($module);
+        $reflectionProperty = $reflectionClass->getProperty('menusIds');
+        $reflectionProperty->setAccessible(true);
 
-		$menusIdsProperty->setValue($module, [222, 444]);
+        $reflectionProperty->setValue($module, [222]);
 
-		$this->assertTrue($module->isPublishedInMenu(222));
-		$this->assertFalse($module->isPublishedInMenu(333));
-		$this->assertTrue($module->isPublishedInMenu(444));
-	}
+        $this->assertFalse($module->isPublishedInMenu(0));
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function isPublishedInMenuReturnsFalseForNoMenusIds()
-	{
-		$module = new Module;
-		$reflection = new \ReflectionClass($module);
-		$menusIdsProperty = $reflection->getProperty('menusIds');
-		$menusIdsProperty->setAccessible(true);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function isPublishedInMenuReturnsFalseForNoMenuIdInMenusIds()
+    {
+        $module = new Module();
+        $reflectionClass = new \ReflectionClass($module);
+        $reflectionProperty = $reflectionClass->getProperty('menusIds');
+        $reflectionProperty->setAccessible(true);
 
-		$menusIdsProperty->setValue($module, []);
+        $reflectionProperty->setValue($module, [222, 444]);
 
-		$this->assertFalse($module->isPublishedInMenu(222));
-		$this->assertFalse($module->isPublishedInMenu(333));
-		$this->assertFalse($module->isPublishedInMenu(444));
-	}
+        $this->assertTrue($module->isPublishedInMenu(222));
+        $this->assertFalse($module->isPublishedInMenu(333));
+        $this->assertTrue($module->isPublishedInMenu(444));
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function isPublishedInMenuReturnsTrueForExcludedMenuId()
-	{
-		$module = new Module;
-		$reflection = new \ReflectionClass($module);
-		$menusIdsProperty = $reflection->getProperty('menusIds');
-		$menusIdsProperty->setAccessible(true);
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function isPublishedInMenuReturnsFalseForNoMenusIds()
+    {
+        $module = new Module();
+        $reflectionClass = new \ReflectionClass($module);
+        $reflectionProperty = $reflectionClass->getProperty('menusIds');
+        $reflectionProperty->setAccessible(true);
 
-		$menusIdsProperty->setValue($module, [-222, -555]);
+        $reflectionProperty->setValue($module, []);
 
-		$this->assertFalse($module->isPublishedInMenu(222));
-		$this->assertTrue($module->isPublishedInMenu(333));
-		$this->assertFalse($module->isPublishedInMenu(555));
-	}
+        $this->assertFalse($module->isPublishedInMenu(222));
+        $this->assertFalse($module->isPublishedInMenu(333));
+        $this->assertFalse($module->isPublishedInMenu(444));
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function isPublishedReturnsExpectedValue()
-	{
-		$this->assertTrue($this->module->isPublished());
-		$this->assertFalse($this->module->isUnpublished());
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function isPublishedInMenuReturnsTrueForExcludedMenuId()
+    {
+        $module = new Module();
+        $reflectionClass = new \ReflectionClass($module);
+        $reflectionProperty = $reflectionClass->getProperty('menusIds');
+        $reflectionProperty->setAccessible(true);
 
-		$this->assertFalse(Module::find(79)->isPublished());
-		$this->assertTrue(Module::find(79)->isUnpublished());
+        $reflectionProperty->setValue($module, [-222, -555]);
 
-		// Not published up
-		$date = new \DateTime;
-		$date->modify('+1 hour');
+        $this->assertFalse($module->isPublishedInMenu(222));
+        $this->assertTrue($module->isPublishedInMenu(333));
+        $this->assertFalse($module->isPublishedInMenu(555));
+    }
 
-		// Future publish_up date
-		$this->module->assign($this->module->columnAlias(Column::PUBLISH_UP), $date->format('Y-m-d H:i:s'));
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function isPublishedReturnsExpectedValue()
+    {
+        $this->assertTrue($this->module->isPublished());
+        $this->assertFalse($this->module->isUnpublished());
 
-		$this->assertFalse($this->module->isPublished());
-		$this->assertTrue($this->module->isUnpublished());
+        $this->assertFalse(Module::find(79)->isPublished());
+        $this->assertTrue(Module::find(79)->isUnpublished());
 
-		$this->module->assign($this->module->columnAlias(Column::PUBLISH_UP), null);
+        // Not published up
+        $date = new \DateTime();
+        $date->modify('+1 hour');
 
-		$this->assertTrue($this->module->isPublished());
-		$this->assertFalse($this->module->isUnpublished());
+        // Future publish_up date
+        $this->module->assign($this->module->columnAlias(Column::PUBLISH_UP), $date->format('Y-m-d H:i:s'));
 
-		// Past publish_down date
-		$date = new \DateTime;
-		$date->modify('-1 hour');
+        $this->assertFalse($this->module->isPublished());
+        $this->assertTrue($this->module->isUnpublished());
 
-		$this->module->assign($this->module->columnAlias(Column::PUBLISH_DOWN), $date->format('Y-m-d H:i:s'));
+        $this->module->assign($this->module->columnAlias(Column::PUBLISH_UP), null);
 
-		$this->assertFalse($this->module->isPublished());
-		$this->assertTrue($this->module->isUnpublished());
-	}
+        $this->assertTrue($this->module->isPublished());
+        $this->assertFalse($this->module->isUnpublished());
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function menusIdsReturnsExpectedVale()
-	{
-		$module = new Module;
-		$this->assertEquals([], $module->menusIds());
-		$this->assertEquals([101], $this->module->menusIds());
-		$this->assertEquals([0], Module::find(2)->menusIds());
-	}
+        // Past publish_down date
+        $date = new \DateTime();
+        $date->modify('-1 hour');
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function menusIdsReturnsCachedInstanceAndReloads()
-	{
-		$reflection = new \ReflectionClass($this->module);
-		$menusIdsProperty = $reflection->getProperty('menusIds');
-		$menusIdsProperty->setAccessible(true);
+        $this->module->assign($this->module->columnAlias(Column::PUBLISH_DOWN), $date->format('Y-m-d H:i:s'));
 
-		$menusIdsProperty->setValue($this->module, [999, 666]);
+        $this->assertFalse($this->module->isPublished());
+        $this->assertTrue($this->module->isUnpublished());
+    }
 
-		$this->assertEquals([999, 666], $this->module->menusIds());
-		$this->assertEquals([101], $this->module->menusIds(true));
-	}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function menusIdsReturnsExpectedVale()
+    {
+        $module = new Module();
+        $this->assertEquals([], $module->menusIds());
+        $this->assertEquals([101], $this->module->menusIds());
+        $this->assertEquals([0], Module::find(2)->menusIds());
+    }
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function loadWorks()
-	{
-		$this->assertSame('Main Menu', $this->module->get('title'));
-	}
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function menusIdsReturnsCachedInstanceAndReloads()
+    {
+        $reflectionClass = new \ReflectionClass($this->module);
+        $reflectionProperty = $reflectionClass->getProperty('menusIds');
+        $reflectionProperty->setAccessible(true);
 
-	/**
-	 * @test
-	 *
-	 * @return void
-	 */
-	public function paramsReturnsModuleParameters()
-	{
-		$params = $this->module->params();
+        $reflectionProperty->setValue($this->module, [999, 666]);
 
-		$this->assertInstanceOf(Registry::class, $params);
-		$this->assertSame('mainmenu', $params->get('menutype'));
-	}
+        $this->assertEquals([999, 666], $this->module->menusIds());
+        $this->assertEquals([101], $this->module->menusIds(true));
+    }
 
-	/**
-	 * Sets up the fixture, for example, opens a network connection.
-	 * This method is called before a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function setUp()
-	{
-		parent::setUp();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function loadWorks()
+    {
+        $this->assertSame('Main Menu', $this->module->get('title'));
+    }
 
-		$this->saveFactoryState();
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function paramsReturnsModuleParameters()
+    {
+        $params = $this->module->params();
 
-		Factory::$session     = $this->getMockSession();
-		Factory::$config      = $this->getMockConfig();
-		Factory::$application = $this->getMockCmsApp();
+        $this->assertInstanceOf(Registry::class, $params);
+        $this->assertSame('mainmenu', $params->get('menutype'));
+    }
 
-		$this->module = Module::find(1);
-	}
+    /**
+     * Gets the data set to be loaded into the database during setup
+     *
+     * @return  \PHPUnit_Extensions_Database_DataSet_CsvDataSet
+     */
+    protected function getDataSet()
+    {
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet = new \PHPUnit_Extensions_Database_DataSet_CsvDataSet(',', "'", '\\');
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		Module::clearAll();
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_assets', JPATH_TEST_DATABASE.'/jos_assets.csv');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_modules', JPATH_TEST_DATABASE.'/jos_modules.csv');
+        $phpUnitExtensionsDatabaseDataSetCsvDataSet->addTable('jos_modules_menu', JPATH_TEST_DATABASE.'/jos_modules_menu.csv');
 
-		parent::tearDown();
-	}
+        return $phpUnitExtensionsDatabaseDataSetCsvDataSet;
+    }
 }

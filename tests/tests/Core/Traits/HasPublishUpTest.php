@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Traits;
+namespace Extly\Joomla\Entity\Tests\Core\Traits;
 
-use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithPublishUp;
+use Extly\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithPublishUp;
 
 /**
  * HasPublishUp trait tests.
@@ -17,111 +23,111 @@ use Phproberto\Joomla\Entity\Tests\Core\Traits\Stubs\EntityWithPublishUp;
  */
 class HasPublishUpTest extends \PHPUnit\Framework\TestCase
 {
-	/**
-	 * Column to use to load/store publish up date.
-	 *
-	 * @const
-	 */
-	const COLUMN_PUBLISH_UP = 'publish_up';
+    /**
+     * Column to use to load/store publish up date.
+     *
+     * @const
+     */
+    public const COLUMN_PUBLISH_UP = 'publish_up';
 
-	/**
-	 * Tears down the fixture, for example, closes a network connection.
-	 * This method is called after a test is executed.
-	 *
-	 * @return  void
-	 */
-	protected function tearDown()
-	{
-		EntityWithPublishUp::clearAll();
+    /**
+     * Tears down the fixture, for example, closes a network connection.
+     * This method is called after a test is executed.
+     *
+     * @return  void
+     */
+    protected function tearDown()
+    {
+        EntityWithPublishUp::clearAll();
 
-		parent::tearDown();
-	}
+        parent::tearDown();
+    }
 
-	/**
-	 * Get a mocked entity.
-	 *
-	 * @param   array  $row  Row returned by the entity as data
-	 *
-	 * @return  \PHPUnit_Framework_MockObject_MockObject
-	 */
-	private function getEntity($row = array())
-	{
-		$entity = $this->getMockBuilder(EntityWithPublishUp::class)
-			->setMethods(array('columnAlias', 'nullDate'))
-			->getMock();
+    /**
+     * getPublishUp returns expected value.
+     *
+     * @return  void
+     */
+    public function testGetPublishUpReturnsExpectedValue()
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getEntity([self::COLUMN_PUBLISH_UP => '2017-09-23 16:49:00']);
 
-		$entity->method('columnAlias')
-			->willReturn(static::COLUMN_PUBLISH_UP);
+        $this->assertSame('2017-09-23 16:49:00', $phpUnitFrameworkMockObjectMockObject->getPublishUp());
+    }
 
-		$entity->method('nullDate')
-			->willReturn('0000-00-00 00:00:00');
+    /**
+     * hasPublishUpReturnsExpectedValue.
+     *
+     * @return  void
+     */
+    public function testHasPublishUpReturnsExpectedValue()
+    {
+        $entity = $this->getEntity([self::COLUMN_PUBLISH_UP => null]);
 
-		$entity->bind($row);
+        $this->assertFalse($entity->HasPublishUp());
 
-		return $entity;
-	}
+        $entity = $this->getEntity([self::COLUMN_PUBLISH_UP => '2017-09-23 16:49:00']);
 
-	/**
-	 * getPublishUp returns expected value.
-	 *
-	 * @return  void
-	 */
-	public function testGetPublishUpReturnsExpectedValue()
-	{
-		$entity = $this->getEntity(array(self::COLUMN_PUBLISH_UP => '2017-09-23 16:49:00'));
+        $this->assertTrue($entity->HasPublishUp());
 
-		$this->assertSame('2017-09-23 16:49:00', $entity->getPublishUp());
-	}
+        $entity = $this->getEntity([self::COLUMN_PUBLISH_UP => '0000-00-00 00:00:00']);
 
-	/**
-	 * hasPublishUpReturnsExpectedValue.
-	 *
-	 * @return  void
-	 */
-	public function testHasPublishUpReturnsExpectedValue()
-	{
-		$entity = $this->getEntity(array(self::COLUMN_PUBLISH_UP => null));
+        $this->assertFalse($entity->HasPublishUp());
+    }
 
-		$this->assertFalse($entity->HasPublishUp());
+    /**
+     * isPublishedUp returns correct value.
+     *
+     * @return  void
+     */
+    public function testIsPublishedUpReturnsCorrectValue()
+    {
+        $entity = $this->getEntity([self::COLUMN_PUBLISH_UP => null]);
 
-		$entity = $this->getEntity(array(self::COLUMN_PUBLISH_UP => '2017-09-23 16:49:00'));
+        $this->assertTrue($entity->isPublishedUp());
 
-		$this->assertTrue($entity->HasPublishUp());
+        // Remove 1h to current time to force past date
+        $date = new \DateTime();
+        $date->sub(new \DateInterval('PT1H'));
 
-		$entity = $this->getEntity(array(self::COLUMN_PUBLISH_UP => '0000-00-00 00:00:00'));
+        $entity = $this->getEntity([self::COLUMN_PUBLISH_UP => $date->format('Y-m-d H:i:s')]);
 
-		$this->assertFalse($entity->HasPublishUp());
-	}
+        $this->assertTrue($entity->isPublishedUp());
 
-	/**
-	 * isPublishedUp returns correct value.
-	 *
-	 * @return  void
-	 */
-	public function testIsPublishedUpReturnsCorrectValue()
-	{
-		$entity = $this->getEntity(array(self::COLUMN_PUBLISH_UP => null));
+        $entity = $this->getEntity([self::COLUMN_PUBLISH_UP => '0000-00-00 00:00:00']);
 
-		$this->assertTrue($entity->isPublishedUp());
+        $this->assertTrue($entity->isPublishedUp());
 
-		// Remove 1h to current time to force past date
-		$date = new \DateTime;
-		$date->sub(new \DateInterval('PT1H'));
+        // Add 1h to current time to force future date
+        $date = new \DateTime();
+        $date->add(new \DateInterval('PT1H'));
 
-		$entity = $this->getEntity(array(self::COLUMN_PUBLISH_UP => $date->format('Y-m-d H:i:s')));
+        $entity = $this->getEntity([self::COLUMN_PUBLISH_UP => $date->format('Y-m-d H:i:s')]);
 
-		$this->assertTrue($entity->isPublishedUp());
+        $this->assertFalse($entity->isPublishedUp());
+    }
 
-		$entity = $this->getEntity(array(self::COLUMN_PUBLISH_UP => '0000-00-00 00:00:00'));
+    /**
+     * Get a mocked entity.
+     *
+     * @param   array  $row  Row returned by the entity as data
+     *
+     * @return  \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getEntity($row = [])
+    {
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(EntityWithPublishUp::class)
+            ->setMethods(['columnAlias', 'nullDate'])
+            ->getMock();
 
-		$this->assertTrue($entity->isPublishedUp());
+        $phpUnitFrameworkMockObjectMockObject->method('columnAlias')
+            ->willReturn(static::COLUMN_PUBLISH_UP);
 
-		// Add 1h to current time to force future date
-		$date = new \DateTime;
-		$date->add(new \DateInterval('PT1H'));
+        $phpUnitFrameworkMockObjectMockObject->method('nullDate')
+            ->willReturn('0000-00-00 00:00:00');
 
-		$entity = $this->getEntity(array(self::COLUMN_PUBLISH_UP => $date->format('Y-m-d H:i:s')));
+        $phpUnitFrameworkMockObjectMockObject->bind($row);
 
-		$this->assertFalse($entity->isPublishedUp());
-	}
+        return $phpUnitFrameworkMockObjectMockObject;
+    }
 }

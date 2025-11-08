@@ -1,16 +1,22 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity;
+namespace Extly\Joomla\Entity;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Contracts\EntityInterface;
+use Extly\Joomla\Entity\Contracts\EntityInterface;
 
 /**
  * Represents a collection of entities.
@@ -19,20 +25,20 @@ use Phproberto\Joomla\Entity\Contracts\EntityInterface;
  */
 abstract class Decorator
 {
-	/**
-	 * Decorated entity.
-	 *
-	 * @var  EntityInterface
-	 */
-	protected $entity;
+    /**
+     * Decorated entity.
+     *
+     * @var  EntityInterface
+     */
+    protected $entity;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   EntityInterface  $entity  Entity to decorate.
-	 */
-	public function __construct(EntityInterface $entity)
-	{
-		$this->entity = $entity;
-	}
+    /**
+     * Constructor.
+     *
+     * @param   EntityInterface  $entity  Entity to decorate.
+     */
+    public function __construct(EntityInterface $entity)
+    {
+        $this->entity = $entity;
+    }
 }

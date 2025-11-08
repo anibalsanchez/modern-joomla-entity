@@ -1,17 +1,21 @@
 <?php
-/**
- * Joomla! component.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-require_once JPATH_BASE . '/tests/unit/bootstrap.php';
+require_once JPATH_BASE.'/tests/unit/bootstrap.php';
 
-if (!defined('JPATH_TESTS_PHPROBERTO'))
-{
-	define('JPATH_TESTS_PHPROBERTO', realpath(__DIR__));
+if (!defined('JPATH_TESTS_PHPROBERTO')) {
+    define('JPATH_TESTS_PHPROBERTO', realpath(__DIR__));
 }
 
-require_once dirname(__FILE__) . '/../vendor/autoload.php';
-
+require_once __DIR__.'/../vendor/autoload.php';

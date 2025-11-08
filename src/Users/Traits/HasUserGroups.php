@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Users\Traits;
+namespace Extly\Joomla\Entity\Users\Traits;
 
 defined('_JEXEC') || die;
 
@@ -17,66 +23,65 @@ defined('_JEXEC') || die;
  */
 trait HasUserGroups
 {
-	/**
-	 * Associated user groups.
-	 *
-	 * @var  Collection
-	 */
-	protected $userGroups;
+    /**
+     * Associated user groups.
+     *
+     * @var  Collection
+     */
+    protected $userGroups;
 
-	/**
-	 * Clear already loaded userGroups.
-	 *
-	 * @return  self
-	 */
-	public function clearUserGroups()
-	{
-		$this->userGroups = null;
+    /**
+     * Clear already loaded userGroups.
+     *
+     * @return  self
+     */
+    public function clearUserGroups()
+    {
+        $this->userGroups = null;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Get the associated user groups.
-	 *
-	 * @return  Collection
-	 */
-	public function userGroups()
-	{
-		if (null === $this->userGroups)
-		{
-			$this->userGroups = $this->loadUserGroups();
-		}
+    /**
+     * Get the associated user groups.
+     *
+     * @return  Collection
+     */
+    public function userGroups()
+    {
+        if (null === $this->userGroups) {
+            $this->userGroups = $this->loadUserGroups();
+        }
 
-		return $this->userGroups;
-	}
+        return $this->userGroups;
+    }
 
-	/**
-	 * Check if this entity has an associated user group.
-	 *
-	 * @param   integer   $id  User identifier
-	 *
-	 * @return  boolean
-	 */
-	public function hasUserGroup($id)
-	{
-		return $this->userGroups()->has($id);
-	}
+    /**
+     * Check if this entity has an associated user group.
+     *
+     * @param   int   $id  User identifier
+     *
+     * @return  bool
+     */
+    public function hasUserGroup($id)
+    {
+        return $this->userGroups()->has($id);
+    }
 
-	/**
-	 * Check if this entity has associated user groups.
-	 *
-	 * @return  boolean
-	 */
-	public function hasUserGroups()
-	{
-		return !$this->userGroups()->isEmpty();
-	}
+    /**
+     * Check if this entity has associated user groups.
+     *
+     * @return  bool
+     */
+    public function hasUserGroups()
+    {
+        return !$this->userGroups()->isEmpty();
+    }
 
-	/**
-	 * Load associated user groups from DB.
-	 *
-	 * @return  Collection
-	 */
-	abstract protected function loadUserGroups();
+    /**
+     * Load associated user groups from DB.
+     *
+     * @return  Collection
+     */
+    abstract protected function loadUserGroups();
 }

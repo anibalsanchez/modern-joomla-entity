@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Tags\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Tags\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Entity;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Tags\Tag;
-use Phproberto\Joomla\Entity\Tags\Traits\HasTags;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Entity;
+use Extly\Joomla\Entity\Tags\Tag;
+use Extly\Joomla\Entity\Tags\Traits\HasTags;
 
 /**
  * Sample class to test HasTags trait.
@@ -20,17 +26,17 @@ use Phproberto\Joomla\Entity\Tags\Traits\HasTags;
  */
 class ClassWithSearchableTags extends Entity
 {
-	use HasTags;
+    use HasTags;
 
-	/**
-	 * Retrieve the alias of content type associated with this entity.
-	 *
-	 * @return  string
-	 *
-	 * @since   1.7.0
-	 */
-	public static function contentTypeAlias()
-	{
-		return 'com_content.category';
-	}
+    /**
+     * Retrieve the alias of content type associated with this entity.
+     *
+     * @return  string
+     *
+     * @since   1.7.0
+     */
+    public static function contentTypeAlias()
+    {
+        return 'com_content.category';
+    }
 }

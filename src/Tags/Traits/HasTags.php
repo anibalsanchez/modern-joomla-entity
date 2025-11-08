@@ -1,18 +1,24 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tags\Traits;
+namespace Extly\Joomla\Entity\Tags\Traits;
 
 defined('_JEXEC') || die;
 
-use Phproberto\Joomla\Entity\Tags\Tag;
-use Phproberto\Joomla\Entity\Collection;
-use Phproberto\Joomla\Entity\Tags\Search\TagSearch;
+use Extly\Joomla\Entity\Collection;
+use Extly\Joomla\Entity\Tags\Search\TagSearch;
+use Extly\Joomla\Entity\Tags\Tag;
 
 /**
  * Trait for entities that have associated tags.
@@ -21,165 +27,158 @@ use Phproberto\Joomla\Entity\Tags\Search\TagSearch;
  */
 trait HasTags
 {
-	/**
-	 * Associated tags.
-	 *
-	 * @var  Collection
-	 */
-	protected $tags;
+    /**
+     * Associated tags.
+     *
+     * @var  Collection
+     */
+    protected $tags;
 
-	/**
-	 * Clear preloaded tags.
-	 *
-	 * @return  self
-	 */
-	public function clearTags()
-	{
-		$this->tags = null;
+    /**
+     * Clear preloaded tags.
+     *
+     * @return  self
+     */
+    public function clearTags()
+    {
+        $this->tags = null;
 
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Retrieve the alias of content type associated with this entity.
-	 *
-	 * @return  string
-	 *
-	 * @since   1.6.0
-	 */
-	public static function contentTypeAlias()
-	{
-		return '';
-	}
+    /**
+     * Retrieve the alias of content type associated with this entity.
+     *
+     * @return  string
+     *
+     * @since   1.6.0
+     */
+    public static function contentTypeAlias()
+    {
+        return '';
+    }
 
-	/**
-	 * Get the associated tags.
-	 *
-	 * @param   boolean  $reload  Force data reloading
-	 *
-	 * @return  Collection
-	 */
-	public function tags($reload = false)
-	{
-		if ($reload || null === $this->tags)
-		{
-			$this->tags = $this->loadTags();
-		}
+    /**
+     * Get the associated tags.
+     *
+     * @param   bool  $reload  Force data reloading
+     *
+     * @return  Collection
+     */
+    public function tags($reload = false)
+    {
+        if ($reload || null === $this->tags) {
+            $this->tags = $this->loadTags();
+        }
 
-		return $this->tags;
-	}
+        return $this->tags;
+    }
 
-	/**
-	 * Get an instance of the tags helper.
-	 * Here mainly for tests.
-	 *
-	 * @return  \JHelperTags
-	 */
-	protected function getTagsHelperInstance()
-	{
-		return new \JHelperTags;
-	}
+    /**
+     * Check if this entity has an associated tag.
+     *
+     * @param   int   $id  Tag identifier
+     *
+     * @return  bool
+     */
+    public function hasTag($id)
+    {
+        return $this->tags()->has($id);
+    }
 
-	/**
-	 * Check if this entity has an associated tag.
-	 *
-	 * @param   integer   $id  Tag identifier
-	 *
-	 * @return  boolean
-	 */
-	public function hasTag($id)
-	{
-		return $this->tags()->has($id);
-	}
+    /**
+     * Check if this entity has associated tags.
+     *
+     * @return  bool
+     */
+    public function hasTags()
+    {
+        return !$this->tags()->isEmpty();
+    }
 
-	/**
-	 * Check if this entity has associated tags.
-	 *
-	 * @return  boolean
-	 */
-	public function hasTags()
-	{
-		return !$this->tags()->isEmpty();
-	}
+    /**
+     * Remove all tags assigned to this entity.
+     *
+     * @return  void
+     *
+     * @since   1.7.0
+     */
+    public function removeAllTags()
+    {
+        $contentTypeAlias = self::contentTypeAlias();
 
-	/**
-	 * Load associated tags from DB.
-	 *
-	 * @return  Collection
-	 */
-	protected function loadTags()
-	{
-		$contentTypeAlias = self::contentTypeAlias();
+        if (!$this->hasId()) {
+            throw new \RuntimeException('Trying to remove tags assigned to unsaved entiy', 500);
+        }
 
-		if (!$this->hasId() || !$contentTypeAlias)
-		{
-			return new Collection;
-		}
+        $db = $this->getDbo();
 
-		$items = $this->getTagsHelperInstance()->getItemTags($contentTypeAlias, $this->id()) ?: array();
+        $query = $db->getQuery(true)
+            ->delete('#__contentitem_tag_map')
+            ->where($db->qn('type_alias').' = '.$db->q($contentTypeAlias))
+            ->where($db->qn('content_item_id').' = '.(int) $this->id());
 
-		$tags = array_map(
-			function ($tag)
-			{
-				return Tag::find($tag->id)->bind($tag);
-			},
-			$items
-		);
+        $db->setQuery($query);
+        $db->execute();
+    }
 
-		return new Collection($tags);
-	}
+    /**
+     * Search within this entity tags.
+     *
+     * @param   array   $options  Search options
+     *
+     * @return  Collection
+     *
+     * @since   1.7.0
+     */
+    public function searchTags(array $options = [])
+    {
+        $contentTypeAlias = self::contentTypeAlias();
 
-	/**
-	 * Remove all tags assigned to this entity.
-	 *
-	 * @return  void
-	 *
-	 * @since   1.7.0
-	 */
-	public function removeAllTags()
-	{
-		$contentTypeAlias = self::contentTypeAlias();
+        if (!$this->hasId() || !$contentTypeAlias) {
+            return new Collection();
+        }
 
-		if (!$this->hasId())
-		{
-			throw new \RuntimeException("Trying to remove tags assigned to unsaved entiy", 500);
-		}
+        $options['filter.content_type_alias'] = $contentTypeAlias;
+        $options['filter.content_item_id'] = $this->id();
 
-		$db = $this->getDbo();
+        return Collection::fromData(
+            TagSearch::instance($options)->search(),
+            Tag::class
+        );
+    }
 
-		$query = $db->getQuery(true)
-			->delete('#__contentitem_tag_map')
-			->where($db->qn('type_alias') . ' = ' . $db->q($contentTypeAlias))
-			->where($db->qn('content_item_id') . ' = ' . (int) $this->id());
+    /**
+     * Get an instance of the tags helper.
+     * Here mainly for tests.
+     *
+     * @return  \Joomla\CMS\Helper\TagsHelper
+     */
+    protected function getTagsHelperInstance()
+    {
+        return new \Joomla\CMS\Helper\TagsHelper();
+    }
 
-		$db->setQuery($query);
-		$db->execute();
-	}
+    /**
+     * Load associated tags from DB.
+     *
+     * @return  Collection
+     */
+    protected function loadTags()
+    {
+        $contentTypeAlias = self::contentTypeAlias();
 
-	/**
-	 * Search within this entity tags.
-	 *
-	 * @param   array   $options  Search options
-	 *
-	 * @return  Collection
-	 *
-	 * @since   1.7.0
-	 */
-	public function searchTags(array $options = [])
-	{
-		$contentTypeAlias = self::contentTypeAlias();
+        if (!$this->hasId() || !$contentTypeAlias) {
+            return new Collection();
+        }
 
-		if (!$this->hasId() || !$contentTypeAlias)
-		{
-			return new Collection;
-		}
+        $items = $this->getTagsHelperInstance()->getItemTags($contentTypeAlias, $this->id()) ?: [];
 
-		$options['filter.content_type_alias'] = $contentTypeAlias;
-		$options['filter.content_item_id'] = $this->id();
+        $tags = array_map(
+            fn ($tag) => Tag::find($tag->id)->bind($tag),
+            $items
+        );
 
-		return Collection::fromData(
-			TagSearch::instance($options)->search(),
-			Tag::class
-		);
-	}
+        return new Collection($tags);
+    }
 }

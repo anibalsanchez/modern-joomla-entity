@@ -1,17 +1,23 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Users\Traits\Stubs;
+namespace Extly\Joomla\Entity\Tests\Users\Traits\Stubs;
 
-use Phproberto\Joomla\Entity\Entity;
-use Phproberto\Joomla\Entity\Users\User;
-use Phproberto\Joomla\Entity\Users\Traits\HasOwner;
-use Phproberto\Joomla\Entity\Users\Contracts\Ownerable;
+use Extly\Joomla\Entity\Entity;
+use Extly\Joomla\Entity\Users\Contracts\Ownerable;
+use Extly\Joomla\Entity\Users\Traits\HasOwner;
+use Extly\Joomla\Entity\Users\User;
 
 /**
  * Sample class to test HasOwner trait.
@@ -22,22 +28,22 @@ use Phproberto\Joomla\Entity\Users\Contracts\Ownerable;
  */
 class EntityWithOwner extends Entity implements Ownerable
 {
-	use HasOwner;
+    use HasOwner;
 
-	/**
-	 * Expected active user.
-	 *
-	 * @var  User
-	 */
-	public $activeUser;
+    /**
+     * Expected active user.
+     *
+     * @var  User
+     */
+    public $activeUser;
 
-	/**
-	 * Retrieve active user.
-	 *
-	 * @return  USer
-	 */
-	private function activeUser()
-	{
-		return $this->activeUser ?: new User;
-	}
+    /**
+     * Retrieve active user.
+     *
+     * @return  User
+     */
+    private function activeUser()
+    {
+        return $this->activeUser ?: new User();
+    }
 }

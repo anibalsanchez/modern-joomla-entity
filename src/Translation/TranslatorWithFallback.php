@@ -1,12 +1,18 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Translation;
+namespace Extly\Joomla\Entity\Translation;
 
 defined('_JEXEC') || die;
 
@@ -17,32 +23,30 @@ defined('_JEXEC') || die;
  */
 class TranslatorWithFallback extends Translator
 {
-	/**
-	 * Translate a column.
-	 *
-	 * @param   string  $column   Column to translate
-	 * @param   mixed   $default  Default value
-	 *
-	 * @return  mixed
-	 */
-	public function translate($column, $default = null)
-	{
-		$value = $this->isEntityLanguage() ? $this->entity->get($column) : $this->translation()->get($column);
+    /**
+     * Translate a column.
+     *
+     * @param   string  $column   Column to translate
+     * @param   mixed   $default  Default value
+     *
+     * @return  mixed
+     */
+    public function translate($column, $default = null)
+    {
+        $value = $this->isEntityLanguage() ? $this->entity->get($column) : $this->translation()->get($column);
 
-		if ($this->validator()->isValidColumnValue($column, $value))
-		{
-			return $value;
-		}
+        if ($this->validator()->isValidColumnValue($column, $value)) {
+            return $value;
+        }
 
-		if ($this->isEntityLanguage())
-		{
-			return $default;
-		}
+        if ($this->isEntityLanguage()) {
+            return $default;
+        }
 
-		$value = $this->entity->get($column);
+        $value = $this->entity->get($column);
 
-		$isValid = $this->validator()->isValidColumnValue($column, $value);
+        $isValid = $this->validator()->isValidColumnValue($column, $value);
 
-		return $isValid ? $value : $default;
-	}
+        return $isValid ? $value : $default;
+    }
 }

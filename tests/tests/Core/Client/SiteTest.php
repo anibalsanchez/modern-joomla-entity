@@ -1,14 +1,20 @@
 <?php
-/**
- * Joomla! entity library.
+
+/*
+ * @package     Modern Joomla Entity
  *
- * @copyright  Copyright (C) 2017-2019 Roberto Segura López, Inc. All rights reserved.
- * @license    See COPYING.txt
+ * @author      Anibal Sanchez <team@extly.com>
+ * @copyright   Copyright (c)2025 Anibal Sanchez. All rights reserved.
+ *              Based on phproberto/joomla-entity by Roberto Segura López
+ *
+ * @license     LGPL-2.1+
+ *
+ * @see         https://www.extly.com
  */
 
-namespace Phproberto\Joomla\Entity\Tests\Core\Client;
+namespace Extly\Joomla\Entity\Tests\Core\Client;
 
-use Phproberto\Joomla\Entity\Core\Client\Site;
+use Extly\Joomla\Entity\Core\Client\Site;
 
 /**
  * Tests for Site client.
@@ -17,58 +23,58 @@ use Phproberto\Joomla\Entity\Core\Client\Site;
  */
 class SiteTest extends \TestCase
 {
-	/**
-	 * Test getFolder returns the correct folder.
-	 *
-	 * @return  void
-	 */
-	public function testGetFolderReturnsCorrectFolder()
-	{
-		$client = new Site;
-		$this->assertEquals(JPATH_SITE, $client->getFolder());
-	}
+    /**
+     * Test getFolder returns the correct folder.
+     *
+     * @return  void
+     */
+    public function testGetFolderReturnsCorrectFolder()
+    {
+        $site = new Site();
+        $this->assertEquals(JPATH_SITE, $site->getFolder());
+    }
 
-	/**
-	 * Test getId returns the correct id.
-	 *
-	 * @return  void
-	 */
-	public function testGetIdReturnsCorrectId()
-	{
-		$client = new Site;
-		$this->assertEquals(Site::ID, $client->getId());
-	}
+    /**
+     * Test getId returns the correct id.
+     *
+     * @return  void
+     */
+    public function testGetIdReturnsCorrectId()
+    {
+        $site = new Site();
+        $this->assertEquals(Site::ID, $site->getId());
+    }
 
-	/**
-	 * Test getName returns correct name.
-	 *
-	 * @return  void
-	 */
-	public function testGetNameRetursCorrectName()
-	{
-		$client = new Site;
-		$this->assertEquals(Site::NAME, $client->getName());
-	}
+    /**
+     * Test getName returns correct name.
+     *
+     * @return  void
+     */
+    public function testGetNameRetursCorrectName()
+    {
+        $site = new Site();
+        $this->assertEquals(Site::NAME, $site->getName());
+    }
 
-	/**
-	 * Test isAdmin returns false.
-	 *
-	 * @return  void
-	 */
-	public function testIsAdminReturnsFalse()
-	{
-		$client = new Site;
-		$this->assertFalse($client->IsAdmin());
-	}
+    /**
+     * Test isAdmin returns false.
+     *
+     * @return  void
+     */
+    public function testIsAdminReturnsFalse()
+    {
+        $site = new Site();
+        $this->assertFalse($site->IsAdmin());
+    }
 
-	/**
-	 * Test isSite returns true.
-	 *
-	 * @return  void
-	 */
-	public function testIsSiteReturnsTrue()
-	{
-		$client = new Site;
-		$this->assertTrue($client->IsSite());
-	}
+    /**
+     * Test isSite returns true.
+     *
+     * @return  void
+     */
+    public function testIsSiteReturnsTrue()
+    {
+        $site = new Site();
+        $this->assertTrue($site->IsSite());
+    }
 }
