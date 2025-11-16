@@ -598,13 +598,13 @@ class EntityTest extends \TestCaseDatabase
 
         $reflectionProperty->setValue($entity, $data);
 
-        $this->assertInstanceOf(\JDate::class, $entity->date('date', true));
+        $this->assertInstanceOf(\Joomla\CMS\Date\Date::class, $entity->date('date', true));
 
         Factory::$config = new Registry(['offset' => '+0600']);
 
-        $this->assertInstanceOf(\JDate::class, $entity->date('date', false));
-        $this->assertInstanceOf(\JDate::class, $entity->date('date', null));
-        $this->assertInstanceOf(\JDate::class, $entity->date('date', 'GMT'));
+        $this->assertInstanceOf(\Joomla\CMS\Date\Date::class, $entity->date('date', false));
+        $this->assertInstanceOf(\Joomla\CMS\Date\Date::class, $entity->date('date', null));
+        $this->assertInstanceOf(\Joomla\CMS\Date\Date::class, $entity->date('date', 'GMT'));
     }
 
     /**
@@ -1136,7 +1136,7 @@ class EntityTest extends \TestCaseDatabase
             'name'            => 'Anibal Sánchez',
         ];
 
-        $tableMock = $this->getMockBuilder(\JTable::class)
+        $tableMock = $this->getMockBuilder(\Joomla\CMS\Table\Table::class)
             ->disableOriginalConstructor()
             ->setMethods(['save'])
             ->getMock();
@@ -1180,7 +1180,7 @@ class EntityTest extends \TestCaseDatabase
      */
     public function testSaveThrowsExceptionWhenTableErrorsHappen()
     {
-        $tableMock = $this->getMockBuilder(\JTable::class)
+        $tableMock = $this->getMockBuilder(\Joomla\CMS\Table\Table::class)
             ->disableOriginalConstructor()
             ->setMethods(['save', 'getError'])
             ->getMock();

@@ -35,7 +35,7 @@ class SaveExceptionTest extends \TestCase
     {
         $entity = new Entity(999);
 
-        $table = $this->getMockBuilder(\JTable::class)
+        $table = $this->getMockBuilder(\Joomla\CMS\Table\Table::class)
             ->disableOriginalConstructor()
             ->setMethods(['getError'])
             ->getMock();

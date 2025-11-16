@@ -275,7 +275,7 @@ class HasParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testSaveParamsThrowsExceptionIfTableSaveFails()
     {
-        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(\JTable::class)
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(\Joomla\CMS\Table\Table::class)
             ->disableOriginalConstructor()
             ->setMethods(['save', 'getError'])
             ->getMock();
@@ -311,7 +311,7 @@ class HasParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testSaveParamsReturnsTrueWhenTableSavesData()
     {
-        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(\JTable::class)
+        $phpUnitFrameworkMockObjectMockObject = $this->getMockBuilder(\Joomla\CMS\Table\Table::class)
             ->disableOriginalConstructor()
             ->setMethods(['save', 'load'])
             ->getMock();

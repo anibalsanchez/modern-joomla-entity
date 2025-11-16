@@ -340,7 +340,7 @@ class ExtensionTest extends \TestCaseDatabase
     {
         $extension = new Extension();
 
-        $this->assertInstanceOf(\JTableExtension::class, $extension->table());
+        $this->assertInstanceOf(\Joomla\CMS\Table\Extension::class, $extension->table());
     }
 
     /**

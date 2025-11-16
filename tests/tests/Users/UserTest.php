@@ -794,7 +794,7 @@ class UserTest extends \TestCaseDatabase
 
         $joomlaUser = $user->joomlaUser();
 
-        $this->assertInstanceOf(\JUser::class, $joomlaUser);
+        $this->assertInstanceOf(\Joomla\CMS\User\User::class, $joomlaUser);
         $this->assertSame(42, (int) $joomlaUser->get('id'));
     }
 
@@ -885,7 +885,7 @@ class UserTest extends \TestCaseDatabase
 
         $joomlaUser = $user->joomlaUser();
 
-        $this->assertInstanceOf(\JUser::class, $joomlaUser);
+        $this->assertInstanceOf(\Joomla\CMS\User\User::class, $joomlaUser);
         $this->assertSame(0, (int) $joomlaUser->get('id'));
         $this->assertSame(1, $joomlaUser->get('guest'));
     }
